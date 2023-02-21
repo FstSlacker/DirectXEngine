@@ -4,6 +4,7 @@
 #include <directxmath.h>
 #include <vector>
 #include "GameComponent.h"
+#include "ConstantBuffer.h"
 
 class Game;
 class GameComponent;
@@ -26,12 +27,14 @@ protected:
 	ID3D11Buffer* verticesBuffer;
 	ID3D11Buffer* indicesBuffer;
 
+	ConstantBuffer<DirectX::XMMATRIX> transformMat;
+
 	std::vector<Vertex> points;
 	std::vector<int> indices;
 
 public:
 
-	MeshComponent(Game* game, Vector3 position);
+	MeshComponent(Game* game, Transform3D transform);
 	void DestroyResources() override;
 	void Draw() override;
 	void Initialize() override;

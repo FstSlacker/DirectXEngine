@@ -51,7 +51,7 @@ void Game::Draw()
 
 	Context->OMSetRenderTargets(1, &RenderView, nullptr);
 
-	float color[] = { 0.0f, 1.0f, 1.0f, 1.0f };
+	float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	Context->ClearRenderTargetView(RenderView, color);
 
 
@@ -148,6 +148,8 @@ void Game::Run()
 {
 	Initialize();
 
+	prevTime = std::chrono::steady_clock::now();
+
 	MSG msg = {};
 	bool isExitRequested = false;
 	while (!isExitRequested) {
@@ -157,10 +159,14 @@ void Game::Run()
 			DispatchMessage(&msg);
 		}
 
-		// If windows signals to end the application then exit out.
 		if (msg.message == WM_QUIT) {
 			isExitRequested = true;
 		}
+
+		auto curTime = std::chrono::steady_clock::now();
+		DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - prevTime).count() / 1000000.0f;
+		prevTime = curTime;
+
 		MessageHandler();
 		Update();
 		Draw();
@@ -171,7 +177,10 @@ void Game::Run()
 
 void Game::Update()
 {
-
+	for (int i = 0; i < Components.size(); i++)
+	{
+		Components[i]->Update();
+	}
 }
 
 void Game::UpdateInternal()

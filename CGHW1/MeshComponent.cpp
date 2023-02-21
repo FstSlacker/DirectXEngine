@@ -1,7 +1,7 @@
 #include "MeshComponent.h"
 #include "Game.h"
 
-MeshComponent::MeshComponent(Game* game, Vector3 position) : GameComponent(game, position)
+MeshComponent::MeshComponent(Game* game, Transform3D transform) : GameComponent(game, transform)
 {
 
 }
@@ -32,6 +32,18 @@ void MeshComponent::Draw(){
 	game->Context->IASetVertexBuffers(0, 1, &verticesBuffer, strides, offsets);
 	game->Context->VSSetShader(vertexShader, nullptr, 0);
 	game->Context->PSSetShader(pixelShader, nullptr, 0);
+
+	transformMat.Data = Transform.GetTransposedTransformMatrix();
+	
+	if (!transformMat.ApplyChanges())
+	{
+		std::cout << "Failed to apply transform mat!" << std::endl;
+	}
+
+	game->Context->VSSetConstantBuffers(0, 1, transformMat.GetAddressOf());
+
+
+
 	game->Context->DrawIndexed(6, 0, 0);
 }
 
@@ -39,11 +51,24 @@ void MeshComponent::Update() {
 	GameComponent::Update();
 }
 
+//void MeshComponent::SetPosition(Vector3 position)
+//{
+//	GameComponent::SetPosition(position);
+//
+//	transformMat.Data = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+//	transformMat.Data = DirectX::XMMatrixTranspose(transformMat.Data);
+//
+//	if (!transformMat.ApplyChanges())
+//	{
+//		std::cout << "Failed to apply transform mat!" << std::endl;
+//	}
+//}
+
 void MeshComponent::Initialize() {
 
 	GameComponent::Initialize();
 
-	//Set pipeline
+	//Set pipeline (compile and create shaders)
 	ID3DBlob* errorVertexCode = nullptr;
 
 	auto res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
@@ -57,17 +82,14 @@ void MeshComponent::Initialize() {
 		&errorVertexCode);
 
 	if (FAILED(res)) {
-		// If the shader failed to compile it should have written something to the error message.
 		if (errorVertexCode) {
 			char* compileErrors = (char*)(errorVertexCode->GetBufferPointer());
 
 			std::cout << compileErrors << std::endl;
 		}
-		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
 			std::cout << "Shader file not found!" << std::endl;
-			//MessageBox(hWnd, L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
 		}
 	}
 
@@ -96,7 +118,7 @@ void MeshComponent::Initialize() {
 		pixelShaderByteCode->GetBufferSize(),
 		nullptr, &pixelShader);
 
-	//Set graphics
+	//Create vertex layout
 	D3D11_INPUT_ELEMENT_DESC inputElements[] = {
 		D3D11_INPUT_ELEMENT_DESC {
 			"POSITION",
@@ -116,7 +138,6 @@ void MeshComponent::Initialize() {
 			0}
 	};
 
-	//Формат ввода
 	game->Device->CreateInputLayout(
 		inputElements,
 		2,
@@ -124,6 +145,7 @@ void MeshComponent::Initialize() {
 		vertexShaderByteCode->GetBufferSize(),
 		&layout);
 
+	//Create vertex buffer
 	D3D11_BUFFER_DESC vertexBufDesc = {};
 	vertexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -139,6 +161,7 @@ void MeshComponent::Initialize() {
 
 	game->Device->CreateBuffer(&vertexBufDesc, &vertexData, &verticesBuffer);
 
+	//Create index buffer
 	D3D11_BUFFER_DESC indexBufDesc = {};
 	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -153,4 +176,7 @@ void MeshComponent::Initialize() {
 	indexData.SysMemSlicePitch = 0;
 
 	game->Device->CreateBuffer(&indexBufDesc, &indexData, &indicesBuffer);
+
+	//Init constant buffers
+	transformMat.Initialize(game->Device.Get(), game->Context);
 }

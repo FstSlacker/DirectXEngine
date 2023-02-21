@@ -1,10 +1,10 @@
 #include "GameComponent.h"
 #include <iostream>
 
-GameComponent::GameComponent(Game* game, Vector3 position) 
+GameComponent::GameComponent(Game* game, Transform3D transform) 
 {
 	this->game = game;
-	this->position = position;
+	this->Transform = transform;
 }
 
 void GameComponent::DestroyResources() 
@@ -31,3 +31,8 @@ void GameComponent::Update()
 {
 
 }
+
+//void GameComponent::SetPosition(Vector3 position)
+//{
+//	this->position = position;
+//}

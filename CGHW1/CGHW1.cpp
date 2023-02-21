@@ -359,42 +359,9 @@
 #include "Game.h"
 int main()
 {
-	//std::vector<MeshComponent::Vertex> points1{
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f)},
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.5f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)},
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)}
-	//};
-
-	//std::vector<MeshComponent::Vertex> points2{
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f)},
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(-0.5f, -0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, -0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)},
-	//	MeshComponent::Vertex{DirectX::XMFLOAT4(-0.5f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)}
-	//};
-
-	//std::vector<int> indices{ 0,1,2, 1,0,3 };
-
 	Game game = Game();
-	game.Components.push_back(new PlaneComponent(&game, Vector3(0, 0, 0)));
-	game.Components.push_back(new PlaneComponent(&game, Vector3(0, 0.5f, 0)));
+	game.Components.push_back(new PlaneComponent(&game, Transform3D(Vector3(0.0f, 0.0f, 0.5f), Vector3(0.0f, 0.0f, 45.0f), Vector3(3.0f, 1.0f, 1.0f)), DirectX::XMFLOAT4{0.0f, 1.0f, 1.0f, 1.0f}));
+	//game.Components.push_back(new PlaneComponent(&game, Transform3D(Vector3(-0.25f, 0.25f, 0.5f), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 1.0f, 1.0f))));
 
 	game.Run();
-
-	//MSG msg = {};
-	//bool isExitRequested = false;
-	//while (!isExitRequested) {
-	//	// Handle the windows messages.
-	//	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-	//		TranslateMessage(&msg);
-	//		DispatchMessage(&msg);
-	//	}
-
-	//	// If windows signals to end the application then exit out.
-	//	if (msg.message == WM_QUIT) {
-	//		isExitRequested = true;
-	//	}
-	//	game.Draw();
-	//}
-	//game.DestroyResources();
 }

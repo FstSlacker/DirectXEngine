@@ -1,20 +1,19 @@
 #include "PlaneComponent.h"
+#include "Game.h"
 
-PlaneComponent::PlaneComponent(Game* game, Vector3 position) : MeshComponent(game, position)
+PlaneComponent::PlaneComponent(Game* game, Transform3D transform, DirectX::XMFLOAT4 color) : MeshComponent(game, transform)
 {
-	
-	/*points = {
-		MeshComponent::Vertex{DirectX::XMFLOAT4(0.25f, 0.25f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		MeshComponent::Vertex{DirectX::XMFLOAT4(-0.25f, -0.25f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		MeshComponent::Vertex{DirectX::XMFLOAT4(0.25f, -0.25f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		MeshComponent::Vertex{DirectX::XMFLOAT4(-0.25f, 0.25f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)}
-	};*/
 	points = {
-		MeshComponent::Vertex{Vector3(0.25f, 0.25f, 0.5f) + position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		MeshComponent::Vertex{Vector3(-0.25f, -0.25f, 0.5f) + position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		MeshComponent::Vertex{Vector3(0.25f, -0.25f, 0.5f) + position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		MeshComponent::Vertex{Vector3(-0.25f, 0.25f, 0.5f) + position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)}
+		MeshComponent::Vertex{Vector3(0.25f, 0.25f, 0.5f), color},
+		MeshComponent::Vertex{Vector3(-0.25f, -0.25f, 0.5f), color},
+		MeshComponent::Vertex{Vector3(0.25f, -0.25f, 0.5f), color},
+		MeshComponent::Vertex{Vector3(-0.25f, 0.25f, 0.5f), color}
 	};
 
 	indices = { 0,1,2, 1,0,3 };
+}
+
+void PlaneComponent::Update() 
+{
+	MeshComponent::Update();
 }

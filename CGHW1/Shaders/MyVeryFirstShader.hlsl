@@ -1,6 +1,11 @@
+cbuffer cBuf : register(b0)
+{
+	float4x4 mat;
+};
+
 struct VS_IN
 {
-	float4 pos : POSITION0;
+	float3 pos : POSITION0;
 	float4 col : COLOR0;
 };
 
@@ -14,7 +19,7 @@ PS_IN VSMain( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 	
-	output.pos = input.pos;
+	output.pos = mul(float4(input.pos, 1.0f), mat);
 	output.col = input.col;
 	
 	return output;

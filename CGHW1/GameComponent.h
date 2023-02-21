@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleMath.h"
+#include "Transform.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -7,12 +8,15 @@ class Game;
 
 class GameComponent
 {
+public:
+	Transform3D Transform;
+
 protected:
 	Game* game;
 	Vector3 position;
 
 public:
-	GameComponent(Game* game, Vector3 position);
+	GameComponent(Game* game, Transform3D transform);
 	virtual void DestroyResources();
 	virtual void Draw();
 	virtual void Initialize();

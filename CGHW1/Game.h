@@ -43,8 +43,8 @@ public:
 
 	LPCWSTR Name;
 	Game* Instance;
-	std::chrono::time_point<std::chrono::steady_clock> PrevTime;
 	float TotalTime;
+	float DeltaTime;
 
 	Game();
 	void Run();
@@ -52,6 +52,7 @@ public:
 	void RestoreTarget();
 
 private:
+	std::chrono::time_point<std::chrono::steady_clock> prevTime;
 	ID3D11Texture2D* backBuffer;
 	ID3D11RasterizerState* rastState;
 
