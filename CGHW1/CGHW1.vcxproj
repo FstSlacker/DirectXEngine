@@ -146,8 +146,9 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameComponent.cpp" />
     <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="PlaneComponent.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
-    <ClCompile Include="TriangleComponent.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Delegates.h" />
@@ -157,8 +158,9 @@
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PlaneComponent.h" />
     <ClInclude Include="SimpleMath.h" />
-    <ClInclude Include="TriangleComponent.h" />
+    <ClInclude Include="MeshComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl" />

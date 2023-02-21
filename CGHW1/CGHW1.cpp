@@ -359,25 +359,25 @@
 #include "Game.h"
 int main()
 {
-	std::vector<TriangleComponent::Vertex> points1{
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f)},
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(0.5f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)},
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)}
-	};
+	//std::vector<MeshComponent::Vertex> points1{
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f)},
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.5f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)},
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)}
+	//};
 
-	std::vector<TriangleComponent::Vertex> points2{
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f)},
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(-0.5f, -0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(0.0f, -0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)},
-		TriangleComponent::Vertex{DirectX::XMFLOAT4(-0.5f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)}
-	};
+	//std::vector<MeshComponent::Vertex> points2{
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f)},
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(-0.5f, -0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)},
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(0.0f, -0.5f, 0.5f, 1.0f), DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)},
+	//	MeshComponent::Vertex{DirectX::XMFLOAT4(-0.5f, 0.0f, 0.5f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)}
+	//};
 
-	std::vector<int> indices{ 0,1,2, 1,0,3 };
+	//std::vector<int> indices{ 0,1,2, 1,0,3 };
 
 	Game game = Game();
-	game.Components.push_back(new TriangleComponent(&game, points1, indices));
-	game.Components.push_back(new TriangleComponent(&game, points2, indices));
+	game.Components.push_back(new PlaneComponent(&game, Vector3(0, 0, 0)));
+	game.Components.push_back(new PlaneComponent(&game, Vector3(0, 0.5f, 0)));
 
 	game.Run();
 

@@ -19,12 +19,14 @@
 #pragma comment(lib, "dxguid.lib")
 
 #include "GameComponent.h"
-#include "TriangleComponent.h"
+#include "MeshComponent.h"
+#include "PlaneComponent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
 
 class GameComponent;
-class TriangleComponent;
+class MeshComponent;
+class PlaneComponent;
 
 class Game
 {

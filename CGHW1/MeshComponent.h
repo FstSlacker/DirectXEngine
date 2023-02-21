@@ -3,15 +3,16 @@
 #include <d3d11.h>
 #include <directxmath.h>
 #include <vector>
+#include "GameComponent.h"
 
 class Game;
 class GameComponent;
 
-class TriangleComponent : public GameComponent
+class MeshComponent : public GameComponent
 {
 public:
 	struct Vertex {
-		DirectX::XMFLOAT4 Position;
+		Vector3 Position;
 		DirectX::XMFLOAT4 Color;
 	};
 
@@ -26,12 +27,11 @@ protected:
 	ID3D11Buffer* indicesBuffer;
 
 	std::vector<Vertex> points;
-
 	std::vector<int> indices;
 
 public:
 
-	TriangleComponent(Game* game, std::vector<Vertex> vertices, std::vector<int> indices);
+	MeshComponent(Game* game, Vector3 position);
 	void DestroyResources() override;
 	void Draw() override;
 	void Initialize() override;

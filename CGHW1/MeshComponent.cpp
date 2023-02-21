@@ -1,17 +1,28 @@
-#include "GameComponent.h"
-#include "TriangleComponent.h"
+#include "MeshComponent.h"
 #include "Game.h"
 
-TriangleComponent::TriangleComponent(Game* game, std::vector<Vertex> vertices, std::vector<int> indices) : GameComponent(game){
-	this->points = vertices;
-	this->indices = indices;
-}
-
-void TriangleComponent::DestroyResources(){
+MeshComponent::MeshComponent(Game* game, Vector3 position) : GameComponent(game, position)
+{
 
 }
 
-void TriangleComponent::Draw(){
+void MeshComponent::DestroyResources(){
+
+	GameComponent::DestroyResources();
+
+	layout->Release();
+	vertexShader->Release();
+	vertexShaderByteCode->Release();
+	pixelShader->Release();
+	pixelShaderByteCode->Release();
+	verticesBuffer->Release();
+	indicesBuffer->Release();
+}
+
+void MeshComponent::Draw(){
+
+	GameComponent::Draw();
+
 	UINT strides[1] = { sizeof(Vertex) };
 	UINT offsets[1] = { 0 };
 
@@ -24,11 +35,13 @@ void TriangleComponent::Draw(){
 	game->Context->DrawIndexed(6, 0, 0);
 }
 
-void TriangleComponent::Update() {
-
+void MeshComponent::Update() {
+	GameComponent::Update();
 }
 
-void TriangleComponent::Initialize() {
+void MeshComponent::Initialize() {
+
+	GameComponent::Initialize();
 
 	//Set pipeline
 	ID3DBlob* errorVertexCode = nullptr;
@@ -88,7 +101,7 @@ void TriangleComponent::Initialize() {
 		D3D11_INPUT_ELEMENT_DESC {
 			"POSITION",
 			0,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_R32G32B32_FLOAT,
 			0,
 			0,
 			D3D11_INPUT_PER_VERTEX_DATA,
