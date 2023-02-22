@@ -5,11 +5,13 @@
 using namespace DirectX::SimpleMath;
 
 class Game;
+class ColliderBase;
 
 class GameComponent
 {
 public:
 	Transform3D Transform;
+	ColliderBase* Collider = nullptr;
 
 protected:
 	Game* game;

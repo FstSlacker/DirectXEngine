@@ -23,6 +23,7 @@
 #include "PlaneComponent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
+#include "Collision.h"
 
 class GameComponent;
 class MeshComponent;

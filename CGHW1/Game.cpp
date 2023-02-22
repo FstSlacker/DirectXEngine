@@ -168,12 +168,15 @@ void Game::Run()
 		prevTime = curTime;
 
 		MessageHandler();
+		UpdateInternal();
 		Update();
 		Draw();
 	}
 
 	DestroyResources();
 }
+
+float mul = 1;
 
 void Game::Update()
 {
@@ -185,5 +188,21 @@ void Game::Update()
 
 void Game::UpdateInternal()
 {
+	//Handle collisions
+	for (int i = 0; i < Components.size(); i++)
+	{
+		for (int j = 0; j < Components.size(); j++)
+		{
+			if (i == j)
+				continue;
 
+			ColliderBase* c1 = Components[i]->Collider;
+			ColliderBase* c2 = Components[j]->Collider;
+
+			if (c1 == nullptr || c2 == nullptr)
+				continue;
+
+			c1->HandleCollision(c2);
+		}
+	}
 }
