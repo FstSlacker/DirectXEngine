@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BallComonent.cpp" />
     <ClCompile Include="CGHW1.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Delegates.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="MeshComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BallComonent.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Delegates.h" />

@@ -365,12 +365,20 @@ int main()
 		Transform3D(
 			Vector3(0.0f, -0.9f, 0.5f),
 			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3(0.5f, 0.2f, 0.5f)
+			Vector3(0.5f, 0.1f, 0.5f)
 		),
 		DirectX::XMFLOAT4{ 0.0f, 1.0f, 1.0f, 1.0f }
 	);
 
+	BallComonent* ball = new BallComonent(
+		&game,
+		Vector3(0.0f, 0.0f, 0.5f),
+		0.05f,
+		DirectX::XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f }
+	);
+
 	game.Components.push_back(p1);
+	game.Components.push_back(ball);
 
 	game.Run();
 }

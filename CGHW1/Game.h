@@ -22,6 +22,7 @@
 #include "MeshComponent.h"
 #include "PlaneComponent.h"
 #include "RacketComponent.h"
+#include "BallComonent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
 #include "Collision.h"
