@@ -26,10 +26,6 @@
 #include "GameComponent.h"
 #include "MeshComponent.h"
 #include "PlaneComponent.h"
-
-#include "RacketComponent.h"
-#include "BallComonent.h"
-#include "PPGameController.h"
 #include "Text2DComponent.h"
 
 class GameComponent;

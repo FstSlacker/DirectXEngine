@@ -360,38 +360,11 @@
 int main()
 {
 	Game game = Game();
-	game.Name = L"Ping-Pong";
+	game.Name = L"Game Framework";
 
 	VertexShader* vsDefault = new VertexShader(L"./Shaders/Default.hlsl");
 	PixelShader* psDefault = new PixelShader(L"./Shaders/Default.hlsl");
-	PixelShader* psBall = new PixelShader(L"./Shaders/Circle.hlsl");
 
-	RacketComponent* playerRacket = new RacketComponent(
-		&game,
-		Transform3D(
-			Vector3(0.0f, -0.975f, 0.5f),
-			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3(0.5f, 0.05f, 0.5f)
-		),
-		DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }
-	);
-
-	RacketComponent* enemyRacket = new RacketComponent(
-		&game,
-		Transform3D(
-			Vector3(0.0f, 0.975f, 0.5f),
-			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3(0.5f, 0.05f, 0.5f)
-		),
-		DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }
-	);
-
-	BallComonent* ball = new BallComonent(
-		&game,
-		Vector3(0.0f, 0.0f, 0.5f),
-		0.05f,
-		DirectX::XMFLOAT4{ 1.0f, 1.0f, 0.0f, 1.0f }
-	);
 
 	Text2DComponent* text = new Text2DComponent(
 		&game,
@@ -402,38 +375,22 @@ int main()
 		)
 	);
 
-	PlaneComponent* midPlane = new PlaneComponent(
+	PlaneComponent* planeComp = new PlaneComponent(
 		&game,
 		Transform3D(
-			Vector3(0.0f, 0.0f, 0.5f),
+			Vector3(0.0f, 0.0f, 0.0f),
 			Vector3::Zero,
-			Vector3(2.0f, 0.02f, 1.0f)
+			Vector3::One
 		),
-		DirectX::XMFLOAT4{ 0.2f, 0.2f, 0.2f, 1.0f }
-	);
-
-	PPGameController* gameController = new PPGameController(
-		&game,
-		playerRacket,
-		enemyRacket,
-		ball,
-		text
+		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 	);
 
 	game.VertexShaders.push_back(vsDefault);
 	game.PixelShaders.push_back(psDefault);
-	game.PixelShaders.push_back(psBall);
 
-	midPlane->SetShaders(vsDefault, psDefault);
-	playerRacket->SetShaders(vsDefault, psDefault);
-	enemyRacket->SetShaders(vsDefault, psDefault);
-	ball->SetShaders(vsDefault, psBall);
+	planeComp->SetShaders(vsDefault, psDefault);
 
-	game.Components.push_back(midPlane);
-	game.Components.push_back(playerRacket);
-	game.Components.push_back(enemyRacket);
-	game.Components.push_back(ball);
-	game.Components.push_back(gameController);
+	game.Components.push_back(planeComp);
 	game.Components.push_back(text);
 
 

@@ -140,7 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BallComonent.cpp" />
     <ClCompile Include="CGHW1.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Delegates.cpp" />
@@ -149,14 +148,11 @@
     <ClCompile Include="GameComponent.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="PlaneComponent.cpp" />
-    <ClCompile Include="PPGameController.cpp" />
-    <ClCompile Include="RacketComponent.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Text2DComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BallComonent.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Delegates.h" />
@@ -167,8 +163,6 @@
     <ClInclude Include="Keys.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlaneComponent.h" />
-    <ClInclude Include="PPGameController.h" />
-    <ClInclude Include="RacketComponent.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Text2DComponent.h" />
