@@ -360,25 +360,46 @@
 int main()
 {
 	Game game = Game();
-	RacketComponent* p1 = new RacketComponent(
+	game.Name = L"Ping-Pong";
+
+	RacketComponent* playerRacket = new RacketComponent(
 		&game,
 		Transform3D(
-			Vector3(0.0f, -0.9f, 0.5f),
+			Vector3(0.0f, -0.975f, 0.5f),
 			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3(0.5f, 0.1f, 0.5f)
+			Vector3(0.5f, 0.05f, 0.5f)
 		),
-		DirectX::XMFLOAT4{ 0.0f, 1.0f, 1.0f, 1.0f }
+		DirectX::XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f }
+	);
+
+	RacketComponent* enemyRacket = new RacketComponent(
+		&game,
+		Transform3D(
+			Vector3(0.0f, 0.975f, 0.5f),
+			Vector3(0.0f, 0.0f, 0.0f),
+			Vector3(0.5f, 0.05f, 0.5f)
+		),
+		DirectX::XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f }
 	);
 
 	BallComonent* ball = new BallComonent(
 		&game,
 		Vector3(0.0f, 0.0f, 0.5f),
 		0.05f,
-		DirectX::XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f }
+		DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }
 	);
 
-	game.Components.push_back(p1);
+	PPGameController* gameController = new PPGameController(
+		&game,
+		playerRacket,
+		enemyRacket,
+		ball
+	);
+
+	game.Components.push_back(playerRacket);
+	game.Components.push_back(enemyRacket);
 	game.Components.push_back(ball);
+	game.Components.push_back(gameController);
 
 	game.Run();
 }

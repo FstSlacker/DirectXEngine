@@ -149,6 +149,7 @@
     <ClCompile Include="GameComponent.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="PlaneComponent.cpp" />
+    <ClCompile Include="PPGameController.cpp" />
     <ClCompile Include="RacketComponent.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Keys.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlaneComponent.h" />
+    <ClInclude Include="PPGameController.h" />
     <ClInclude Include="RacketComponent.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="MeshComponent.h" />

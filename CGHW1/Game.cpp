@@ -13,7 +13,7 @@ void Game::CreateBackBuffer()
 
 void Game::Initialize()
 {
-	Display = new DisplayWin32(800, 800, L"GameFramework");
+	Display = new DisplayWin32(500, 500, Name);
 
 	Input = new InputDevice(this);
 
@@ -78,6 +78,11 @@ void Game::EndFrame()
 void Game::Exit()
 {
 
+}
+
+void Game::Pause()
+{
+	isPauseRequested = true;
 }
 
 void Game::MessageHandler()
@@ -173,7 +178,8 @@ void Game::Run()
 
 	prevTime = std::chrono::steady_clock::now();
 
-	while (!isExitRequested) {
+	while (!isExitRequested) 
+	{
 		auto curTime = std::chrono::steady_clock::now();
 		DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - prevTime).count() / 1000000.0f;
 		prevTime = curTime;
@@ -182,12 +188,16 @@ void Game::Run()
 		UpdateInternal();
 		Update();
 		Draw();
+
+		if (isPauseRequested) 
+		{
+			system("pause");
+			isPauseRequested = false;
+		}
 	}
 
 	DestroyResources();
 }
-
-float mul = 1;
 
 void Game::Update()
 {
@@ -199,6 +209,12 @@ void Game::Update()
 
 void Game::UpdateInternal()
 {
+	//Update components
+	for (int i = 0; i < Components.size(); i++)
+	{
+		Components[i]->FixedUpdate();
+	}
+
 	//Handle collisions
 	for (int i = 0; i < Components.size(); i++)
 	{

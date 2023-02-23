@@ -39,4 +39,5 @@ public:
 	void Draw() override;
 	void Initialize() override;
 	void Update() override;
+	void FixedUpdate() override;
 };

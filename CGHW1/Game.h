@@ -18,14 +18,17 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-#include "GameComponent.h"
-#include "MeshComponent.h"
-#include "PlaneComponent.h"
-#include "RacketComponent.h"
-#include "BallComonent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
 #include "Collision.h"
+
+#include "GameComponent.h"
+#include "MeshComponent.h"
+#include "PlaneComponent.h"
+
+#include "RacketComponent.h"
+#include "BallComonent.h"
+#include "PPGameController.h"
 
 class GameComponent;
 class MeshComponent;
@@ -52,6 +55,7 @@ public:
 	Game();
 	void Run();
 	void Exit();
+	void Pause();
 	void RestoreTarget();
 
 private:
@@ -59,6 +63,7 @@ private:
 	ID3D11Texture2D* backBuffer;
 	ID3D11RasterizerState* rastState;
 	bool isExitRequested = false;
+	bool isPauseRequested = false;
 
 	void CreateBackBuffer();
 	void DestroyResources();

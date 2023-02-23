@@ -24,5 +24,6 @@ public:
 	virtual void Initialize();
 	virtual void Reaload();
 	virtual void Update();
+	virtual void FixedUpdate();
 };
 

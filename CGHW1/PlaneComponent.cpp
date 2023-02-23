@@ -17,3 +17,8 @@ void PlaneComponent::Update()
 {
 	MeshComponent::Update();
 }
+
+void PlaneComponent::FixedUpdate()
+{
+	MeshComponent::FixedUpdate();
+}

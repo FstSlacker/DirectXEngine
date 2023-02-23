@@ -51,6 +51,11 @@ void MeshComponent::Update() {
 	GameComponent::Update();
 }
 
+void MeshComponent::FixedUpdate()
+{
+	GameComponent::FixedUpdate();
+}
+
 //void MeshComponent::SetPosition(Vector3 position)
 //{
 //	GameComponent::SetPosition(position);

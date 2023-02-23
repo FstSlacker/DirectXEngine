@@ -6,12 +6,12 @@ RacketComponent::RacketComponent(Game* game, Transform3D transform, DirectX::XMF
 	Collider = new AABBCollider(this, Vector3::One);
 }
 
-void RacketComponent::MoveByX(float xValue)
+void RacketComponent::MoveByX(float dir)
 {
 	float halfSizeX = Transform.GetScale().x * 0.5f;
 	Vector3 pos = Transform.GetPosition();
 
-	pos.x += xValue * MoveSpeed;
+	pos.x += dir * MoveSpeed * game->DeltaTime;
 
 	if (pos.x + halfSizeX > 1.0f)
 	{
@@ -28,11 +28,4 @@ void RacketComponent::MoveByX(float xValue)
 void RacketComponent::Update()
 {
 	PlaneComponent::Update();
-
-	if (game->Input->IsKeyDown(Keys::A)) {
-		MoveByX(-game->DeltaTime);
-	}
-	if(game->Input->IsKeyDown(Keys::D)) {
-		MoveByX(game->DeltaTime);
-	}
 }

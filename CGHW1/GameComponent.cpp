@@ -32,6 +32,11 @@ void GameComponent::Update()
 
 }
 
+void GameComponent::FixedUpdate()
+{
+	//...
+}
+
 //void GameComponent::SetPosition(Vector3 position)
 //{
 //	this->position = position;
