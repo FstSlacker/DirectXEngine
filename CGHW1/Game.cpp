@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "InputDevice.h"
 
 Game::Game() 
 {
@@ -12,6 +13,10 @@ void Game::CreateBackBuffer()
 
 void Game::Initialize()
 {
+	Display = new DisplayWin32(800, 800, L"GameFramework");
+
+	Input = new InputDevice(this);
+
 	PrepareResources();
 
 	for (int i = 0; i < Components.size(); i++) {
@@ -77,7 +82,27 @@ void Game::Exit()
 
 void Game::MessageHandler()
 {
+	MSG msg{};
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 
+		if (msg.message == WM_KEYDOWN || msg.message == WM_KEYUP)
+		{
+			InputDevice::KeyboardInputEventArgs args{
+				0,
+				msg.message,
+				msg.wParam,
+				msg.message
+			};
+			Input->OnKeyDown(args);
+		}
+
+		if (msg.message == WM_QUIT) {
+			isExitRequested = true;
+		}
+
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 }
 
 void Game::PrepareFrame()
@@ -87,8 +112,6 @@ void Game::PrepareFrame()
 
 void Game::PrepareResources()
 {
-	Display = new DisplayWin32(800, 800, L"GameFramework");
-
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -150,19 +173,7 @@ void Game::Run()
 
 	prevTime = std::chrono::steady_clock::now();
 
-	MSG msg = {};
-	bool isExitRequested = false;
 	while (!isExitRequested) {
-		// Handle the windows messages.
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		if (msg.message == WM_QUIT) {
-			isExitRequested = true;
-		}
-
 		auto curTime = std::chrono::steady_clock::now();
 		DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - prevTime).count() / 1000000.0f;
 		prevTime = curTime;

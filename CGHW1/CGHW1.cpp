@@ -360,38 +360,17 @@
 int main()
 {
 	Game game = Game();
-	PlaneComponent* p1 = new PlaneComponent(
+	RacketComponent* p1 = new RacketComponent(
 		&game,
 		Transform3D(
-			Vector3(0.0f, 0.5f, 0.5f),
+			Vector3(0.0f, -0.9f, 0.5f),
 			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3(0.5f, 0.5f, 0.5f)
+			Vector3(0.5f, 0.2f, 0.5f)
 		),
 		DirectX::XMFLOAT4{ 0.0f, 1.0f, 1.0f, 1.0f }
 	);
 
-	PlaneComponent* p2 = new PlaneComponent(
-		&game,
-		Transform3D(
-			Vector3(0.0f, -0.5f, 0.5f),
-			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3(1.0f, 0.5f, 0.5f)
-		),
-		DirectX::XMFLOAT4{ 1.0f, 1.0f, 0.0f, 1.0f }
-	);
-
-	p1->Collider = new AABBCollider(p1, Vector3::One);
-	p1->Collider->OnCollisionEnter.AddLambda([](const CollisionArgs&) -> void {std::cout << "P1 enter" << std::endl; });
-	p1->Collider->OnCollisionExit.AddLambda([](const CollisionArgs&) -> void {std::cout << "P1 exit" << std::endl; });
-	p1->Collider->OnCollisionStay.AddLambda([](const CollisionArgs&) -> void {std::cout << "P1 stay" << std::endl; });
-
-	p2->Collider = new AABBCollider(p2, Vector3::One);
-	p2->Collider->OnCollisionEnter.AddLambda([](const CollisionArgs&) -> void {std::cout << "P2 enter" << std::endl; });
-	p2->Collider->OnCollisionExit.AddLambda([](const CollisionArgs&) -> void {std::cout << "P2 exit" << std::endl; });
-	p2->Collider->OnCollisionStay.AddLambda([](const CollisionArgs&) -> void {std::cout << "P2 stay" << std::endl; });
-
 	game.Components.push_back(p1);
-	game.Components.push_back(p2);
 
 	game.Run();
 }

@@ -21,6 +21,7 @@
 #include "GameComponent.h"
 #include "MeshComponent.h"
 #include "PlaneComponent.h"
+#include "RacketComponent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
 #include "Collision.h"
@@ -39,7 +40,7 @@ public:
 	IDXGISwapChain* SwapChain;
 	std::vector<GameComponent*> Components;
 	DisplayWin32* Display;
-	InputDevice* InputDevice;
+	InputDevice* Input;
 	
 
 	LPCWSTR Name;
@@ -56,6 +57,7 @@ private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
 	ID3D11Texture2D* backBuffer;
 	ID3D11RasterizerState* rastState;
+	bool isExitRequested = false;
 
 	void CreateBackBuffer();
 	void DestroyResources();
