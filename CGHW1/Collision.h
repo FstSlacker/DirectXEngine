@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_set>
-#include "SimpleMath.h"
+#include <SimpleMath.h>
 #include <DirectXCollision.h>
 #include "Delegates.h"
 

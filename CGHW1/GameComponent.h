@@ -1,5 +1,5 @@
 #pragma once
-#include "SimpleMath.h"
+#include <SimpleMath.h>
 #include "Transform.h"
 
 using namespace DirectX::SimpleMath;

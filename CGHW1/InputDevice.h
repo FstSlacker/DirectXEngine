@@ -3,7 +3,7 @@
 #include <unordered_set>
 #include "Keys.h"
 #include <DirectXMath.h>
-#include "SimpleMath.h"
+#include <SimpleMath.h>
 #include "Delegates.h"
 //#include "Exports.h"
 

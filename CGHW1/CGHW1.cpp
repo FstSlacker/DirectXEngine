@@ -369,7 +369,7 @@ int main()
 			Vector3(0.0f, 0.0f, 0.0f),
 			Vector3(0.5f, 0.05f, 0.5f)
 		),
-		DirectX::XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f }
+		DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }
 	);
 
 	RacketComponent* enemyRacket = new RacketComponent(
@@ -379,27 +379,49 @@ int main()
 			Vector3(0.0f, 0.0f, 0.0f),
 			Vector3(0.5f, 0.05f, 0.5f)
 		),
-		DirectX::XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f }
+		DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }
 	);
 
 	BallComonent* ball = new BallComonent(
 		&game,
 		Vector3(0.0f, 0.0f, 0.5f),
 		0.05f,
-		DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }
+		DirectX::XMFLOAT4{ 1.0f, 1.0f, 0.0f, 1.0f }
+	);
+
+	Text2DComponent* text = new Text2DComponent(
+		&game,
+		Transform3D(
+			Vector3(0.0f, 218.0f, 0.0f),
+			Vector3::Zero,
+			Vector3::One
+		)
+	);
+
+	PlaneComponent* midPlane = new PlaneComponent(
+		&game,
+		Transform3D(
+			Vector3(0.0f, 0.0f, 0.5f),
+			Vector3::Zero,
+			Vector3(2.0f, 0.02f, 1.0f)
+		),
+		DirectX::XMFLOAT4{ 0.2f, 0.2f, 0.2f, 1.0f }
 	);
 
 	PPGameController* gameController = new PPGameController(
 		&game,
 		playerRacket,
 		enemyRacket,
-		ball
+		ball,
+		text
 	);
 
+	game.Components.push_back(midPlane);
 	game.Components.push_back(playerRacket);
 	game.Components.push_back(enemyRacket);
 	game.Components.push_back(ball);
 	game.Components.push_back(gameController);
+	game.Components.push_back(text);
 
 	game.Run();
 }

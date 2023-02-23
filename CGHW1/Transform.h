@@ -1,5 +1,5 @@
 #pragma once
-#include "SimpleMath.h"
+#include <SimpleMath.h>
 #include <d3d11.h>
 
 constexpr float kDeg2Rad = 3.141592653589793238463f / 180.0f;

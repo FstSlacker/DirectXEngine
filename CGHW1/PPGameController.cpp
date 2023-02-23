@@ -1,18 +1,26 @@
 #include "PPGameController.h"
 #include "BallComonent.h"
 #include "RacketComponent.h"
+#include "Text2DComponent.h"
 #include <random>
 #include <math.h>
 
-PPGameController::PPGameController(Game* game, RacketComponent* playerRacket, RacketComponent* enemyRacket, BallComonent* ball) : GameComponent(game, Transform3D())
+
+PPGameController::PPGameController(Game* game, RacketComponent* playerRacket, RacketComponent* enemyRacket, BallComonent* ball, Text2DComponent* scoreText) : GameComponent(game, Transform3D())
 {
 	this->playerRacket = playerRacket;
 	this->enemyRacket = enemyRacket;
+	this->scoreText = scoreText;
+
 	this->ball = ball;
 	this->ball->Collider->OnCollisionEnter.AddRaw(this, &PPGameController::OnBallCollisionEnter);
 
 	playerRacket->MoveSpeed = 0.5f;
 	enemyRacket->MoveSpeed = 0.5f;
+
+	scorePlayer = 0;
+	scoreEnemy = 0;
+	this->scoreText->Text = std::to_wstring(scoreEnemy) + L"\n" + std::to_wstring(scorePlayer);
 }
 
 void PPGameController::Update()
@@ -24,10 +32,12 @@ void PPGameController::Update()
 	float ballRadius = ball->Transform.GetScale().y * 0.5f;
 	if (ballPos.y + ballRadius > 1.0f)
 	{
+		scorePlayer++;
 		RestartLevel(-1.0f);
 	}
 	else if (ballPos.y - ballRadius < -1.0f)
 	{
+		scoreEnemy++;
 		RestartLevel(1.0f);
 	}
 }
@@ -103,4 +113,6 @@ void PPGameController::RestartLevel(float startBallDir)
 	
 
 	ball->MoveDirection = Vector3(cos(rndAngle), sin(rndAngle), 0.0f) * startBallDir;
+	ball->MoveSpeed += 0.1f;
+	scoreText->Text = std::to_wstring(scoreEnemy) + L"\n" + std::to_wstring(scorePlayer);
 }
