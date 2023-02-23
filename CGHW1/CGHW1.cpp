@@ -362,6 +362,10 @@ int main()
 	Game game = Game();
 	game.Name = L"Ping-Pong";
 
+	VertexShader* vsDefault = new VertexShader(L"./Shaders/Default.hlsl");
+	PixelShader* psDefault = new PixelShader(L"./Shaders/Default.hlsl");
+	PixelShader* psBall = new PixelShader(L"./Shaders/Circle.hlsl");
+
 	RacketComponent* playerRacket = new RacketComponent(
 		&game,
 		Transform3D(
@@ -416,12 +420,22 @@ int main()
 		text
 	);
 
+	game.VertexShaders.push_back(vsDefault);
+	game.PixelShaders.push_back(psDefault);
+	game.PixelShaders.push_back(psBall);
+
+	midPlane->SetShaders(vsDefault, psDefault);
+	playerRacket->SetShaders(vsDefault, psDefault);
+	enemyRacket->SetShaders(vsDefault, psDefault);
+	ball->SetShaders(vsDefault, psBall);
+
 	game.Components.push_back(midPlane);
 	game.Components.push_back(playerRacket);
 	game.Components.push_back(enemyRacket);
 	game.Components.push_back(ball);
 	game.Components.push_back(gameController);
 	game.Components.push_back(text);
+
 
 	game.Run();
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include "GameComponent.h"
 #include "ConstantBuffer.h"
+#include "Shaders.h"
 
 class Game;
 class GameComponent;
@@ -17,12 +18,15 @@ public:
 		DirectX::XMFLOAT4 Color;
 	};
 
+
 protected:
-	ID3D11InputLayout* layout;
+	VertexShader* vertexShader;
+	PixelShader* pixelShader;
+	/*ID3D11InputLayout* layout;
 	ID3D11VertexShader* vertexShader;
 	ID3DBlob* vertexShaderByteCode = nullptr;
 	ID3D11PixelShader* pixelShader;
-	ID3DBlob* pixelShaderByteCode = nullptr;
+	ID3DBlob* pixelShaderByteCode = nullptr;*/
 
 	ID3D11Buffer* verticesBuffer;
 	ID3D11Buffer* indicesBuffer;
@@ -40,4 +44,5 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void FixedUpdate() override;
+	virtual void SetShaders(VertexShader* vShader, PixelShader* pShader);
 };

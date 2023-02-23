@@ -152,6 +152,7 @@
     <ClCompile Include="PPGameController.cpp" />
     <ClCompile Include="RacketComponent.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Text2DComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="PPGameController.h" />
     <ClInclude Include="RacketComponent.h" />
     <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="Shaders.h" />
     <ClInclude Include="Text2DComponent.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>

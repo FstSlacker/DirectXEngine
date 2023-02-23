@@ -11,24 +11,40 @@ void Game::CreateBackBuffer()
 
 }
 
-void Game::Initialize()
+bool Game::Initialize()
 {
 	Display = new DisplayWin32(500, 500, Name);
 
 	Input = new InputDevice(this);
 
-	PrepareResources();
+	if (!InitializeGraphics())
+	{
+		return false;
+	}
 
-	for (int i = 0; i < Components.size(); i++) {
+	for (int i = 0; i < Components.size(); i++) 
+	{
 		Components[i]->Initialize();
 	}
 
+	return true;
 }
 
 void Game::DestroyResources()
 {
-	for (int i = 0; i < Components.size(); i++) {
+	for (int i = 0; i < Components.size(); i++) 
+	{
 		Components[i]->DestroyResources();
+	}
+
+	for (int i = 0; i < VertexShaders.size(); i++)
+	{
+		VertexShaders[i]->DestroyResources();
+	}
+
+	for (int i = 0; i < PixelShaders.size(); i++)
+	{
+		PixelShaders[i]->DestroyResources();
 	}
 
 	SwapChain->Release();
@@ -115,7 +131,7 @@ void Game::PrepareFrame()
 
 }
 
-void Game::PrepareResources()
+bool Game::InitializeGraphics()
 {
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
@@ -136,7 +152,9 @@ void Game::PrepareResources()
 	swapDesc.SampleDesc.Count = 1;
 	swapDesc.SampleDesc.Quality = 0;
 
-	auto res = D3D11CreateDeviceAndSwapChain(
+	HRESULT res;
+
+	res = D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
@@ -148,15 +166,30 @@ void Game::PrepareResources()
 		&SwapChain,
 		&Device,
 		nullptr,
-		&Context);
+		&Context
+	);
 
 	if (FAILED(res))
 	{
-		// Well, that was unexpected
+		std::cout << "Failed to create device and swapchain" << std::endl;
+		return false;
 	}
 
 	res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+
+	if (FAILED(res))
+	{
+		std::cout << "Failed to create back buffer" << std::endl;
+		return false;
+	}
+
 	res = Device->CreateRenderTargetView(backBuffer, nullptr, &RenderView);
+
+	if (FAILED(res))
+	{
+		std::cout << "Failed to create RenderTargetView" << std::endl;
+		return false;
+	}
 
 	CD3D11_RASTERIZER_DESC rastDesc = {};
 	rastDesc.CullMode = D3D11_CULL_NONE;
@@ -164,7 +197,32 @@ void Game::PrepareResources()
 
 	res = Device->CreateRasterizerState(&rastDesc, &rastState);
 
+	if (FAILED(res))
+	{
+		std::cout << "Failed to create rasterization state" << std::endl;
+		return false;
+	}
+
 	Context->RSSetState(rastState);
+
+	//Create shaders
+	for (int i = 0; i < VertexShaders.size(); i++)
+	{
+		if(!VertexShaders[i]->Initialize(Device))
+		{
+			return false;
+		}
+	}
+
+	for (int i = 0; i < PixelShaders.size(); i++)
+	{
+		if (!PixelShaders[i]->Initialize(Device))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void Game::RestoreTarget()
@@ -174,7 +232,10 @@ void Game::RestoreTarget()
 
 void Game::Run()
 {
-	Initialize();
+	if (!Initialize())
+	{
+		return;
+	}
 
 	prevTime = std::chrono::steady_clock::now();
 

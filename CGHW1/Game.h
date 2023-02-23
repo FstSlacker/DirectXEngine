@@ -21,6 +21,7 @@
 #include "DisplayWin32.h"
 #include "InputDevice.h"
 #include "Collision.h"
+#include "Shaders.h"
 
 #include "GameComponent.h"
 #include "MeshComponent.h"
@@ -43,7 +44,11 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
 	ID3D11RenderTargetView* RenderView;
 	IDXGISwapChain* SwapChain;
+
 	std::vector<GameComponent*> Components;
+	std::vector<VertexShader*> VertexShaders;
+	std::vector<PixelShader*> PixelShaders;
+
 	DisplayWin32* Display;
 	InputDevice* Input;
 	
@@ -70,10 +75,10 @@ private:
 	void DestroyResources();
 	void Draw();
 	void EndFrame();
-	void Initialize();
+	bool Initialize();
 	void MessageHandler();
 	void PrepareFrame();
-	void PrepareResources();
+	bool InitializeGraphics();
 	void Update();
 	void UpdateInternal();
 };
