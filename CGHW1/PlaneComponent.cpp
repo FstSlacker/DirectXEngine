@@ -4,10 +4,10 @@
 PlaneComponent::PlaneComponent(Game* game, Transform3D transform, DirectX::XMFLOAT4 color) : MeshComponent(game, transform)
 {
 	points = {
-		Vertex{Vector3(0.5f, 0.5f, 0.5f), color},
-		Vertex{Vector3(-0.5f, -0.5f, 0.5f), color},
-		Vertex{Vector3(0.5f, -0.5f, 0.5f), color},
-		Vertex{Vector3(-0.5f, 0.5f, 0.5f), color}
+		Vertex{Vector3(0.5f, 0.5f, 0.5f), color, Vector2(1.0f, 1.0f)},
+		Vertex{Vector3(-0.5f, -0.5f, 0.5f), color, Vector2(0.0f, 0.0f)},
+		Vertex{Vector3(0.5f, -0.5f, 0.5f), color, Vector2(1.0f, 0.0f)},
+		Vertex{Vector3(-0.5f, 0.5f, 0.5f), color, Vector2(0.0f, 1.0f)}
 	};
 
 	indices = { 0,1,2, 1,0,3 };

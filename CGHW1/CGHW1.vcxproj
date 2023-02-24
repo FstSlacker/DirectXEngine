@@ -151,11 +151,14 @@
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="PlaneComponent.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Text2DComponent.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bindable.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraMoveComponent.h" />
     <ClInclude Include="Collision.h" />
@@ -170,8 +173,10 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlaneComponent.h" />
     <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="Sampler.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Text2DComponent.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexBuffer.h" />

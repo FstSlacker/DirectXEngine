@@ -20,19 +20,27 @@ void MeshComponent::Draw(){
 
 	UINT offsets[1] = { 0 };
 
-	game->Context->IASetInputLayout(vertexShader->GetInputLayout());
-	game->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	game->Context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	game->Context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), offsets);
-	game->Context->VSSetShader(vertexShader->GetShader(), nullptr, 0);
-	game->Context->PSSetShader(pixelShader->GetShader(), nullptr, 0);
+	//game->Context->IASetInputLayout(vertexShader->GetInputLayout());
+	//game->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//game->Context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	
+	vertexBuffer.Bind(game->Context);//game->Context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), offsets);
+	indexBuffer.Bind(game->Context);
+	vertexShader->Bind(game->Context);
+	pixelShader->Bind(game->Context);
+
+	sampler.Bind(game->Context);
+	texture.Bind(game->Context);
+	//game->Context->VSSetShader(vertexShader->GetShader(), nullptr, 0);
+	//game->Context->PSSetShader(pixelShader->GetShader(), nullptr, 0);
 
 	
 	transformMat.Data = DirectX::XMMatrixTranspose(
 		Transform.GetTransformMatrix() * (game->MainCamera->GetViewMatrix() * game->MainCamera->GetProjectionMatrix())
 	);
 	
-	if (!transformMat.ApplyChanges())
+	if (!transformMat.ApplyChanges(game->Context))
 	{
 		std::cout << "Failed to apply transform mat!" << std::endl;
 	}
@@ -66,6 +74,11 @@ void MeshComponent::Initialize() {
 	//Create index buffer
 	indexBuffer.Initialize(game->Device.Get(), indices.data(), indices.size());
 
+	texture = Texture(L"./Textures/brich_wall.jpg");
+	texture.Initialize(game->Device.Get());
+
+	sampler.Initialize(game->Device.Get());
+
 	//Init constant buffers
-	transformMat.Initialize(game->Device.Get(), game->Context);
+	transformMat.Initialize(game->Device.Get());
 }

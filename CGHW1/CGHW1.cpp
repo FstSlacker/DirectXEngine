@@ -365,6 +365,8 @@ int main()
 	VertexShader* vsDefault = new VertexShader(L"./Shaders/Default.hlsl");
 	PixelShader* psDefault = new PixelShader(L"./Shaders/Default.hlsl");
 
+	VertexShader* vsTexture = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
+	PixelShader* psTexture = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
 
 	Text2DComponent* text = new Text2DComponent(
 		&game,
@@ -393,7 +395,10 @@ int main()
 	game.VertexShaders.push_back(vsDefault);
 	game.PixelShaders.push_back(psDefault);
 
-	planeComp->SetShaders(vsDefault, psDefault);
+	game.VertexShaders.push_back(vsTexture);
+	game.PixelShaders.push_back(psTexture);
+
+	planeComp->SetShaders(vsTexture, psTexture);
 
 	game.Components.push_back(planeComp);
 	game.Components.push_back(moveComp);

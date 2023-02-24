@@ -63,20 +63,20 @@ bool VertexShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device)
 			0,
 			D3D11_APPEND_ALIGNED_ELEMENT,
 			D3D11_INPUT_PER_VERTEX_DATA,
+			0},
+		D3D11_INPUT_ELEMENT_DESC {
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
 			0}
-		//D3D11_INPUT_ELEMENT_DESC {
-		//	"TEXCOORD",
-		//	0,
-		//	DXGI_FORMAT_R32G32_FLOAT,
-		//	0,
-		//	D3D11_APPEND_ALIGNED_ELEMENT,
-		//	D3D11_INPUT_PER_VERTEX_DATA,
-		//	0}
 	};
-
+	
 	res = device->CreateInputLayout(
 		inputElements,
-		2,
+		3,
 		shaderByteCode->GetBufferPointer(),
 		shaderByteCode->GetBufferSize(),
 		inputLayout.GetAddressOf()
@@ -111,6 +111,13 @@ ID3DBlob* VertexShader::GetByteCode()
 ID3D11InputLayout* VertexShader::GetInputLayout()
 {
 	return inputLayout.Get();
+}
+
+void VertexShader::Bind(ID3D11DeviceContext* context)
+{
+	context->IASetInputLayout(inputLayout.Get());
+	context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->VSSetShader(shader.Get(), nullptr, 0);
 }
 
 
@@ -164,6 +171,11 @@ bool PixelShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device)
 	}
 
 	return true;
+}
+
+void PixelShader::Bind(ID3D11DeviceContext* context)
+{
+	context->PSSetShader(shader.Get(), nullptr, 0);
 }
 
 void PixelShader::DestroyResources()

@@ -9,9 +9,8 @@ class ConstantBuffer
 private:
 	ConstantBuffer(const ConstantBuffer<T>& rhs);
 
-private:
+protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
-	ID3D11DeviceContext* context;
 
 public:
 
@@ -29,10 +28,8 @@ public:
 		return buffer.GetAddressOf();
 	}
 
-	HRESULT Initialize(ID3D11Device* device, ID3D11DeviceContext* context)
+	HRESULT Initialize(ID3D11Device* device)
 	{
-		this->context = context;
-
 		D3D11_BUFFER_DESC bufDesc = {};
 		bufDesc.Usage = D3D11_USAGE_DYNAMIC;
 		bufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -46,10 +43,10 @@ public:
 		return res;
 	}
 
-	bool ApplyChanges()
+	bool ApplyChanges(ID3D11DeviceContext* context)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		HRESULT res = this->context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		HRESULT res = context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 		if (FAILED(res)) 
 		{
@@ -58,7 +55,20 @@ public:
 		}
 
 		CopyMemory(mappedResource.pData, &Data, sizeof(T));
-		this->context->Unmap(buffer.Get(), 0);
+		context->Unmap(buffer.Get(), 0);
 		return true;
 	}
+
+	virtual void Bind(ID3D11DeviceContext* context) {}
+
 };
+
+//template<class T>
+//class VSConstantBuffer : ConstantBuffer<T>
+//{
+//public:
+//	void Bind(ID3D11DeviceContext* context) override
+//	{
+//		context->VSSetConstantBuffers(0, 1, buffer.GetAddressOf());
+//	}
+//};

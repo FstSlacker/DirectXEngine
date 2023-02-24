@@ -2,22 +2,24 @@
 
 #pragma comment(lib, "d3dcompiler.lib")
 
-#include <d3d11.h>
+#include "Bindable.h"
 #include <d3dcompiler.h>
 #include <string>
 #include <wrl.h>
 #include <iostream>
 
-class VertexShader
+class VertexShader : public Bindable
 {
 public:
 	VertexShader(std::wstring shaderPath);
 	bool Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device);
-	void DestroyResources();
 
 	ID3D11VertexShader* GetShader();
 	ID3DBlob* GetByteCode();
 	ID3D11InputLayout* GetInputLayout();
+
+	void Bind(ID3D11DeviceContext* context) override;
+	void DestroyResources() override;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> shader;
@@ -27,15 +29,17 @@ private:
 };
 
 
-class PixelShader
+class PixelShader : public Bindable
 {
 public:
 	PixelShader(std::wstring shaderPath);
 	bool Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device);
-	void DestroyResources();
 
 	ID3D11PixelShader* GetShader();
 	ID3DBlob* GetByteCode();
+
+	void Bind(ID3D11DeviceContext* context) override;
+	void DestroyResources() override;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> shader;

@@ -2,9 +2,10 @@
 #include <d3d11.h>
 #include <wrl.h>
 #include <memory>
+#include "Bindable.h"
 
 template<class T>
-class VertexBuffer
+class VertexBuffer : public Bindable
 {
 private:
 	VertexBuffer(const VertexBuffer<T>& rhs);
@@ -64,7 +65,13 @@ public:
 		return res;
 	}
 
-	void DestroyResources()
+	void Bind(ID3D11DeviceContext* context) override
+	{
+		UINT offsets[1] = { 0 };
+		context->IASetVertexBuffers(0, 1, this->buffer.GetAddressOf(), this->stride.get(), offsets);
+	}
+
+	void DestroyResources() override
 	{
 		buffer->Release();
 		stride.release();

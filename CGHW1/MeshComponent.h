@@ -9,6 +9,8 @@
 #include "Vertex.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Texture.h"
+#include "Sampler.h"
 
 class Game;
 class GameComponent;
@@ -18,6 +20,8 @@ class MeshComponent : public GameComponent
 protected:
 	VertexShader* vertexShader;
 	PixelShader* pixelShader;
+	Sampler sampler;
+	Texture texture;
 
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indexBuffer;

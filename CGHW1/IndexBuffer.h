@@ -1,8 +1,9 @@
 #pragma once
+#include "Bindable.h"
 #include <d3d11.h>
 #include <wrl.h>
 
-class IndexBuffer 
+class IndexBuffer : public Bindable
 {
 private:
 	IndexBuffer(const IndexBuffer& rhs);
@@ -50,7 +51,12 @@ public:
 		return res;
 	}
 
-	void DestroyResources()
+	void Bind(ID3D11DeviceContext* context) override
+	{
+		context->IASetIndexBuffer(buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	}
+
+	void DestroyResources() override
 	{
 		buffer->Release();
 	}
