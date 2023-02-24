@@ -13,7 +13,9 @@ void Game::CreateBackBuffer()
 
 bool Game::Initialize()
 {
-	Display = new DisplayWin32(500, 500, Name);
+	Display = new DisplayWin32(1000, 800, Name);
+
+	MainCamera = new Camera(Transform3D(Vector3(0.0f, 0.0f, -2.0f), Vector3::Zero, Vector3::One), Display->ClientWidth, Display->ClientHeight);
 
 	Input = new InputDevice(this);
 
@@ -115,6 +117,21 @@ void Game::MessageHandler()
 				msg.message
 			};
 			Input->OnKeyDown(args);
+		}
+		if (msg.message == WM_MOUSEMOVE)
+		{
+			InputDevice::RawMouseEventArgs args
+			{
+				/*MOUSE_MOVE_RELATIVE*/
+				msg.message,
+				msg.wParam,
+				0,
+				0,
+				0,
+				LOWORD(msg.lParam),
+				HIWORD(msg.lParam)
+			};
+			Input->OnMouseMove(args);
 		}
 
 		if (msg.message == WM_QUIT) {

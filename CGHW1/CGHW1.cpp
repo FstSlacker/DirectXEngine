@@ -378,11 +378,16 @@ int main()
 	PlaneComponent* planeComp = new PlaneComponent(
 		&game,
 		Transform3D(
-			Vector3(0.0f, 0.0f, 0.0f),
-			Vector3::Zero,
+			Vector3(0.0f, 0.0f, 1.0f),
+			Vector3(0.0f, 30.0f, 0.0f),
 			Vector3::One
 		),
-		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+		DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)
+	);
+
+	CameraMoveComponent* moveComp = new CameraMoveComponent(
+		&game,
+		Transform3D()
 	);
 
 	game.VertexShaders.push_back(vsDefault);
@@ -391,6 +396,7 @@ int main()
 	planeComp->SetShaders(vsDefault, psDefault);
 
 	game.Components.push_back(planeComp);
+	game.Components.push_back(moveComp);
 	game.Components.push_back(text);
 
 

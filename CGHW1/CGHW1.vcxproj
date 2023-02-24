@@ -140,6 +140,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraMoveComponent.cpp" />
     <ClCompile Include="CGHW1.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Delegates.cpp" />
@@ -151,8 +153,11 @@
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Text2DComponent.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraMoveComponent.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Delegates.h" />

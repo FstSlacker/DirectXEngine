@@ -28,7 +28,13 @@ void MeshComponent::Draw(){
 	game->Context->VSSetShader(vertexShader->GetShader(), nullptr, 0);
 	game->Context->PSSetShader(pixelShader->GetShader(), nullptr, 0);
 
-	transformMat.Data = Transform.GetTransposedTransformMatrix();
+	
+	transformMat.Data = DirectX::XMMatrixTranspose(
+		DirectX::XMMatrixIdentity()
+		* game->MainCamera->GetViewMatrix()
+		* game->MainCamera->GetProjectionMatrix()
+		* Transform.GetTransformMatrix()
+	);
 	
 	if (!transformMat.ApplyChanges())
 	{
@@ -57,83 +63,6 @@ void MeshComponent::SetShaders(VertexShader* vShader, PixelShader* pShader)
 void MeshComponent::Initialize() {
 
 	GameComponent::Initialize();
-
-	////Set pipeline (compile and create shaders)
-	//ID3DBlob* errorVertexCode = nullptr;
-
-	//auto res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
-	//	nullptr /*macros*/,
-	//	nullptr /*include*/,
-	//	"VSMain",
-	//	"vs_5_0",
-	//	D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-	//	0,
-	//	&vertexShaderByteCode,
-	//	&errorVertexCode);
-
-	//if (FAILED(res)) {
-	//	if (errorVertexCode) {
-	//		char* compileErrors = (char*)(errorVertexCode->GetBufferPointer());
-
-	//		std::cout << compileErrors << std::endl;
-	//	}
-	//	else
-	//	{
-	//		std::cout << "Shader file not found!" << std::endl;
-	//	}
-	//}
-
-	//ID3DBlob* errorPixelCode;
-	//res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl", 
-	//	nullptr /*macros*/,
-	//	nullptr /*include*/, 
-	//	"PSMain", 
-	//	"ps_5_0", 
-	//	D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 
-	//	0, 
-	//	&pixelShaderByteCode, 
-	//	&errorPixelCode);
-
-	//if (FAILED(res)) {
-	//	std::cout << "Pixel shader not compile!" << std::endl;
-	//}
-
-	//game->Device->CreateVertexShader(
-	//	vertexShaderByteCode->GetBufferPointer(),
-	//	vertexShaderByteCode->GetBufferSize(),
-	//	nullptr, &vertexShader);
-
-	//game->Device->CreatePixelShader(
-	//	pixelShaderByteCode->GetBufferPointer(),
-	//	pixelShaderByteCode->GetBufferSize(),
-	//	nullptr, &pixelShader);
-
-	////Create vertex layout
-	//D3D11_INPUT_ELEMENT_DESC inputElements[] = {
-	//	D3D11_INPUT_ELEMENT_DESC {
-	//		"POSITION",
-	//		0,
-	//		DXGI_FORMAT_R32G32B32_FLOAT,
-	//		0,
-	//		0,
-	//		D3D11_INPUT_PER_VERTEX_DATA,
-	//		0},
-	//	D3D11_INPUT_ELEMENT_DESC {
-	//		"COLOR",
-	//		0,
-	//		DXGI_FORMAT_R32G32B32A32_FLOAT,
-	//		0,
-	//		D3D11_APPEND_ALIGNED_ELEMENT,
-	//		D3D11_INPUT_PER_VERTEX_DATA,
-	//		0}
-	//};
-
-	//game->Device->CreateInputLayout(
-	//	inputElements,
-	//	2,
-	//	vertexShaderByteCode->GetBufferPointer(),
-	//	vertexShaderByteCode->GetBufferSize(),
-	//	&layout);
 
 	//Create vertex buffer
 	D3D11_BUFFER_DESC vertexBufDesc = {};

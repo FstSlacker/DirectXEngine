@@ -5,80 +5,55 @@
 constexpr float kDeg2Rad = 3.141592653589793238463f / 180.0f;
 
 using namespace DirectX::SimpleMath;
+using namespace DirectX;
 
 struct Transform3D 
 {
 private:
+	Vector3 position;
+	Vector3 rotation;
+	Vector3 scale;
+
+	Vector3 forward;
+	Vector3 right;
+	Vector3 up;
+	Vector3 backward;
+	Vector3 left;
+	Vector3 down;
+
 	DirectX::XMMATRIX translationMat;
 	DirectX::XMMATRIX rotationMat;
 	DirectX::XMMATRIX scaleMat;
 
+	void UpdateRotation(Vector3 eulerAngles);
+
 public:
 
-	Transform3D(Vector3 position, Vector3 rotation, Vector3 scale)
-	{
-		SetPosition(position);
-		SetRotation(rotation);
-		SetScale(scale);
-	}
+	Transform3D(Vector3 position, Vector3 rotation, Vector3 scale);
+	Transform3D();
 
-	Transform3D() 
-	{
-		translationMat = DirectX::XMMatrixIdentity();
-		rotationMat = DirectX::XMMatrixIdentity();
-		scaleMat = DirectX::XMMatrixIdentity();
-	}
+	void SetPosition(Vector3 position);
+	void SetRotation(Vector3 eulerAngles);
+	void SetScale(Vector3 scale);
 
-	void SetPosition(Vector3 position) 
-	{
-		translationMat = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-	}
+	void AddRotation(Vector3 addEulerAngles);
+	void AddPosition(Vector3 addPosition);
 
-	Vector3 GetPosition()
-	{
-		DirectX::XMVECTOR pos;
-		DirectX::XMVECTOR rot;
-		DirectX::XMVECTOR scale;
-		
-		DirectX::XMMatrixDecompose(&scale, &rot, &pos, translationMat);
+	const Vector3& GetPosition() const;
+	const Vector3& GetRotation() const;
+	const Vector3& GetScale() const;
 
-		return Vector3(DirectX::XMVectorGetX(pos), DirectX::XMVectorGetY(pos), DirectX::XMVectorGetZ(pos));
-	}
+	const Vector3& GetForward() const;
+	const Vector3& GetRight() const;
+	const Vector3& GetUp() const;
+	const Vector3& GetBackward() const;
+	const Vector3& GetLeft() const;
+	const Vector3& GetDown() const;
 
-	void SetRotation(Vector3 eulerAngles) 
-	{
-		eulerAngles *= kDeg2Rad;
-
-		rotationMat = DirectX::XMMatrixRotationRollPitchYaw(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-	}
-
-	Vector3 GetRotation()
-	{
-		return Vector3::Zero;
-	}
-
-	void SetScale(Vector3 scale)
-	{
-		scaleMat = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
-	}
-
-	Vector3 GetScale()
-	{
-		DirectX::XMVECTOR pos;
-		DirectX::XMVECTOR rot;
-		DirectX::XMVECTOR scale;
-
-		DirectX::XMMatrixDecompose(&scale, &rot, &pos, scaleMat);
-
-		return Vector3(DirectX::XMVectorGetX(scale), DirectX::XMVectorGetY(scale), DirectX::XMVectorGetZ(scale));
-	}
-
-	DirectX::XMMATRIX GetTransposedTransformMatrix()
-	{
-		DirectX::XMMATRIX transformMat = scaleMat * rotationMat * translationMat;
-		transformMat = DirectX::XMMatrixTranspose(transformMat);
-
-		return transformMat;
-	}
+	const DirectX::XMMATRIX& GetTranslationMatrix() const;
+	const DirectX::XMMATRIX& GetRotationMatrix() const;
+	const DirectX::XMMATRIX& GetScaleMatrix() const;
+	const DirectX::XMMATRIX& GetTransformMatrix() const;
+	const DirectX::XMMATRIX& GetTransposedTransformMatrix() const;
 
 };

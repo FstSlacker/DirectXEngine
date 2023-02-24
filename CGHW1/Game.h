@@ -27,6 +27,8 @@
 #include "MeshComponent.h"
 #include "PlaneComponent.h"
 #include "Text2DComponent.h"
+#include "Camera.h"
+#include "CameraMoveComponent.h"
 
 class GameComponent;
 class MeshComponent;
@@ -47,7 +49,8 @@ public:
 
 	DisplayWin32* Display;
 	InputDevice* Input;
-	
+
+	Camera* MainCamera;
 
 	LPCWSTR Name;
 	Game* Instance;
