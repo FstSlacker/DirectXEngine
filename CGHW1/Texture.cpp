@@ -17,6 +17,11 @@ HRESULT Texture::Initialize(ID3D11Device* device)
 	return res;
 }
 
+ID3D11ShaderResourceView* Texture::GetTextureView() const
+{
+	return this->textureView.Get();
+}
+
 void Texture::Bind(ID3D11DeviceContext* context)
 {
 	context->PSSetShaderResources(0, 1, textureView.GetAddressOf());

@@ -9,6 +9,7 @@ public:
 	Texture() {}
 	Texture(std::wstring imagePath);
 	HRESULT Initialize(ID3D11Device* device);
+	ID3D11ShaderResourceView* GetTextureView() const;
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;
 

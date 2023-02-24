@@ -382,7 +382,7 @@ int main()
 		Transform3D(
 			Vector3(1.0f, 0.0f, 0.0f),
 			Vector3(0.0f, 30.0f, 0.0f),
-			Vector3(2.0f, 1.0f, 1.0f)
+			Vector3(1.0f, 1.0f, 1.0f)
 		),
 		DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)
 	);
