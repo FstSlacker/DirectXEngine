@@ -14,6 +14,11 @@ void Transform3D::UpdateRotation(Vector3 eulerAngles)
 	down = up * -1.0f;
 }
 
+void Transform3D::UpdateWorldMatrix()
+{
+	worldMat = scaleMat * rotationMat * translationMat;
+}
+
 Transform3D::Transform3D(Vector3 position, Vector3 rotation, Vector3 scale)
 {
 	SetPosition(position);
@@ -32,6 +37,7 @@ void Transform3D::SetPosition(Vector3 position)
 {
 	this->position = position;
 	translationMat = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+	UpdateWorldMatrix();
 }
 
 const Vector3& Transform3D::GetPosition() const
@@ -42,8 +48,8 @@ const Vector3& Transform3D::GetPosition() const
 void Transform3D::SetRotation(Vector3 eulerAngles)
 {
 	this->rotation = eulerAngles;
-
 	UpdateRotation(eulerAngles);
+	UpdateWorldMatrix();
 }
 
 const Vector3& Transform3D::GetRotation() const
@@ -54,8 +60,8 @@ const Vector3& Transform3D::GetRotation() const
 void Transform3D::SetScale(Vector3 scale)
 {
 	this->scale = scale;
-
 	scaleMat = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+	UpdateWorldMatrix();
 }
 
 void Transform3D::AddRotation(Vector3 addEulerAngles)
@@ -122,11 +128,10 @@ const DirectX::XMMATRIX& Transform3D::GetScaleMatrix() const
 
 const DirectX::XMMATRIX& Transform3D::GetTransformMatrix() const
 {
-	DirectX::XMMATRIX transformMat = scaleMat * rotationMat * translationMat;
-	return transformMat;
+	return this->worldMat;
 }
 
 const DirectX::XMMATRIX& Transform3D::GetTransposedTransformMatrix() const
 {
-	return DirectX::XMMatrixTranspose(GetTransformMatrix());
+	return DirectX::XMMatrixTranspose(worldMat);
 }

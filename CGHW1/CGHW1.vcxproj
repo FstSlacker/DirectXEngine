@@ -164,6 +164,7 @@
     <ClInclude Include="DisplayWin32.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameComponent.h" />
+    <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="pch.h" />
@@ -172,6 +173,8 @@
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Text2DComponent.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

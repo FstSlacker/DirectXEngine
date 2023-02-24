@@ -6,30 +6,21 @@
 #include "GameComponent.h"
 #include "ConstantBuffer.h"
 #include "Shaders.h"
+#include "Vertex.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 class Game;
 class GameComponent;
 
 class MeshComponent : public GameComponent
 {
-public:
-	struct Vertex {
-		Vector3 Position;
-		DirectX::XMFLOAT4 Color;
-	};
-
-
 protected:
 	VertexShader* vertexShader;
 	PixelShader* pixelShader;
-	/*ID3D11InputLayout* layout;
-	ID3D11VertexShader* vertexShader;
-	ID3DBlob* vertexShaderByteCode = nullptr;
-	ID3D11PixelShader* pixelShader;
-	ID3DBlob* pixelShaderByteCode = nullptr;*/
 
-	ID3D11Buffer* verticesBuffer;
-	ID3D11Buffer* indicesBuffer;
+	VertexBuffer<Vertex> vertexBuffer;
+	IndexBuffer indexBuffer;
 
 	ConstantBuffer<DirectX::XMMATRIX> transformMat;
 

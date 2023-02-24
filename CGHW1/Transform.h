@@ -21,11 +21,14 @@ private:
 	Vector3 left;
 	Vector3 down;
 
-	DirectX::XMMATRIX translationMat;
-	DirectX::XMMATRIX rotationMat;
-	DirectX::XMMATRIX scaleMat;
+	XMMATRIX translationMat;
+	XMMATRIX rotationMat;
+	XMMATRIX scaleMat;
+
+	XMMATRIX worldMat;
 
 	void UpdateRotation(Vector3 eulerAngles);
+	void UpdateWorldMatrix();
 
 public:
 
