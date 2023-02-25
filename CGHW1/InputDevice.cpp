@@ -53,7 +53,7 @@ void InputDevice::OnKeyDown(KeyboardInputEventArgs args)
 
 void InputDevice::OnMouseMove(RawMouseEventArgs args)
 {
-	if(args.ButtonFlags & static_cast<int>(MouseButtonFlags::LeftButtonDown))
+	/*if(args.ButtonFlags & static_cast<int>(MouseButtonFlags::LeftButtonDown))
 		AddPressedKey(Keys::LeftButton);
 	if (args.ButtonFlags & static_cast<int>(MouseButtonFlags::LeftButtonUp))
 		RemovePressedKey(Keys::LeftButton);
@@ -64,7 +64,24 @@ void InputDevice::OnMouseMove(RawMouseEventArgs args)
 	if (args.ButtonFlags & static_cast<int>(MouseButtonFlags::MiddleButtonDown))
 		AddPressedKey(Keys::MiddleButton);
 	if (args.ButtonFlags & static_cast<int>(MouseButtonFlags::MiddleButtonUp))
+		RemovePressedKey(Keys::MiddleButton);*/
+
+	if ((args.ButtonFlags & MK_LBUTTON) && !keys->count(Keys::LeftButton))
+		AddPressedKey(Keys::LeftButton);
+	else if(keys->count(Keys::LeftButton))
+		RemovePressedKey(Keys::LeftButton);
+
+	if (args.ButtonFlags & MK_MBUTTON && !keys->count(Keys::MiddleButton))
+		AddPressedKey(Keys::MiddleButton);
+	else if (keys->count(Keys::MiddleButton))
 		RemovePressedKey(Keys::MiddleButton);
+
+	if (args.ButtonFlags & MK_RBUTTON && !keys->count(Keys::RightButton))
+		AddPressedKey(Keys::RightButton);
+	else if (keys->count(Keys::RightButton))
+		RemovePressedKey(Keys::RightButton);
+
+
 
 	POINT p;
 	GetCursorPos(&p);

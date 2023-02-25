@@ -72,10 +72,11 @@ void Game::Draw()
 
 	Context->RSSetViewports(1, &viewport);
 
-	Context->OMSetRenderTargets(1, &RenderView, nullptr);
+	Context->OMSetRenderTargets(1, &RenderView, depthStencilView);
 
 	float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	Context->ClearRenderTargetView(RenderView, color);
+	Context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
 
 	//Draw components
@@ -133,6 +134,8 @@ void Game::MessageHandler()
 			};
 			Input->OnMouseMove(args);
 		}
+
+		if(msg.message == WM_MOUSEHOVER)
 
 		if (msg.message == WM_QUIT) {
 			isExitRequested = true;
@@ -222,10 +225,38 @@ bool Game::InitializeGraphics()
 
 	Context->RSSetState(rastState);
 
+	//Create depth stencil view
+	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
+	depthStencilDesc.Width = Display->ClientWidth;
+	depthStencilDesc.Height = Display->ClientHeight;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	res = Device->CreateTexture2D(&depthStencilDesc, nullptr, &depthStencilBuffer);
+
+	if (FAILED(res))
+	{
+		std::cout << "Error to create depthStencilBuffer texture" << std::endl;
+	}
+
+	res = Device->CreateDepthStencilView(depthStencilBuffer, nullptr, &depthStencilView);
+
+	if (FAILED(res))
+	{
+		std::cout << "Error to create depthStencilView" << std::endl;
+	}
+
 	//Create shaders
 	for (int i = 0; i < VertexShaders.size(); i++)
 	{
-		if(!VertexShaders[i]->Initialize(Device))
+		if(!VertexShaders[i]->Initialize(Device.Get()))
 		{
 			return false;
 		}
@@ -233,7 +264,7 @@ bool Game::InitializeGraphics()
 
 	for (int i = 0; i < PixelShaders.size(); i++)
 	{
-		if (!PixelShaders[i]->Initialize(Device))
+		if (!PixelShaders[i]->Initialize(Device.Get()))
 		{
 			return false;
 		}

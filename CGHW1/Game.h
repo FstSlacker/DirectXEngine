@@ -30,6 +30,9 @@
 #include "Camera.h"
 #include "CameraMoveComponent.h"
 
+#include "PlanetComponent.h"
+#include "PlanetSystemComponent.h"
+
 class GameComponent;
 class MeshComponent;
 class PlaneComponent;
@@ -65,7 +68,11 @@ public:
 
 private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
+
 	ID3D11Texture2D* backBuffer;
+	ID3D11Texture2D* depthStencilBuffer;
+	ID3D11DepthStencilView* depthStencilView;
+
 	ID3D11RasterizerState* rastState;
 	bool isExitRequested = false;
 	bool isPauseRequested = false;

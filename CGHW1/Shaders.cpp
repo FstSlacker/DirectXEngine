@@ -5,7 +5,7 @@ VertexShader::VertexShader(std::wstring shaderPath)
 	this->shaderPath = shaderPath;
 }
 
-bool VertexShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device)
+bool VertexShader::Initialize(ID3D11Device* device)
 {
 	ID3DBlob* errorCode = nullptr;
 	HRESULT res;
@@ -128,7 +128,7 @@ PixelShader::PixelShader(std::wstring shaderPath)
 	this->shaderPath = shaderPath;
 }
 
-bool PixelShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device)
+bool PixelShader::Initialize(ID3D11Device* device)
 {
 	ID3DBlob* errorCode;
 	HRESULT res;

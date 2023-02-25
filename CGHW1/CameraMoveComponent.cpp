@@ -37,6 +37,11 @@ void CameraMoveComponent::Update()
 		camT->AddPosition(camT->GetRight() * game->DeltaTime);
 	}
 
-	float density = 0.2f;
-	camT->AddRotation(Vector3(deltaPos.y * density, deltaPos.x * density, 0.0f));
+	if (game->Input->IsKeyDown(Keys::MiddleButton))
+	{
+		float density = 0.3f;
+		camT->AddRotation(Vector3(deltaPos.y * density, deltaPos.x * density, 0.0f));
+	}
+
+	
 }

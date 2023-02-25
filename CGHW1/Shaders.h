@@ -11,8 +11,9 @@
 class VertexShader : public Bindable
 {
 public:
+	VertexShader() {}
 	VertexShader(std::wstring shaderPath);
-	bool Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device);
+	bool Initialize(ID3D11Device* device);
 
 	ID3D11VertexShader* GetShader();
 	ID3DBlob* GetByteCode();
@@ -32,8 +33,9 @@ private:
 class PixelShader : public Bindable
 {
 public:
+	PixelShader() {}
 	PixelShader(std::wstring shaderPath);
-	bool Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device);
+	bool Initialize(ID3D11Device* device);
 
 	ID3D11PixelShader* GetShader();
 	ID3DBlob* GetByteCode();

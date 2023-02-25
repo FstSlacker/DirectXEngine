@@ -360,13 +360,96 @@
 int main()
 {
 	Game game = Game();
-	game.Name = L"Game Framework";
+	game.Name = L"Solar System";
 
-	VertexShader* vsDefault = new VertexShader(L"./Shaders/Default.hlsl");
-	PixelShader* psDefault = new PixelShader(L"./Shaders/Default.hlsl");
+	PlanetComponent* sun = new PlanetComponent(
+		&game,
+		Vector3(0.0f, 0.0f, 0.0f),
+		2.0f,
+		0.0f,
+		0.0f,
+		Texture(L"./Textures/sun.jpg")
+	);
+	sun->IsStar = true;
 
-	VertexShader* vsTexture = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
-	PixelShader* psTexture = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
+	PlanetComponent* mercury = new PlanetComponent(
+		&game,
+		Vector3(10.0f, 0.0f, 0.0f),
+		0.382f,
+		10.0f,
+		1.607454668f,
+		Texture(L"./Textures/mercury.jpg")
+	);
+
+	PlanetComponent* venus = new PlanetComponent(
+		&game,
+		Vector3(20.0f, 0.0f, 0.0f),
+		0.949f,
+		20.0f,
+		1.175957018f,
+		Texture(L"./Textures/venus.jpg")
+	);
+
+	PlanetComponent* earth = new PlanetComponent(
+		&game,
+		Vector3(30.0f, 0.0f, 0.0f),
+		1.0f,
+		30.0f,
+		1.0f,
+		Texture(L"./Textures/earth.jpg")
+	);
+
+	/*PlanetComponent* moon = new PlanetComponent(
+		&game,
+		Vector3(4.0f, 0.0f, 0.0f),
+		0.27f,
+		Texture(L"./Textures/moon.jpg")
+	);*/
+
+	PlanetComponent* mars = new PlanetComponent(
+		&game,
+		Vector3(40.0f, 0.0f, 0.0f),
+		0.53f,
+		40.0f,
+		0.808495635f,
+		Texture(L"./Textures/mars.jpg")
+	);
+
+	PlanetComponent* jupiter = new PlanetComponent(
+		&game,
+		Vector3(50.0f, 0.0f, 0.0f),
+		11.2f,
+		50.0f,
+		0.438885158f,
+		Texture(L"./Textures/jupiter.jpg")
+	);
+
+	PlanetComponent* saturn = new PlanetComponent(
+		&game,
+		Vector3(60.0f, 0.0f, 0.0f),
+		9.41f,
+		60.0f,
+		0.325386165f,
+		Texture(L"./Textures/saturn.jpg")
+	);
+
+	PlanetComponent* uranus = new PlanetComponent(
+		&game,
+		Vector3(70.0f, 0.0f, 0.0f),
+		3.98f,
+		70.0f,
+		0.228676964f,
+		Texture(L"./Textures/uranus.jpg")
+	);
+
+	PlanetComponent* neptune = new PlanetComponent(
+		&game,
+		Vector3(80.0f, 0.0f, 0.0f),
+		3.81f,
+		80.0f,
+		0.182337139f,
+		Texture(L"./Textures/neptune.jpg")
+	);
 
 	Text2DComponent* text = new Text2DComponent(
 		&game,
@@ -377,14 +460,20 @@ int main()
 		)
 	);
 
-	PlaneComponent* planeComp = new PlaneComponent(
+	PlanetSystemComponent* sysComp = new PlanetSystemComponent(
 		&game,
-		Transform3D(
-			Vector3(1.0f, 0.0f, 0.0f),
-			Vector3(0.0f, 30.0f, 0.0f),
-			Vector3(1.0f, 1.0f, 1.0f)
-		),
-		DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f)
+		Transform3D(),
+		sun,
+		std::vector<PlanetComponent*>{
+			mercury,
+			venus,
+			earth,
+			mars,
+			jupiter,
+			saturn,
+			uranus,
+			neptune
+		}
 	);
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(
@@ -392,16 +481,23 @@ int main()
 		Transform3D()
 	);
 
-	game.VertexShaders.push_back(vsDefault);
-	game.PixelShaders.push_back(psDefault);
+	
 
-	game.VertexShaders.push_back(vsTexture);
-	game.PixelShaders.push_back(psTexture);
-
-	planeComp->SetShaders(vsTexture, psTexture);
-
-	game.Components.push_back(planeComp);
 	game.Components.push_back(moveComp);
+
+	game.Components.push_back(sun);
+	game.Components.push_back(mercury);
+	game.Components.push_back(venus);
+	game.Components.push_back(earth);
+	//game.Components.push_back(moon);
+	game.Components.push_back(mars);
+	game.Components.push_back(jupiter);
+	game.Components.push_back(saturn);
+	game.Components.push_back(uranus);
+	game.Components.push_back(neptune);
+
+	game.Components.push_back(sysComp);
+
 	game.Components.push_back(text);
 
 
