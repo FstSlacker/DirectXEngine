@@ -25,6 +25,8 @@
 #include "ImGuiManager.h"
 #include "ImGuiDebugWindows.h"
 
+#include "ImGuiPlanetSystem.h"
+
 #include "GameComponent.h"
 #include "MeshComponent.h"
 #include "PlaneComponent.h"

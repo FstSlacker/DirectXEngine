@@ -3,17 +3,28 @@
 #include "PlanetComponent.h"
 #include <vector>
 
+class ImGuiPlanetSystem;
+
 class PlanetSystemComponent : public GameComponent
 {
+	friend class ImGuiPlanetSystem;
+
 private:
 	PlanetComponent* star;
 	std::vector<PlanetComponent*> planets;
+	bool isFollowMode;
+	PlanetComponent* followTarget;
+
+	void FollowPlanet();
 
 public:
+	float SimulationSpeed;
+
 	PlanetSystemComponent(Game* game, Transform3D transform, PlanetComponent* star, std::vector<PlanetComponent*> planets);
 	void Update() override;
 	void Initialize() override;
 	void RotatePlanet(PlanetComponent* p);
+	void StartFollowPlanet(PlanetComponent* p);
 
 };
 

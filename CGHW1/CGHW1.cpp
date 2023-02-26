@@ -509,8 +509,7 @@ int main()
 
 	game.Components.push_back(text);
 
-	game.ImGUI.AddWindow(new ImGuiGameCompWindow(earth));
-	game.ImGUI.AddWindow(new ImGuiGameCompWindow(sun));
+	game.ImGUI.AddWindow(new ImGuiPlanetSystem(&game, sysComp));
 	game.ImGUI.AddWindow(new ImGuiGameInfoWindow(&game));
 
 	game.Run();
