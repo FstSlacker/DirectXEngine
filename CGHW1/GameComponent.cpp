@@ -1,10 +1,12 @@
 #include "GameComponent.h"
 #include <iostream>
+#include "Game.h"
 
 GameComponent::GameComponent(Game* game, Transform3D transform) 
 {
 	this->game = game;
 	this->Transform = transform;
+	this->Name = "GameComponent_" + std::to_string(game->Components.size());
 }
 
 void GameComponent::DestroyResources() 

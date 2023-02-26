@@ -1,6 +1,7 @@
 #pragma once
 #include <SimpleMath.h>
 #include "Transform.h"
+#include <string>
 
 using namespace DirectX::SimpleMath;
 
@@ -10,6 +11,7 @@ class ColliderBase;
 class GameComponent
 {
 public:
+	std::string Name;
 	Transform3D Transform;
 	ColliderBase* Collider = nullptr;
 

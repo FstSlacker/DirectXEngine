@@ -22,6 +22,8 @@
 #include "InputDevice.h"
 #include "Collision.h"
 #include "Shaders.h"
+#include "ImGuiManager.h"
+#include "ImGuiDebugWindows.h"
 
 #include "GameComponent.h"
 #include "MeshComponent.h"
@@ -52,6 +54,7 @@ public:
 
 	DisplayWin32* Display;
 	InputDevice* Input;
+	ImGuiManager ImGUI;
 
 	Camera* MainCamera;
 

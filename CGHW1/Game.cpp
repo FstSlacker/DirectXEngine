@@ -84,8 +84,9 @@ void Game::Draw()
 		Components[i]->Draw();
 	}
 
-	Context->OMSetRenderTargets(0, nullptr, nullptr);
+	ImGUI.Draw();
 
+	Context->OMSetRenderTargets(0, nullptr, nullptr);
 	SwapChain->Present(1, 0);
 }
 
@@ -269,6 +270,8 @@ bool Game::InitializeGraphics()
 			return false;
 		}
 	}
+
+	ImGUI.Initialize(Device.Get(), Context, Display->hWnd);
 
 	return true;
 }

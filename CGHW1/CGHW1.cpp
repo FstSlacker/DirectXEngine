@@ -371,6 +371,7 @@ int main()
 		Texture(L"./Textures/sun.jpg")
 	);
 	sun->IsStar = true;
+	sun->Name = "Sun";
 
 	PlanetComponent* mercury = new PlanetComponent(
 		&game,
@@ -380,6 +381,7 @@ int main()
 		1.607454668f,
 		Texture(L"./Textures/mercury.jpg")
 	);
+	mercury->Name = "Mercury";
 
 	PlanetComponent* venus = new PlanetComponent(
 		&game,
@@ -389,6 +391,7 @@ int main()
 		1.175957018f,
 		Texture(L"./Textures/venus.jpg")
 	);
+	venus->Name = "Venus";
 
 	PlanetComponent* earth = new PlanetComponent(
 		&game,
@@ -398,6 +401,7 @@ int main()
 		1.0f,
 		Texture(L"./Textures/earth.jpg")
 	);
+	earth->Name = "Earth";
 
 	/*PlanetComponent* moon = new PlanetComponent(
 		&game,
@@ -414,6 +418,7 @@ int main()
 		0.808495635f,
 		Texture(L"./Textures/mars.jpg")
 	);
+	mars->Name = "Mars";
 
 	PlanetComponent* jupiter = new PlanetComponent(
 		&game,
@@ -423,6 +428,7 @@ int main()
 		0.438885158f,
 		Texture(L"./Textures/jupiter.jpg")
 	);
+	jupiter->Name = "Jupiter";
 
 	PlanetComponent* saturn = new PlanetComponent(
 		&game,
@@ -432,6 +438,7 @@ int main()
 		0.325386165f,
 		Texture(L"./Textures/saturn.jpg")
 	);
+	saturn->Name = "Saturn";
 
 	PlanetComponent* uranus = new PlanetComponent(
 		&game,
@@ -441,6 +448,7 @@ int main()
 		0.228676964f,
 		Texture(L"./Textures/uranus.jpg")
 	);
+	uranus->Name = "Uranus";
 
 	PlanetComponent* neptune = new PlanetComponent(
 		&game,
@@ -450,6 +458,7 @@ int main()
 		0.182337139f,
 		Texture(L"./Textures/neptune.jpg")
 	);
+	neptune->Name = "Neptune";
 
 	Text2DComponent* text = new Text2DComponent(
 		&game,
@@ -500,6 +509,9 @@ int main()
 
 	game.Components.push_back(text);
 
+	game.ImGUI.AddWindow(new ImGuiGameCompWindow(earth));
+	game.ImGUI.AddWindow(new ImGuiGameCompWindow(sun));
+	game.ImGUI.AddWindow(new ImGuiGameInfoWindow(&game));
 
 	game.Run();
 }

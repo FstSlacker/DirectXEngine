@@ -45,8 +45,12 @@ DisplayWin32::DisplayWin32(int width, int height, LPCWSTR name)
 	ShowCursor(true);
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 LRESULT CALLBACK DisplayWin32::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, umessage, wparam, lparam))
+		return true;
+
 	switch (umessage)
 	{
 		case WM_KEYDOWN:
