@@ -30,6 +30,21 @@ void Camera::SetAspectRatio(float aspectRatio)
     UpdateProjectionMatrix();
 }
 
+float Camera::GetFov() const
+{
+    return this->fovDegrees;
+}
+
+float Camera::GetNear() const
+{
+    return this->nearZ;
+}
+
+float Camera::GetFar() const
+{
+    return this->farZ;
+}
+
 const XMMATRIX& Camera::GetViewMatrix()
 {
     UpdateViewMatrix();

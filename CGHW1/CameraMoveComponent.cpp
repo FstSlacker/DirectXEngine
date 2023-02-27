@@ -3,7 +3,7 @@
 
 CameraMoveComponent::CameraMoveComponent(Game* game, Transform3D transform) : GameComponent(game, transform)
 {
-
+	this->MoveSpeed = 5.0f;
 }
 
 void CameraMoveComponent::Initialize()
@@ -22,19 +22,19 @@ void CameraMoveComponent::Update()
 
 	if (game->Input->IsKeyDown(Keys::W))
 	{
-		camT->AddPosition(camT->GetForward() * game->DeltaTime);
+		camT->AddPosition(camT->GetForward() * game->DeltaTime * MoveSpeed);
 	}
 	if (game->Input->IsKeyDown(Keys::A))
 	{
-		camT->AddPosition(camT->GetLeft() * game->DeltaTime);
+		camT->AddPosition(camT->GetLeft() * game->DeltaTime * MoveSpeed);
 	}
 	if (game->Input->IsKeyDown(Keys::S))
 	{
-		camT->AddPosition(camT->GetBackward() * game->DeltaTime);
+		camT->AddPosition(camT->GetBackward() * game->DeltaTime * MoveSpeed);
 	}
 	if (game->Input->IsKeyDown(Keys::D))
 	{
-		camT->AddPosition(camT->GetRight() * game->DeltaTime);
+		camT->AddPosition(camT->GetRight() * game->DeltaTime * MoveSpeed);
 	}
 
 	if (game->Input->IsKeyDown(Keys::MiddleButton))

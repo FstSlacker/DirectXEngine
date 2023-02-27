@@ -1,14 +1,10 @@
 #include "Transform.h"
 
-void Transform3D::UpdateRotation(Vector3 eulerAngles)
+void Transform3D::UpdateDirVectors()
 {
-	eulerAngles *= kDeg2Rad;
-	rotationMat = DirectX::XMMatrixRotationRollPitchYaw(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-
-	XMMATRIX vecRotMat = rotationMat;//XMMatrixRotationRollPitchYaw(0.0f, eulerAngles.y, 0.0f);
-	forward = XMVector3TransformCoord(Vector3(0.0f, 0.0f, 1.0f), vecRotMat);
-	right = XMVector3TransformCoord(Vector3::Right, vecRotMat);
-	up = XMVector3TransformCoord(Vector3::Up, vecRotMat);
+	forward = XMVector3TransformCoord(Vector3(0.0f, 0.0f, 1.0f), rotationMat);
+	right = XMVector3TransformCoord(Vector3::Right, rotationMat);
+	up = XMVector3TransformCoord(Vector3::Up, rotationMat);
 	backward = forward * -1.0f;
 	left = right * -1.0f;
 	down = up * -1.0f;
@@ -48,7 +44,9 @@ const Vector3& Transform3D::GetPosition() const
 void Transform3D::SetRotation(Vector3 eulerAngles)
 {
 	this->rotation = eulerAngles;
-	UpdateRotation(eulerAngles);
+	eulerAngles *= kDeg2Rad;
+	this->rotationMat = DirectX::XMMatrixRotationRollPitchYaw(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+	UpdateDirVectors();
 	UpdateWorldMatrix();
 }
 
@@ -74,6 +72,20 @@ void Transform3D::AddPosition(Vector3 addPosition)
 {
 	position += addPosition;
 	SetPosition(position);
+}
+
+void Transform3D::AddLocalRotation(Vector3 addEulerAngles)
+{
+	addEulerAngles *= kDeg2Rad;
+	XMMATRIX localRot = DirectX::XMMatrixRotationRollPitchYaw(addEulerAngles.x, addEulerAngles.y, addEulerAngles.z);
+	this->rotationMat = localRot * this->rotationMat;
+	UpdateDirVectors();
+	UpdateWorldMatrix();
+
+	XMVECTOR p, r, s;
+	DirectX::XMMatrixDecompose(&s, &r, &p, this->worldMat);
+	Quaternion q(r);
+	this->rotation = q.ToEuler();
 }
 
 const Vector3& Transform3D::GetScale() const

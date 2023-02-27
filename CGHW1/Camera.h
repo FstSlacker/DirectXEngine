@@ -22,6 +22,10 @@ public:
 	void SetFar(float farByZ);
 	void SetAspectRatio(float aspectRatio);
 
+	float GetFov() const;
+	float GetNear() const;
+	float GetFar() const;
+
 	const XMMATRIX& GetViewMatrix();
 	const XMMATRIX& GetProjectionMatrix();
 
