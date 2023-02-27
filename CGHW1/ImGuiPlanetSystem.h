@@ -7,6 +7,8 @@ class ImGuiPlanetSystem : public ImGuiBaseWindow
 private:
 	PlanetSystemComponent* planetSystem;
 	Game* game;
+	bool isLighting;
+	float orbScale;
 
 public:
 	ImGuiPlanetSystem(Game* game, PlanetSystemComponent* planetSys);

@@ -1,19 +1,41 @@
 #include "PlanetComponent.h"
 #include "Game.h"
 
-PlanetComponent::PlanetComponent(Game* game, Vector3 position, float radius, float orbitRad, float orbitSpeed, Texture tex)
-	: GameComponent(game, Transform3D(position, Vector3::Zero, Vector3(radius, radius, radius)))
+PlanetComponent::PlanetComponent(Game* game, Vector3 position, PlanetInfo info, Texture tex)
+	: GameComponent(game, Transform3D(position, Vector3::Zero, Vector3(info.Diameter, info.Diameter, info.Diameter)))
 {
 	this->planetTexture = tex;
-	this->OrbitRadius = orbitRad;
-	this->OrbitSpeed = orbitSpeed;
+	this->Info = info;
 	this->IsStar = false;
+	this->Name = info.Name;
+}
+
+void PlanetComponent::ReloadGraphics(bool isLighting)
+{
+	effect = std::make_unique<BasicEffect>(game->Device.Get());
+	effect->SetTextureEnabled(true);
+
+	effect->SetPerPixelLighting(isLighting);
+	effect->SetLightingEnabled(isLighting);
+	effect->SetLightEnabled(0, isLighting);
+
+	effect->SetLightDiffuseColor(0, Colors::White);
+	effect->SetLightDirection(0, -Vector3::UnitZ);
+
+	sphere = GeometricPrimitive::CreateSphere(game->Context, 1.0f, 16U, false);
+	sphere->CreateInputLayout(effect.get(), inputLayout.ReleaseAndGetAddressOf());
+
+	effect->SetTexture(planetTexture.GetTextureView());
+}
+
+void PlanetComponent::SetLighting(bool isActive)
+{
+	ReloadGraphics(isActive);
 }
 
 void PlanetComponent::Update()
 {
 	GameComponent::Update();
-	Transform.AddRotation(Vector3(0.0f, game->DeltaTime * 10.0f, 0.0f));
 }
 
 void PlanetComponent::Draw()
@@ -29,18 +51,7 @@ void PlanetComponent::Initialize()
 {
 	planetTexture.Initialize(game->Device.Get());
 
-	effect = std::make_unique<BasicEffect>(game->Device.Get());
-	effect->SetTextureEnabled(true);
-
-	effect->SetPerPixelLighting(!IsStar);
-	effect->SetLightingEnabled(!IsStar);
-	effect->SetLightEnabled(0, !IsStar);
-	
-	effect->SetLightDiffuseColor(0, Colors::White);
-	effect->SetLightDirection(0, -Vector3::UnitZ);
-
-	sphere = GeometricPrimitive::CreateSphere(game->Context, 1.0f, 16U, false);
-	sphere->CreateInputLayout(effect.get(), inputLayout.ReleaseAndGetAddressOf());
+	ReloadGraphics(!IsStar);
 
 	effect->SetTexture(planetTexture.GetTextureView());
 

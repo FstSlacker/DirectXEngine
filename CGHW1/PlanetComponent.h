@@ -7,6 +7,20 @@
 
 using namespace DirectX;
 
+struct PlanetInfo
+{
+	std::string Name;
+	float Mass;
+	float Diameter;
+	float Density;
+	float Gravity;
+	float LengthOfDay;
+	float OrbitRadius;
+	float OrbitPeriod;
+	float RotationPeriod;
+	float ObliquityToOrbit;
+};
+
 class PlanetComponent : public GameComponent
 {
 private:
@@ -15,16 +29,18 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 	std::unique_ptr<BasicEffect> effect;
 
+	void ReloadGraphics(bool isLighting);
+
 public:
-	float OrbitRadius;
-	float OrbitSpeed;
+	PlanetInfo Info;
 	bool IsStar;
 
-	PlanetComponent(Game* game, Vector3 position, float radius, float orbitRad, float orbitSpeed, Texture tex);
+	PlanetComponent(Game* game, Vector3 position, PlanetInfo info, Texture tex);
 
 	void Update() override;
 	void Draw() override;
 	void Initialize() override;
 	void SetLightDirection(Vector3 dir);
+	void SetLighting(bool isActive);
 };
 
