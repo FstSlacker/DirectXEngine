@@ -33,8 +33,6 @@ void MeshComponent::Draw(){
 	sampler.Bind(game->Context);
 	texture.Bind(game->Context);
 
-
-	
 	transformMat.Data = DirectX::XMMatrixTranspose(
 		Transform.GetTransformMatrix() * (game->MainCamera->GetViewMatrix() * game->MainCamera->GetProjectionMatrix())
 	);

@@ -27,7 +27,7 @@ private:
 
 	XMMATRIX worldMat;
 
-	void UpdateRotation(Vector3 eulerAngles);
+	void UpdateDirVectors();
 	void UpdateWorldMatrix();
 
 public:
@@ -39,8 +39,11 @@ public:
 	void SetRotation(Vector3 eulerAngles);
 	void SetScale(Vector3 scale);
 
+
 	void AddRotation(Vector3 addEulerAngles);
 	void AddPosition(Vector3 addPosition);
+
+	void AddLocalRotation(Vector3 addEulerAngles);
 
 	const Vector3& GetPosition() const;
 	const Vector3& GetRotation() const;

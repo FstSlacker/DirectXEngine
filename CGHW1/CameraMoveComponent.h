@@ -8,6 +8,8 @@ private:
 	Vector2 prevMousePos;
 
 public:
+	float MoveSpeed;
+
 	CameraMoveComponent(Game* game, Transform3D transform);
 	void Initialize() override;
 	void Update() override;
