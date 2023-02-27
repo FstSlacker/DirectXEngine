@@ -11,8 +11,10 @@ PPGameController::PPGameController(Game* game, RacketComponent* playerRacket, Ra
 	this->playerRacket = playerRacket;
 	this->enemyRacket = enemyRacket;
 	this->scoreText = scoreText;
-
+	this->MaxBallSpeed = 2.0f;
 	this->ball = ball;
+	this->MaxEnemySpeed = 1.0f;
+	this->MaxPlayerSpeed = 0.75f;
 	this->ball->Collider->OnCollisionEnter.AddRaw(this, &PPGameController::OnBallCollisionEnter);
 
 	playerRacket->MoveSpeed = 0.5f;
@@ -114,5 +116,9 @@ void PPGameController::RestartLevel(float startBallDir)
 
 	ball->MoveDirection = Vector3(cos(rndAngle), sin(rndAngle), 0.0f) * startBallDir;
 	ball->MoveSpeed += 0.1f;
+	ball->MoveSpeed = ball->MoveSpeed > MaxBallSpeed ? MaxBallSpeed : ball->MoveSpeed;
+	enemyRacket->MoveSpeed = enemyRacket->MoveSpeed + 0.05f > MaxEnemySpeed ? MaxEnemySpeed : enemyRacket->MoveSpeed + 0.1f;
+	playerRacket->MoveSpeed = playerRacket->MoveSpeed + 0.025f > MaxPlayerSpeed ? MaxPlayerSpeed : playerRacket->MoveSpeed + 0.025f;
+
 	scoreText->Text = std::to_wstring(scoreEnemy) + L"\n" + std::to_wstring(scorePlayer);
 }

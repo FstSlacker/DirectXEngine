@@ -18,6 +18,10 @@ private:
 	int scoreEnemy;
 
 public:
+	float MaxBallSpeed;
+	float MaxEnemySpeed;
+	float MaxPlayerSpeed;
+
 	PPGameController(Game* game, RacketComponent* playerRacket, RacketComponent* enemyRacket, BallComonent* ball, Text2DComponent* scoreText);
 	void Update() override;
 	void FixedUpdate() override;
