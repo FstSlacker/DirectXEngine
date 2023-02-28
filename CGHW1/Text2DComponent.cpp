@@ -9,8 +9,8 @@ Text2DComponent::Text2DComponent(Game* game, Transform3D transform) : GameCompon
 void Text2DComponent::Initialize()
 {
 	GameComponent::Initialize();
-	spriteBatch = std::make_unique<DirectX::SpriteBatch>(game->Context);
-	spriteFont = std::make_unique<DirectX::SpriteFont>(game->Device.Get(), L"./Fonts/comic_sans_ms.spritefont");
+	spriteBatch = std::make_unique<DirectX::SpriteBatch>(game->Gfx.GetContext());
+	spriteFont = std::make_unique<DirectX::SpriteFont>(game->Gfx.GetDevice(), L"./Fonts/comic_sans_ms.spritefont");
 }
 
 void Text2DComponent::Draw()
