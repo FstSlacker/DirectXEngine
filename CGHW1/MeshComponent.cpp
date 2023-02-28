@@ -3,7 +3,7 @@
 
 MeshComponent::MeshComponent(Game* game, Transform3D transform) : GameComponent(game, transform)
 {
-
+	//...
 }
 
 void MeshComponent::DestroyResources(){
@@ -18,20 +18,10 @@ void MeshComponent::Draw(){
 
 	GameComponent::Draw();
 
-	//game->Context->IASetInputLayout(vertexShader->GetInputLayout());
-	//game->Context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//game->Context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	//game->Context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), offsets);
-	//game->Context->VSSetShader(vertexShader->GetShader(), nullptr, 0);
-	//game->Context->PSSetShader(pixelShader->GetShader(), nullptr, 0);
-	
-	vertexBuffer.Bind(game->Context);
-	indexBuffer.Bind(game->Context);
-	vertexShader->Bind(game->Context);
-	pixelShader->Bind(game->Context);
-
-	sampler.Bind(game->Context);
-	texture.Bind(game->Context);
+	for (int i = 0; i < binds.size(); i++)
+	{
+		binds[i]->Bind(game->Context);
+	}
 
 	transformMat.Data = DirectX::XMMatrixTranspose(
 		Transform.GetTransformMatrix() * (game->MainCamera->GetViewMatrix() * game->MainCamera->GetProjectionMatrix())
@@ -46,7 +36,8 @@ void MeshComponent::Draw(){
 	game->Context->DrawIndexed(indexBuffer.BufferSize(), 0, 0);
 }
 
-void MeshComponent::Update() {
+void MeshComponent::Update() 
+{
 	GameComponent::Update();
 }
 
@@ -57,25 +48,24 @@ void MeshComponent::FixedUpdate()
 
 void MeshComponent::SetShaders(VertexShader* vShader, PixelShader* pShader)
 {
-	vertexShader = vShader;
-	pixelShader = pShader;
+	binds.push_back(vShader);
+	binds.push_back(pShader);
+}
+
+void MeshComponent::SetTexture(Texture* tex)
+{
+	binds.push_back(tex);
 }
 
 void MeshComponent::Initialize() {
 
 	GameComponent::Initialize();
 
-	//Create vertex buffer
 	vertexBuffer.Initialize(game->Device.Get(), points.data(), points.size());
-
-	//Create index buffer
 	indexBuffer.Initialize(game->Device.Get(), indices.data(), indices.size());
 
-	texture = Texture(L"./Textures/earth.png");
-	texture.Initialize(game->Device.Get());
+	binds.push_back(&vertexBuffer);
+	binds.push_back(&indexBuffer);
 
-	sampler.Initialize(game->Device.Get());
-
-	//Init constant buffers
 	transformMat.Initialize(game->Device.Get());
 }

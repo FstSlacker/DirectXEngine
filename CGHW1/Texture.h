@@ -2,6 +2,7 @@
 #include "Bindable.h"
 #include "WICTextureLoader.h"
 #include <string>
+#include "Sampler.h"
 
 class Texture : public Bindable
 {
@@ -15,6 +16,7 @@ public:
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureView;
+	Sampler sampler;
 	std::wstring texPath;
 };
 

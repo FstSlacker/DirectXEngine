@@ -34,6 +34,7 @@
 
 #include "PlanetComponent.h"
 #include "PlanetSystemComponent.h"
+#include "SphereComponent.h"
 
 class GameComponent;
 class MeshComponent;
@@ -49,8 +50,10 @@ public:
 	IDXGISwapChain* SwapChain;
 
 	std::vector<GameComponent*> Components;
+
 	std::vector<VertexShader*> VertexShaders;
 	std::vector<PixelShader*> PixelShaders;
+	std::vector<Texture*> Textures;
 
 	DisplayWin32* Display;
 	InputDevice* Input;

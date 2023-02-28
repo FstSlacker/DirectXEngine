@@ -11,6 +11,7 @@
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Sampler.h"
+#include "Bindable.h"
 
 class Game;
 class GameComponent;
@@ -18,10 +19,7 @@ class GameComponent;
 class MeshComponent : public GameComponent
 {
 protected:
-	VertexShader* vertexShader;
-	PixelShader* pixelShader;
-	Sampler sampler;
-	Texture texture;
+	std::vector<Bindable*> binds;
 
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indexBuffer;
@@ -39,5 +37,6 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void FixedUpdate() override;
-	virtual void SetShaders(VertexShader* vShader, PixelShader* pShader);
+	void SetShaders(VertexShader* vShader, PixelShader* pShader);
+	void SetTexture(Texture* tex);
 };
