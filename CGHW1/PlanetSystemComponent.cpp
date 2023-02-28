@@ -63,10 +63,10 @@ void PlanetSystemComponent::RotatePlanet(PlanetComponent* p)
 	p->Transform.SetPosition(newPos);
 	p->Transform.AddLocalRotation(Vector3(0.0f, rotSpeed * SimulationSpeed * kSecPerHour, 0.0f));
 
-	Vector3 lightDir = newPos - star->Transform.GetPosition();
-	lightDir.Normalize();
+	/*Vector3 lightDir = newPos - star->Transform.GetPosition();
+	lightDir.Normalize();*/
 
-	p->SetLightDirection(lightDir);
+	//p->SetLightDirection(lightDir);
 
 	if (isFollowMode && followTarget == p)
 	{
@@ -112,14 +112,14 @@ void PlanetSystemComponent::ScaleDiametersRelativeEarth()
 
 void PlanetSystemComponent::SetLighting(bool isActive)
 {
-	if (isLighting == isActive)
+	/*if (isLighting == isActive)
 		return;
 
 	isLighting = isActive;
 	for (int i = 0; i < planets.size(); i++)
 	{
 		planets[i]->SetLighting(isActive);
-	}
+	}*/
 }
 
 void PlanetSystemComponent::SetOrbitScale(float orbScale)

@@ -1,5 +1,5 @@
 #pragma once
-#include "GameComponent.h"
+#include "SphereComponent.h"
 #include "Texture.h"
 #include <GeometricPrimitive.h>
 #include <Effects.h>
@@ -21,26 +21,11 @@ struct PlanetInfo
 	float ObliquityToOrbit;
 };
 
-class PlanetComponent : public GameComponent
+class PlanetComponent : public SphereComponent
 {
-private:
-	Texture planetTexture;
-	std::unique_ptr<GeometricPrimitive> sphere;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
-	std::unique_ptr<BasicEffect> effect;
-
-	void ReloadGraphics(bool isLighting);
-
 public:
 	PlanetInfo Info;
-	bool IsStar;
 
-	PlanetComponent(Game* game, Vector3 position, PlanetInfo info, Texture tex);
-
-	void Update() override;
-	void Draw() override;
-	void Initialize() override;
-	void SetLightDirection(Vector3 dir);
-	void SetLighting(bool isActive);
+	PlanetComponent(Game* game, Vector3 position, PlanetInfo info, Texture* tex);
 };
 

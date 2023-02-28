@@ -13,7 +13,7 @@ void ImGuiPlanetSystem::Bind()
 {
 	ImGui::Text("Simulation speed (1 real second =):");
 	ImGui::SliderFloat("x", &planetSystem->SimulationSpeed, 1.0f, 36000.0f);
-	if (ImGui::SliderFloat("Orbit scale", &orbScale, 0.01f, 5.0f))
+	if (ImGui::SliderFloat("Orbit scale", &orbScale, 0.01f, 2.0f))
 	{
 		planetSystem->SetOrbitScale(orbScale);
 	}
