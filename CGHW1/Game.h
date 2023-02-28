@@ -18,10 +18,10 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
+#include "Graphics.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
 #include "Collision.h"
-#include "Shaders.h"
 #include "ImGuiManager.h"
 #include "ImGuiDebugWindows.h"
 
@@ -36,25 +36,14 @@
 #include "PlanetSystemComponent.h"
 #include "SphereComponent.h"
 
-class GameComponent;
-class MeshComponent;
-class PlaneComponent;
 
 class Game
 {
 
 public:
-	ID3D11DeviceContext* Context;
-	Microsoft::WRL::ComPtr<ID3D11Device> Device;
-	ID3D11RenderTargetView* RenderView;
-	IDXGISwapChain* SwapChain;
-
 	std::vector<GameComponent*> Components;
 
-	std::vector<VertexShader*> VertexShaders;
-	std::vector<PixelShader*> PixelShaders;
-	std::vector<Texture*> Textures;
-
+	Graphics Gfx;
 	DisplayWin32* Display;
 	InputDevice* Input;
 	ImGuiManager ImGUI;
@@ -75,22 +64,13 @@ public:
 private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
 
-	ID3D11Texture2D* backBuffer;
-	ID3D11Texture2D* depthStencilBuffer;
-	ID3D11DepthStencilView* depthStencilView;
-
-	ID3D11RasterizerState* rastState;
 	bool isExitRequested = false;
 	bool isPauseRequested = false;
 
-	void CreateBackBuffer();
 	void DestroyResources();
 	void Draw();
-	void EndFrame();
 	bool Initialize();
 	void MessageHandler();
-	void PrepareFrame();
-	bool InitializeGraphics();
 	void Update();
 	void UpdateInternal();
 };

@@ -20,20 +20,20 @@ void MeshComponent::Draw(){
 
 	for (int i = 0; i < binds.size(); i++)
 	{
-		binds[i]->Bind(game->Context);
+		binds[i]->Bind(game->Gfx.GetContext());
 	}
 
 	transformMat.Data = DirectX::XMMatrixTranspose(
 		Transform.GetTransformMatrix() * (game->MainCamera->GetViewMatrix() * game->MainCamera->GetProjectionMatrix())
 	);
 	
-	if (!transformMat.ApplyChanges(game->Context))
+	if (!transformMat.ApplyChanges(game->Gfx.GetContext()))
 	{
 		std::cout << "Failed to apply transform mat!" << std::endl;
 	}
 
-	game->Context->VSSetConstantBuffers(0, 1, transformMat.GetAddressOf());
-	game->Context->DrawIndexed(indexBuffer.BufferSize(), 0, 0);
+	game->Gfx.GetContext()->VSSetConstantBuffers(0, 1, transformMat.GetAddressOf());
+	game->Gfx.GetContext()->DrawIndexed(indexBuffer.BufferSize(), 0, 0);
 }
 
 void MeshComponent::Update() 
@@ -61,11 +61,11 @@ void MeshComponent::Initialize() {
 
 	GameComponent::Initialize();
 
-	vertexBuffer.Initialize(game->Device.Get(), points.data(), points.size());
-	indexBuffer.Initialize(game->Device.Get(), indices.data(), indices.size());
+	vertexBuffer.Initialize(game->Gfx.GetDevice(), points.data(), points.size());
+	indexBuffer.Initialize(game->Gfx.GetDevice(), indices.data(), indices.size());
 
 	binds.push_back(&vertexBuffer);
 	binds.push_back(&indexBuffer);
 
-	transformMat.Initialize(game->Device.Get());
+	transformMat.Initialize(game->Gfx.GetDevice());
 }

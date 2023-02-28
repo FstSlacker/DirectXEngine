@@ -27,9 +27,9 @@ void PlanetComponent::Draw()
 
 void PlanetComponent::Initialize()
 {
-	planetTexture.Initialize(game->Device.Get());
+	planetTexture.Initialize(game->Gfx.GetDevice());
 
-	effect = std::make_unique<BasicEffect>(game->Device.Get());
+	effect = std::make_unique<BasicEffect>(game->Gfx.GetDevice());
 	effect->SetTextureEnabled(true);
 
 	effect->SetPerPixelLighting(!IsStar);
@@ -39,7 +39,7 @@ void PlanetComponent::Initialize()
 	effect->SetLightDiffuseColor(0, Colors::White);
 	effect->SetLightDirection(0, -Vector3::UnitZ);
 
-	sphere = GeometricPrimitive::CreateSphere(game->Context, 1.0f, 16U, false);
+	sphere = GeometricPrimitive::CreateSphere(game->Gfx.GetContext(), 1.0f, 16U, false);
 	sphere->CreateInputLayout(effect.get(), inputLayout.ReleaseAndGetAddressOf());
 
 	effect->SetTexture(planetTexture.GetTextureView());
