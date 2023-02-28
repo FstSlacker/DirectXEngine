@@ -15,7 +15,7 @@ bool Game::Initialize()
 {
 	Display = new DisplayWin32(1000, 800, Name);
 
-	MainCamera = new Camera(Transform3D(Vector3(0.0f, 0.0f, -2.0f), Vector3::Zero, Vector3::One), Display->ClientWidth, Display->ClientHeight);
+	MainCamera = new Camera(Transform3D(Vector3(0.0f, 0.0f, -15.0f), Vector3::Zero, Vector3::One), Display->ClientWidth, Display->ClientHeight);
 
 	Input = new InputDevice(this);
 
@@ -47,6 +47,11 @@ void Game::DestroyResources()
 	for (int i = 0; i < PixelShaders.size(); i++)
 	{
 		PixelShaders[i]->DestroyResources();
+	}
+
+	for (int i = 0; i < Textures.size(); i++)
+	{
+		Textures[i]->DestroyResources();
 	}
 
 	SwapChain->Release();
@@ -267,6 +272,16 @@ bool Game::InitializeGraphics()
 	{
 		if (!PixelShaders[i]->Initialize(Device.Get()))
 		{
+			return false;
+		}
+	}
+
+	//Create textures
+	for (int i = 0; i < Textures.size(); i++)
+	{
+		if (FAILED(Textures[i]->Initialize(Device.Get())))
+		{
+			std::cout << "Texture " << i << " init failed" << std::endl;
 			return false;
 		}
 	}
