@@ -8,8 +8,8 @@ int main()
 	PixelShader* psTex = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
 	VertexShader* vsTex = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
 
-	game.PixelShaders.push_back(psTex);
-	game.VertexShaders.push_back(vsTex);
+	game.Gfx.AddPixelShader(psTex);
+	game.Gfx.AddVertexShader(vsTex);
 
 	Texture* texSun = new Texture(L"./Textures/sun.jpg");
 	Texture* texMercury = new Texture(L"./Textures/mercury.jpg");
@@ -21,15 +21,15 @@ int main()
 	Texture* texUranus = new Texture(L"./Textures/uranus.jpg");
 	Texture* texNeptune = new Texture(L"./Textures/neptune.jpg");
 
-	game.Textures.push_back(texSun);
-	game.Textures.push_back(texMercury);
-	game.Textures.push_back(texVenus);
-	game.Textures.push_back(texEarth);
-	game.Textures.push_back(texMars);
-	game.Textures.push_back(texJupiter);
-	game.Textures.push_back(texSaturn);
-	game.Textures.push_back(texUranus);
-	game.Textures.push_back(texNeptune);
+	game.Gfx.AddTexture(texSun);
+	game.Gfx.AddTexture(texMercury);
+	game.Gfx.AddTexture(texVenus);
+	game.Gfx.AddTexture(texEarth);
+	game.Gfx.AddTexture(texMars);
+	game.Gfx.AddTexture(texJupiter);
+	game.Gfx.AddTexture(texSaturn);
+	game.Gfx.AddTexture(texUranus);
+	game.Gfx.AddTexture(texNeptune);
 
 	std::vector<PlanetInfo> infos = PlanetSystemComponent::CreatePlanetsFromFile("planets_data_transp.txt");
 
