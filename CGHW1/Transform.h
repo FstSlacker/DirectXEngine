@@ -1,13 +1,16 @@
 #pragma once
 #include <SimpleMath.h>
 #include <d3d11.h>
+#include <vector>
 
 constexpr float kDeg2Rad = 3.141592653589793238463f / 180.0f;
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
 
-struct Transform3D 
+class GameComponent;
+
+class Transform3D 
 {
 private:
 	Vector3 position;
@@ -27,13 +30,26 @@ private:
 
 	XMMATRIX worldMat;
 
+	GameComponent* gameComponent;
+	Transform3D* parent;
+	std::vector<Transform3D*> childs;
+	Transform3D(const Transform3D& rhs);
+
 	void UpdateDirVectors();
 	void UpdateWorldMatrix();
+	void UpdateChildsTransform();
+	int FindChild(Transform3D& child);
 
 public:
+	Transform3D(GameComponent& comp);
 
-	Transform3D(Vector3 position, Vector3 rotation, Vector3 scale);
-	Transform3D();
+	GameComponent* GetGameComponent() const;
+	void SetParent(Transform3D* parent);
+	Transform3D* GetParent() const;
+	void AddChild(Transform3D& child);
+	void RemoveChild(Transform3D& child);
+	Transform3D* GetChild(int ind) const;
+	int GetChildsCount() const;
 
 	void SetPosition(Vector3 position);
 	void SetRotation(Vector3 eulerAngles);

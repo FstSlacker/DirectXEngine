@@ -4,11 +4,13 @@
 #include <directxmath.h>
 #include <vector>
 #include "GameComponent.h"
-#include "ConstantBuffer.h"
-#include "Shaders.h"
+
 #include "Vertex.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+
+#include "ConstantBuffer.h"
+#include "Shaders.h"
 #include "Texture.h"
 #include "Sampler.h"
 #include "Bindable.h"
@@ -20,7 +22,6 @@ class MeshComponent : public GameComponent
 {
 protected:
 	std::vector<Bindable*> binds;
-
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indexBuffer;
 
@@ -31,7 +32,7 @@ protected:
 
 public:
 
-	MeshComponent(Game* game, Transform3D transform);
+	MeshComponent(Game* game);
 	void DestroyResources() override;
 	void Draw() override;
 	void Initialize() override;

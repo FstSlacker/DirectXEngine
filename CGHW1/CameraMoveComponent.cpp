@@ -1,7 +1,7 @@
 #include "CameraMoveComponent.h"
 #include "Game.h"
 
-CameraMoveComponent::CameraMoveComponent(Game* game, Transform3D transform) : GameComponent(game, transform)
+CameraMoveComponent::CameraMoveComponent(Game* game) : GameComponent(game)
 {
 	this->MoveSpeed = 5.0f;
 }

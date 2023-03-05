@@ -9,7 +9,7 @@ class Text2DComponent : public GameComponent
 public:
 	std::wstring Text;
 
-	Text2DComponent(Game* game, Transform3D transform);
+	Text2DComponent(Game* game);
 	void Initialize() override;
 	void Draw() override;
 

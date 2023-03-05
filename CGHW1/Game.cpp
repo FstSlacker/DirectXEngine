@@ -11,7 +11,8 @@ bool Game::Initialize()
 	Display = new DisplayWin32(1000, 800, Name);
 
 
-	MainCamera = new Camera(Transform3D(Vector3(0.0f, 0.0f, -15.0f), Vector3::Zero, Vector3::One), Display->ClientWidth, Display->ClientHeight);
+	MainCamera = new Camera(this, Display->ClientWidth, Display->ClientHeight);
+	MainCamera->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
 
 	Input = new InputDevice(this);
 

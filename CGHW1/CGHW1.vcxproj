@@ -161,8 +161,6 @@
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="PlaneComponent.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
-    <ClCompile Include="PlanetComponent.cpp" />
-    <ClCompile Include="PlanetSystemComponent.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="SkyboxEffect.cpp" />
@@ -199,8 +197,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlaneComponent.h" />
     <ClInclude Include="MeshComponent.h" />
-    <ClInclude Include="PlanetComponent.h" />
-    <ClInclude Include="PlanetSystemComponent.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="Shaders.h" />

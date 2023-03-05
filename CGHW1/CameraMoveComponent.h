@@ -10,7 +10,7 @@ private:
 public:
 	float MoveSpeed;
 
-	CameraMoveComponent(Game* game, Transform3D transform);
+	CameraMoveComponent(Game* game);
 	void Initialize() override;
 	void Update() override;
 };

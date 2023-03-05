@@ -1,7 +1,7 @@
 #include "MeshComponent.h"
 #include "Game.h"
 
-MeshComponent::MeshComponent(Game* game, Transform3D transform) : GameComponent(game, transform)
+MeshComponent::MeshComponent(Game* game) : GameComponent(game)
 {
 	//...
 }

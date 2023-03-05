@@ -10,6 +10,8 @@ class ImGuiGameInfoWindow : public ImGuiBaseWindow
 protected:
 	Game* game;
 
+	void ShowGameComponent(GameComponent* comp);
+
 public:
 	ImGuiGameInfoWindow(Game* game);
 	virtual void Bind() override;

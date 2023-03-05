@@ -10,6 +10,7 @@ class ColliderBase;
 
 class GameComponent
 {
+
 public:
 	std::string Name;
 	Transform3D Transform;
@@ -20,7 +21,7 @@ protected:
 	Vector3 position;
 
 public:
-	GameComponent(Game* game, Transform3D transform);
+	GameComponent(Game* game);
 	virtual void DestroyResources();
 	virtual void Draw();
 	virtual void Initialize();

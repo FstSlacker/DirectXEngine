@@ -1,7 +1,7 @@
 #include "Text2DComponent.h"
 #include "Game.h"
 
-Text2DComponent::Text2DComponent(Game* game, Transform3D transform) : GameComponent(game, transform)
+Text2DComponent::Text2DComponent(Game* game) : GameComponent(game)
 {
 
 }

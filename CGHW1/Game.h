@@ -32,8 +32,6 @@
 #include "Camera.h"
 #include "CameraMoveComponent.h"
 
-#include "PlanetComponent.h"
-#include "PlanetSystemComponent.h"
 #include "SphereComponent.h"
 
 

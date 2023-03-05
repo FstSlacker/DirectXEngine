@@ -44,8 +44,8 @@ void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 
 }
 
-SphereComponent::SphereComponent(Game* game, Transform3D transform, float radius, size_t tesselation) 
-	: MeshComponent(game, transform)
+SphereComponent::SphereComponent(Game* game, float radius, size_t tesselation) 
+	: MeshComponent(game)
 {
 	CreateSphereMesh(tesselation, tesselation);
 }

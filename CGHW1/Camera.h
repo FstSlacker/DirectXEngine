@@ -2,21 +2,19 @@
 #include <d3d.h>
 #include <d3d11.h>
 #include <directxmath.h>
-#include "Transform.h"
+#include "GameComponent.h"
 
 using namespace DirectX;
 
 class Game;
 
-class Camera
+class Camera : public GameComponent
 {
 
 	friend class Game;
 
 public:
-	Transform3D Transform;
-
-	Camera(Transform3D transform, UINT width, UINT height);
+	Camera(Game* game, UINT width, UINT height);
 	void SetFov(float angleDeg);
 	void SetNear(float nearByZ);
 	void SetFar(float farByZ);

@@ -15,18 +15,90 @@ void Transform3D::UpdateWorldMatrix()
 	worldMat = scaleMat * rotationMat * translationMat;
 }
 
-Transform3D::Transform3D(Vector3 position, Vector3 rotation, Vector3 scale)
+void Transform3D::UpdateChildsTransform()
 {
-	SetPosition(position);
-	SetRotation(rotation);
-	SetScale(scale);
+
 }
 
-Transform3D::Transform3D()
+int Transform3D::FindChild(Transform3D& child)
 {
+	for (int i = 0; i < childs.size(); i++)
+	{
+		if (childs[i] == &child)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+Transform3D::Transform3D(GameComponent& comp)
+{
+	this->gameComponent = &comp;
 	SetPosition(Vector3::Zero);
 	SetRotation(Vector3::Zero);
 	SetScale(Vector3::One);
+}
+
+GameComponent* Transform3D::GetGameComponent() const
+{
+	return this->gameComponent;
+}
+
+void Transform3D::SetParent(Transform3D* parent)
+{
+	if (parent == this)
+		throw std::exception("Parent of transform should not equal self");
+
+	if (this->parent != nullptr)
+	{
+		this->parent->RemoveChild(*this);
+	}
+
+	if (parent != nullptr)
+	{
+		parent->AddChild(*this);
+	}
+}
+
+Transform3D* Transform3D::GetParent() const
+{
+	return this->parent;
+}
+
+void Transform3D::AddChild(Transform3D& child)
+{
+	if (&child == this)
+		throw std::exception("Child of transform should not equal self");
+
+	if (FindChild(child) != -1)
+		throw std::exception("Child already exists");
+
+	if (child.parent != nullptr)
+		child.parent->RemoveChild(child);
+
+	childs.push_back(&child);
+	child.parent = this;
+}
+
+void Transform3D::RemoveChild(Transform3D& child)
+{
+	int ind = FindChild(child);
+	if (ind != -1) 
+	{
+		childs.erase(childs.begin() + ind);
+		child.parent = nullptr;
+	}
+}
+
+Transform3D* Transform3D::GetChild(int ind) const
+{
+	return childs[ind];
+}
+
+int Transform3D::GetChildsCount() const
+{
+	return childs.size();
 }
 
 void Transform3D::SetPosition(Vector3 position)
@@ -140,10 +212,17 @@ const DirectX::XMMATRIX& Transform3D::GetScaleMatrix() const
 
 const DirectX::XMMATRIX& Transform3D::GetTransformMatrix() const
 {
-	return this->worldMat;
+	if (parent != nullptr)
+	{
+		return this->worldMat * parent->GetTransformMatrix();
+	}
+	else 
+	{
+		return this->worldMat;
+	}
 }
 
 const DirectX::XMMATRIX& Transform3D::GetTransposedTransformMatrix() const
 {
-	return DirectX::XMMatrixTranspose(worldMat);
+	return DirectX::XMMatrixTranspose(GetTransformMatrix());
 }

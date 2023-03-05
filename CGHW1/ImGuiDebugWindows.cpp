@@ -1,6 +1,27 @@
 #include "ImGuiDebugWindows.h"
 #include "Game.h"
 
+void ImGuiGameInfoWindow::ShowGameComponent(GameComponent* comp)
+{
+	int childsCount = comp->Transform.GetChildsCount();
+
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
+		| (childsCount == 0 ? ImGuiTreeNodeFlags_Leaf : 0);
+
+	if (ImGui::TreeNodeEx(comp->Name.c_str(), flags))
+	{
+		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+		{
+			game->ImGUI.AddWindow(new ImGuiGameCompWindow(comp));
+		}
+		for (int i = 0; i < childsCount; i++)
+		{
+			ShowGameComponent(comp->Transform.GetChild(i)->GetGameComponent());
+		}
+		ImGui::TreePop();
+	}
+}
+
 ImGuiGameInfoWindow::ImGuiGameInfoWindow(Game* game) : ImGuiBaseWindow("General Info")
 {
 	this->game = game;
@@ -11,15 +32,29 @@ void ImGuiGameInfoWindow::Bind()
 	ImGui::Text("FPS: %.2f", 1.0f / game->DeltaTime);
 	ImGui::Text("ImGui windows count: %d", game->ImGUI.GetWindowsCount());
 	ImGui::Spacing();
+
 	if (ImGui::TreeNode("Components"))
 	{
 
-		if (ImGui::Button("Camera"))
+		if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_Leaf))
 		{
-			game->ImGUI.AddWindow(new ImGuiCameraWindow(game->MainCamera));
+			if (ImGui::IsItemClicked())
+			{
+				game->ImGUI.AddWindow(new ImGuiCameraWindow(game->MainCamera));
+			}
+			
+			ImGui::TreePop();
 		}
-	
-		if (ImGui::TreeNode("Game components"))
+		
+		for (int i = 0; i < game->Components.size(); i++)
+		{
+			if (game->Components[i]->Transform.GetParent() == nullptr)
+			{
+				ShowGameComponent(game->Components[i]);
+			}
+		}
+
+		/*if (ImGui::TreeNode("Game components"))
 		{
 			for (int i = 0; i < game->Components.size(); i++)
 			{
@@ -30,7 +65,7 @@ void ImGuiGameInfoWindow::Bind()
 			}
 			ImGui::TreePop();
 			ImGui::Spacing();
-		}
+		}*/
 		ImGui::TreePop();
 	}
 }

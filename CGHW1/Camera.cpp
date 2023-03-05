@@ -1,8 +1,7 @@
 #include "Camera.h"
 
-Camera::Camera(Transform3D transform, UINT width, UINT height)
+Camera::Camera(Game* game, UINT width, UINT height) : GameComponent(game)
 {
-    this->Transform = transform;
     this->aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
 
