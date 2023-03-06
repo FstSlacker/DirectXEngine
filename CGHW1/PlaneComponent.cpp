@@ -1,13 +1,17 @@
 #include "PlaneComponent.h"
 #include "Game.h"
 
-PlaneComponent::PlaneComponent(Game* game, DirectX::XMFLOAT4 color) : MeshComponent(game)
+PlaneComponent::PlaneComponent(Game* game) : MeshComponent(game)
 {
+	this->Name = "PlaneComponent_" + std::to_string(game->Components.size());
+
+	Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+
 	points = {
-		Vertex{Vector3(0.5f, 0.5f, 0.5f), color, Vector2(1.0f, 1.0f)},
-		Vertex{Vector3(-0.5f, -0.5f, 0.5f), color, Vector2(0.0f, 0.0f)},
-		Vertex{Vector3(0.5f, -0.5f, 0.5f), color, Vector2(1.0f, 0.0f)},
-		Vertex{Vector3(-0.5f, 0.5f, 0.5f), color, Vector2(0.0f, 1.0f)}
+		Vertex{Vector3(0.5f, 0.0f, 0.5f), color, Vector2(1.0f, 1.0f)},
+		Vertex{Vector3(-0.5f, 0.0f, -0.5f), color, Vector2(0.0f, 0.0f)},
+		Vertex{Vector3(0.5f, 0.0f, -0.5f), color, Vector2(1.0f, 0.0f)},
+		Vertex{Vector3(-0.5f, 0.0f, 0.5f), color, Vector2(0.0f, 1.0f)}
 	};
 
 	indices = { 0,1,2, 1,0,3 };

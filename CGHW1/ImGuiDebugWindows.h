@@ -21,6 +21,9 @@ class ImGuiGameCompWindow : public ImGuiBaseWindow
 {
 protected:
 	GameComponent* gameComp;
+
+	bool isWorldTransform;
+
 	float position[3] = { 0.0f, 0.0f, 0.0f };
 	float rotation[3] = { 0.0f, 0.0f, 0.0f };
 	float scale[3] = { 0.0f, 0.0f, 0.0f };
@@ -33,21 +36,16 @@ public:
 	virtual void Bind() override;
 };
 
-class ImGuiCameraWindow : public ImGuiBaseWindow
+class ImGuiCameraWindow : public ImGuiGameCompWindow
 {
 protected:
 	Camera* comp;
-	float position[3] = { 0.0f, 0.0f, 0.0f };
-	float rotation[3] = { 0.0f, 0.0f, 0.0f };
-	float scale[3] = { 0.0f, 0.0f, 0.0f };
 
 	float fov;
 	float nearZ;
 	float farZ;
 	float aspectRatio;
 
-	void GetTransform();
-	void SetTransform();
 	void GetCameraSettings();
 
 public:

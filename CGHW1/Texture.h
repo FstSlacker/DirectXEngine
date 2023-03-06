@@ -3,11 +3,15 @@
 #include "WICTextureLoader.h"
 #include <string>
 #include "Sampler.h"
+#include <SimpleMath.h>
+
+using namespace DirectX::SimpleMath;
 
 class Texture : public Bindable
 {
 public:
-	Texture() {}
+	Texture();
+	Texture(Color color);
 	Texture(std::wstring imagePath);
 	HRESULT Initialize(ID3D11Device* device);
 	ID3D11ShaderResourceView* GetTextureView() const;
@@ -15,8 +19,27 @@ public:
 	void DestroyResources() override;
 
 protected:
+	enum class TextureType
+	{
+		ColorArray,
+		FilePath
+	};
+
+	struct TextureData
+	{
+		TextureType Type;
+		std::wstring TexturePath;
+		Color TextureColor;
+	};
+
+	TextureData textureData;
+
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureView;
+	Microsoft::WRL::ComPtr<ID3D11Resource> texture;
 	Sampler sampler;
-	std::wstring texPath;
+
+	HRESULT InitializeFromColor(ID3D11Device* device, const Color* colorData, UINT w, UINT h);
+	HRESULT InitializeFromFile(ID3D11Device* device, std::wstring path);
+
 };
 

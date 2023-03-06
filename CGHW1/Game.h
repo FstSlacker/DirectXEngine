@@ -33,6 +33,7 @@
 #include "CameraMoveComponent.h"
 
 #include "SphereComponent.h"
+#include "ModelComponent.h"
 
 
 class Game

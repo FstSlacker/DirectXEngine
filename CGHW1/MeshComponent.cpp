@@ -57,6 +57,16 @@ void MeshComponent::SetTexture(Texture* tex)
 	binds.push_back(tex);
 }
 
+void MeshComponent::SetVertices(std::vector<Vertex>& verts)
+{
+	points = verts;
+}
+
+void MeshComponent::SetIndices(std::vector<int>& inds)
+{
+	indices = inds;
+}
+
 void MeshComponent::Initialize() {
 
 	GameComponent::Initialize();

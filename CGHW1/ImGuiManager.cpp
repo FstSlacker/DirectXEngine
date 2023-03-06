@@ -6,6 +6,11 @@ void ImGuiManager::DestroyWindow(int ind)
 	windows.erase(windows.begin() + ind);
 }
 
+ImGuiManager::ImGuiManager()
+{
+	this->isEnabled = true;
+}
+
 void ImGuiManager::Initialize(ID3D11Device* device, ID3D11DeviceContext* context, void* hWnd)
 {
 	//Set ImGui
@@ -29,6 +34,9 @@ size_t ImGuiManager::GetWindowsCount() const
 
 void ImGuiManager::Draw()
 {
+	if (!isEnabled)
+		return;
+
 	//Start new frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -51,6 +59,16 @@ void ImGuiManager::Draw()
 	//Assemble and draw data
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+bool ImGuiManager::IsEnabled() const
+{
+	return this->isEnabled;
+}
+
+void ImGuiManager::SetEnable(bool isEnable)
+{
+	this->isEnabled = isEnable;
 }
 
 void ImGuiManager::DestroyResouces()

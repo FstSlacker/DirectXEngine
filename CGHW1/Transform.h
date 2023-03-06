@@ -17,6 +17,10 @@ private:
 	Vector3 rotation;
 	Vector3 scale;
 
+	Vector3 localPosition;
+	Vector3 localRotation;
+	Vector3 localScale;
+
 	Vector3 forward;
 	Vector3 right;
 	Vector3 up;
@@ -24,10 +28,11 @@ private:
 	Vector3 left;
 	Vector3 down;
 
-	XMMATRIX translationMat;
+	/*XMMATRIX translationMat;
 	XMMATRIX rotationMat;
-	XMMATRIX scaleMat;
+	XMMATRIX scaleMat;*/
 
+	XMMATRIX localMat;
 	XMMATRIX worldMat;
 
 	GameComponent* gameComponent;
@@ -36,7 +41,8 @@ private:
 	Transform3D(const Transform3D& rhs);
 
 	void UpdateDirVectors();
-	void UpdateWorldMatrix();
+	void UpdateLocalTransform();
+	void UpdateWorldTransform();
 	void UpdateChildsTransform();
 	int FindChild(Transform3D& child);
 
@@ -55,15 +61,24 @@ public:
 	void SetRotation(Vector3 eulerAngles);
 	void SetScale(Vector3 scale);
 
+	void SetLocalPosition(Vector3 position);
+	void SetLocalRotation(Vector3 eulerAngles);
+	void SetLocalScale(Vector3 scale);
+
 
 	void AddRotation(Vector3 addEulerAngles);
 	void AddPosition(Vector3 addPosition);
 
 	void AddLocalRotation(Vector3 addEulerAngles);
+	void AddLocalPosition(Vector3 addPosition);
 
 	const Vector3& GetPosition() const;
 	const Vector3& GetRotation() const;
 	const Vector3& GetScale() const;
+
+	const Vector3& GetLocalPosition() const;
+	const Vector3& GetLocalRotation() const;
+	const Vector3& GetLocalScale() const;
 
 	const Vector3& GetForward() const;
 	const Vector3& GetRight() const;
@@ -72,9 +87,7 @@ public:
 	const Vector3& GetLeft() const;
 	const Vector3& GetDown() const;
 
-	const DirectX::XMMATRIX& GetTranslationMatrix() const;
-	const DirectX::XMMATRIX& GetRotationMatrix() const;
-	const DirectX::XMMATRIX& GetScaleMatrix() const;
+	const DirectX::XMMATRIX& GetWorldRotationMatrix() const;
 	const DirectX::XMMATRIX& GetTransformMatrix() const;
 	const DirectX::XMMATRIX& GetTransposedTransformMatrix() const;
 

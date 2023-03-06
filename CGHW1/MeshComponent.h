@@ -22,6 +22,7 @@ class MeshComponent : public GameComponent
 {
 protected:
 	std::vector<Bindable*> binds;
+
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indexBuffer;
 
@@ -40,4 +41,6 @@ public:
 	void FixedUpdate() override;
 	void SetShaders(VertexShader* vShader, PixelShader* pShader);
 	void SetTexture(Texture* tex);
+	void SetVertices(std::vector<Vertex>& verts);
+	void SetIndices(std::vector<int>& inds);
 };

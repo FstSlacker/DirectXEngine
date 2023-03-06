@@ -3,6 +3,7 @@
 Camera::Camera(Game* game, UINT width, UINT height) : GameComponent(game)
 {
     this->aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    this->Name = "CameraComponent";
 }
 
 void Camera::SetFov(float angleDeg)
@@ -58,7 +59,7 @@ const XMMATRIX& Camera::GetProjectionMatrix()
 
 void Camera::UpdateViewMatrix()
 {
-    XMMATRIX rotMat = Transform.GetRotationMatrix();
+    XMMATRIX rotMat = Transform.GetWorldRotationMatrix();
     XMVECTOR pos = Transform.GetPosition();
 
     XMVECTOR targetVector = XMVector3TransformCoord(this->kDefaultForwardVector, rotMat);

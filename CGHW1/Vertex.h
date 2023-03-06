@@ -10,11 +10,11 @@ public:
 	Vertex()
 	{
 		Position = Vector3::Zero;
-		Color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		Color = SimpleMath::Color(0.0f, 0.0f, 0.0f, 1.0f);
 		UV = Vector2::Zero;
 	}
 
-	Vertex(Vector3 position, DirectX::XMFLOAT4 color, Vector2 uv)
+	Vertex(Vector3 position, Color color, Vector2 uv)
 	{
 		Position = position;
 		Color = color;
@@ -22,6 +22,6 @@ public:
 	}
 
 	Vector3 Position;
-	DirectX::XMFLOAT4 Color;
+	Color Color;
 	Vector2 UV;
 };
