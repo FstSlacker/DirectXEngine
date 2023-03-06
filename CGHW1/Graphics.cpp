@@ -61,7 +61,7 @@ void Graphics::PrepareFrame()
 
 	context->OMSetRenderTargets(1, &renderView, depthStencilView);
 
-	float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float color[] = { BackgroundColor.x, BackgroundColor.y, BackgroundColor.z, 1.0f };
 	context->ClearRenderTargetView(renderView, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 }

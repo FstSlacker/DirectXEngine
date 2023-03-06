@@ -14,6 +14,8 @@
 class Graphics
 {
 public:
+	Color BackgroundColor = Color(0.0f, 0.0f, 0.0f);
+
 	bool Initialize(HWND hWnd, UINT width, UINT height);
 	void DestroyResources();
 	void PrepareFrame();

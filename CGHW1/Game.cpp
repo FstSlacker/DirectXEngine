@@ -98,9 +98,7 @@ void Game::MessageHandler()
 			Input->OnMouseMove(args);
 		}
 
-		if(msg.message == WM_MOUSEHOVER)
-
-		if (msg.message == WM_QUIT) {
+		if (msg.message == WM_CLOSE) {
 			isExitRequested = true;
 		}
 
@@ -140,7 +138,6 @@ void Game::Run()
 			isPauseRequested = false;
 		}
 	}
-
 	DestroyResources();
 }
 

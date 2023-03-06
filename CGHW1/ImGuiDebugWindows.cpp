@@ -29,8 +29,18 @@ ImGuiGameInfoWindow::ImGuiGameInfoWindow(Game* game) : ImGuiBaseWindow("General 
 
 void ImGuiGameInfoWindow::Bind()
 {
+
 	ImGui::Text("FPS: %.2f", 1.0f / game->DeltaTime);
 	ImGui::Text("ImGui windows count: %d", game->ImGUI.GetWindowsCount());
+
+	backColor[0] = game->Gfx.BackgroundColor.x;
+	backColor[1] = game->Gfx.BackgroundColor.y;
+	backColor[2] = game->Gfx.BackgroundColor.z;
+
+	if (ImGui::ColorEdit3("Background color", backColor))
+	{
+		game->Gfx.BackgroundColor = DirectX::SimpleMath::Color(backColor[0], backColor[1], backColor[2]);
+	}
 	ImGui::Spacing();
 
 	if (ImGui::CollapsingHeader("Hierarchy", ImGuiTreeNodeFlags_DefaultOpen))
@@ -114,9 +124,9 @@ void ImGuiGameCompWindow::Bind()
 		{
 			isWorldTransform = false;
 		}
-		if (ImGui::InputFloat3("Position", position)
-			|| ImGui::InputFloat3("Rotation", rotation)
-			|| ImGui::InputFloat3("Scale", scale))
+		if (ImGui::DragFloat3("Position", position)
+			|| ImGui::DragFloat3("Rotation", rotation)
+			|| ImGui::DragFloat3("Scale", scale))
 		{
 			SetTransform();
 		}

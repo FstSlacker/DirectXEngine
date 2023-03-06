@@ -9,6 +9,7 @@ class ImGuiGameInfoWindow : public ImGuiBaseWindow
 {
 protected:
 	Game* game;
+	float backColor[3];
 
 	void ShowGameComponent(GameComponent* comp);
 
