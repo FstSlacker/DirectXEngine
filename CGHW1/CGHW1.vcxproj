@@ -170,6 +170,7 @@
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="SkyboxEffect.cpp" />
     <ClCompile Include="SphereComponent.cpp" />
+    <ClCompile Include="StringHelper.cpp" />
     <ClCompile Include="Text2DComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="SkyboxEffect.h" />
     <ClInclude Include="SphereComponent.h" />
+    <ClInclude Include="StringHelper.h" />
     <ClInclude Include="Text2DComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />

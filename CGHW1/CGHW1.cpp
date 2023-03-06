@@ -7,8 +7,8 @@ int main()
 
 	PixelShader* ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
 	VertexShader* vs = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
-	Texture* texWall = new Texture(L"./Textures/brich_wall.jpg");
-	Texture* texGrass = new Texture(L"./Textures/grass-texture.jpg");
+	Texture* texWall = new Texture("./Textures/brich_wall.jpg");
+	Texture* texGrass = new Texture("./Textures/grass-texture.jpg");
 
 	SphereComponent* s1 = new SphereComponent(&game);
 	s1->Name = "Sphere1";
@@ -33,8 +33,7 @@ int main()
 
 	ModelComponent* model = new ModelComponent(
 		&game,
-		"D:\\Documents\\3DModels\\FlowerEnemy.fbx",
-		L"D:\\Documents\\3DModels\\Textures\\flower_texture.png"
+		"D:\\Documents\\3DModels\\Mashroom1.fbx"
 	);
 	model->Transform.SetRotation(Vector3(90.0f, 180.0f, 0.0f));
 

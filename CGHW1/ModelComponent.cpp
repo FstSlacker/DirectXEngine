@@ -1,8 +1,13 @@
 #include "ModelComponent.h"
 #include "Game.h"
+#include "StringHelper.h"
+#include <filesystem>
 
 bool ModelComponent::LoadModel(const std::string& path)
 {
+	this->modelPath = modelPath;
+	this->modelDirectory = FilePathHelper::GetFileDirectory(modelPath);
+
 	Assimp::Importer importer;
 
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
@@ -64,7 +69,15 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		}
 	}
 
+	aiMaterial* meshMaterial = scene->mMaterials[mesh->mMaterialIndex];
+
+	std::vector<Texture*> textures;
+	std::vector<Texture*> diffTextures = GetMaterialTextures(meshMaterial, aiTextureType::aiTextureType_DIFFUSE, scene);
+
+	textures.insert(textures.end(), diffTextures.begin(), diffTextures.end());
+
 	MeshComponent* meshComp = new MeshComponent(game);
+
 	meshComp->Transform.SetPosition(this->Transform.GetPosition());
 	this->Transform.AddChild(meshComp->Transform);
 
@@ -73,12 +86,17 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	meshComp->SetIndices(inds);
 
 	meshComp->SetShaders(vs, ps);
-	meshComp->SetTexture(tex);
+
+	for (int i = 0; i < textures.size(); i++)
+	{
+		game->Gfx.AddTexture(textures[i]);
+		meshComp->SetTexture(textures[i]);
+	}
 }
 
-void ModelComponent::ProcessMaterial(aiMaterial* material, aiTextureType texType, const aiScene* scene)
+std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, aiTextureType texType, const aiScene* scene)
 {
-	Texture* texture;
+	std::vector<Texture*> textures;
 
 	UINT textureCount = material->GetTextureCount(texType);
 
@@ -90,32 +108,83 @@ void ModelComponent::ProcessMaterial(aiMaterial* material, aiTextureType texType
 		{
 		case aiTextureType_DIFFUSE:
 			material->Get(AI_MATKEY_COLOR_DIFFUSE, diffColor);
-			if (diffColor.IsBlack())
-			{
-				texture = new Texture(Color(0.5f, 0.5f, 0.5f));
-				return;
-			}
-			texture = new Texture(Color(diffColor.r, diffColor.g, diffColor.b));
-			return;
+			textures.push_back(new Texture(Color(diffColor.r, diffColor.g, diffColor.b)));
+			return textures;
 		}
 	}
 	else
 	{
-		texture = new Texture(Color(Colors::Red));
+		for (UINT i = 0; i < textureCount; i++)
+		{
+			aiString path;
+			material->GetTexture(texType, i, &path);
+			TextureStorageType storeType = GetTextureStorageType(material, i, texType, scene);
+			switch (storeType)
+			{
+			case TextureStorageType::File:
+				std::cout << path.C_Str() << std::endl;
+				textures.push_back(new Texture(path.C_Str()));
+				break;
+			default:
+				textures.push_back(new Texture(Color(1.0f, 0.0f, 0.0f)));
+				break;
+			}
+		}
+
+		return textures;
 	}
 }
 
-ModelComponent::ModelComponent(Game* game, std::string modelPath, std::wstring texturePath) : GameComponent(game)
+TextureStorageType ModelComponent::GetTextureStorageType(aiMaterial* material, UINT ind, aiTextureType texType, const aiScene* scene)
+{
+	if (material->GetTextureCount(texType) == 0)
+		return TextureStorageType::None;
+
+	aiString path;
+	material->GetTexture(texType, ind, &path);
+	std::string texPath = path.C_Str();
+
+	if (texPath[0] == '*')
+	{
+		if (scene->mTextures[0]->mHeight == 0)
+		{
+			return TextureStorageType::EmbeddedIndexCompressed;
+		}
+		else
+		{
+			return TextureStorageType::EmbeddedIndex;
+		}
+	}
+
+	if (auto tex = scene->GetEmbeddedTexture(texPath.c_str()))
+	{
+		if (tex->mHeight == 0)
+		{
+			return TextureStorageType::EmbeddedCompressed;
+		}
+		else
+		{
+			return TextureStorageType::Embedded;
+		}
+	}
+
+	if (texPath.find('.') != std::string::npos)
+	{
+		return TextureStorageType::File;
+	}
+
+	return TextureStorageType::None;
+}
+
+ModelComponent::ModelComponent(Game* game, std::string modelPath) : GameComponent(game)
 {
 	this->Name = "ModelComponent_" + std::to_string(game->Components.size());
 
 	ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
 	vs = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
-	tex = new Texture(texturePath);
 
 	game->Gfx.AddPixelShader(ps);
 	game->Gfx.AddVertexShader(vs);
-	game->Gfx.AddTexture(tex);
 
 	LoadModel(modelPath);
 }

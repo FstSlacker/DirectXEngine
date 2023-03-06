@@ -1,18 +1,32 @@
 #pragma once
 #include "Bindable.h"
-#include "WICTextureLoader.h"
-#include <string>
+#include <WICTextureLoader.h>
+#include <DDSTextureLoader.h>
+#include "StringHelper.h"
 #include "Sampler.h"
 #include <SimpleMath.h>
+#include <assimp/material.h>
+
 
 using namespace DirectX::SimpleMath;
+
+enum class TextureStorageType
+{
+	Invalid,
+	None,
+	EmbeddedIndex,
+	EmbeddedIndexCompressed,
+	Embedded,
+	EmbeddedCompressed,
+	File
+};
 
 class Texture : public Bindable
 {
 public:
 	Texture();
 	Texture(Color color);
-	Texture(std::wstring imagePath);
+	Texture(std::string imagePath);
 	HRESULT Initialize(ID3D11Device* device);
 	ID3D11ShaderResourceView* GetTextureView() const;
 	void Bind(ID3D11DeviceContext* context) override;
@@ -28,7 +42,7 @@ protected:
 	struct TextureData
 	{
 		TextureType Type;
-		std::wstring TexturePath;
+		std::string TexturePath;
 		Color TextureColor;
 	};
 
@@ -39,7 +53,7 @@ protected:
 	Sampler sampler;
 
 	HRESULT InitializeFromColor(ID3D11Device* device, const Color* colorData, UINT w, UINT h);
-	HRESULT InitializeFromFile(ID3D11Device* device, std::wstring path);
+	HRESULT InitializeFromFile(ID3D11Device* device, std::string path);
 
 };
 

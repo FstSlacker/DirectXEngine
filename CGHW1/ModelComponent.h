@@ -11,13 +11,18 @@ private:
 	PixelShader* ps;
 	Texture* tex;
 
+	std::string modelDirectory;
+	std::string modelPath;
+
 	bool LoadModel(const std::string& path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	void ProcessMesh(aiMesh* mesh, const aiScene* scene);
-	void ProcessMaterial(aiMaterial* material, aiTextureType texType, const aiScene* scene);
+
+	std::vector<Texture*> GetMaterialTextures(aiMaterial* material, aiTextureType texType, const aiScene* scene);
+	TextureStorageType GetTextureStorageType(aiMaterial* material, UINT ind, aiTextureType texType, const aiScene* scene);
 
 public:
-	ModelComponent(Game* game, std::string modelPath, std::wstring texturePath);
+	ModelComponent(Game* game, std::string modelPath);
 
 };
 

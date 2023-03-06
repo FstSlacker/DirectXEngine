@@ -12,7 +12,7 @@ Texture::Texture(Color color)
 	textureData.TextureColor = color;
 }
 
-Texture::Texture(std::wstring imagePath)
+Texture::Texture(std::string imagePath)
 {
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = imagePath;
@@ -80,14 +80,37 @@ HRESULT Texture::InitializeFromColor(ID3D11Device* device, const Color* colorDat
 	return res;
 }
 
-HRESULT Texture::InitializeFromFile(ID3D11Device* device, std::wstring path)
+HRESULT Texture::InitializeFromFile(ID3D11Device* device, std::string path)
 {
-	HRESULT res = DirectX::CreateWICTextureFromFile(
-		device,
-		path.c_str(),
-		nullptr,
-		textureView.GetAddressOf()
-	);
+	HRESULT res;
+
+	std::wstring wPath = std::wstring(path.begin(), path.end());
+
+	if (FilePathHelper::GetFileExtention(path) == ".dds") 
+	{
+		res = DirectX::CreateDDSTextureFromFile(
+			device,
+			wPath.c_str(),
+			nullptr,
+			textureView.GetAddressOf()
+		);
+	}
+	else
+	{
+		res = DirectX::CreateWICTextureFromFile(
+			device,
+			wPath.c_str(),
+			nullptr,
+			textureView.GetAddressOf()
+		);
+	}
+
+	if (FAILED(res))
+	{
+		Color* colors = new Color[1]{ Color(1.0f, 0.0f, 0.0f) };
+		res = InitializeFromColor(device, colors, 1, 1);
+		delete[] colors;
+	}
 
 	return res;
 }
