@@ -12,6 +12,7 @@ int main()
 	game.Gfx.AddVertexShader(vsTex);
 
 	Texture* texSun = new Texture(L"./Textures/sun.jpg");
+	Texture* texMoon = new Texture(L"./Textures/moon.jpg");
 	Texture* texMercury = new Texture(L"./Textures/mercury.jpg");
 	Texture* texVenus = new Texture(L"./Textures/venus.jpg");
 	Texture* texEarth = new Texture(L"./Textures/earth.jpg");
@@ -22,6 +23,7 @@ int main()
 	Texture* texNeptune = new Texture(L"./Textures/neptune.jpg");
 
 	game.Gfx.AddTexture(texSun);
+	game.Gfx.AddTexture(texMoon);
 	game.Gfx.AddTexture(texMercury);
 	game.Gfx.AddTexture(texVenus);
 	game.Gfx.AddTexture(texEarth);
@@ -32,6 +34,21 @@ int main()
 	game.Gfx.AddTexture(texNeptune);
 
 	std::vector<PlanetInfo> infos = PlanetSystemComponent::CreatePlanetsFromFile("planets_data_transp.txt");
+
+
+	PlanetInfo moonInfo = {};
+	moonInfo.Diameter = 0.5f;
+	moonInfo.OrbitRadius = 2.0f;
+	moonInfo.OrbitPeriod = 10.0f;
+	moonInfo.RotationPeriod = 1.0f;
+	moonInfo.Name = "Moon";
+
+	PlanetComponent* moon = new PlanetComponent(
+		&game,
+		Vector3(0.0f, 0.0f, 0.0f),
+		moonInfo,
+		texMoon
+	);
 
 	PlanetComponent* sun = new PlanetComponent(
 		&game,
@@ -72,6 +89,8 @@ int main()
 		texEarth
 	);
 
+	earth->AddSatelite(moon);
+
 	PlanetComponent* mars = new PlanetComponent(
 		&game,
 		Vector3(40.0f, 0.0f, 0.0f),
@@ -107,6 +126,7 @@ int main()
 		texNeptune
 	);
 
+	moon->SetShaders(vsTex, psTex);
 	sun->SetShaders(vsTex, psTex);
 	mercury->SetShaders(vsTex, psTex);
 	venus->SetShaders(vsTex, psTex);
@@ -150,6 +170,7 @@ int main()
 
 	game.Components.push_back(moveComp);
 
+	game.Components.push_back(moon);
 	game.Components.push_back(sun);
 	game.Components.push_back(mercury);
 	game.Components.push_back(venus);

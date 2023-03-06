@@ -11,15 +11,11 @@ ImGuiPlanetSystem::ImGuiPlanetSystem(Game* game, PlanetSystemComponent* planetSy
 
 void ImGuiPlanetSystem::Bind()
 {
-	ImGui::Text("Simulation speed (1 real second =):");
-	ImGui::SliderFloat("x", &planetSystem->SimulationSpeed, 1.0f, 36000.0f);
+	ImGui::Text("Simulation speed:");
+	ImGui::SliderFloat("x", &planetSystem->SimulationSpeed, 1.0f, 10000.0f);
 	if (ImGui::SliderFloat("Orbit scale", &orbScale, 0.01f, 2.0f))
 	{
 		planetSystem->SetOrbitScale(orbScale);
-	}
-	if (ImGui::Checkbox("Lighting On/Off", &isLighting))
-	{
-		planetSystem->SetLighting(isLighting);
 	}
 	if (ImGui::Button(planetSystem->star->Name.c_str()))
 	{

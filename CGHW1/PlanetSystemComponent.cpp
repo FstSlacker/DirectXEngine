@@ -24,11 +24,6 @@ void PlanetSystemComponent::Update()
 		RotatePlanet(planets[i]);
 	}
 
-	//if (isFollowMode) 
-	//{
-	//	FollowPlanet();
-	//}
-
 }
 
 void PlanetSystemComponent::Initialize()
@@ -63,10 +58,8 @@ void PlanetSystemComponent::RotatePlanet(PlanetComponent* p)
 	p->Transform.SetPosition(newPos);
 	p->Transform.AddLocalRotation(Vector3(0.0f, rotSpeed * SimulationSpeed * kSecPerHour, 0.0f));
 
-	/*Vector3 lightDir = newPos - star->Transform.GetPosition();
-	lightDir.Normalize();*/
-
-	//p->SetLightDirection(lightDir);
+	p->MoveSatelites(newPos - prevPos);
+	p->RotateSatelites(game->DeltaTime * SimulationSpeed * kSecPerHour);
 
 	if (isFollowMode && followTarget == p)
 	{
@@ -132,7 +125,11 @@ void PlanetSystemComponent::SetOrbitScale(float orbScale)
 		dir.Normalize();
 		dir = dir * (planets[i]->Info.OrbitRadius * orbScale);
 
+		Vector3 prevPos = planets[i]->Transform.GetPosition();
 		planets[i]->Transform.SetPosition(dir + starPos);
+
+		planets[i]->MoveSatelites(planets[i]->Transform.GetPosition() - prevPos);
+
 	}
 }
 
@@ -158,6 +155,8 @@ void PlanetSystemComponent::ResetSystem()
 				planets[i]->Info.ObliquityToOrbit
 			)
 		);
+
+		planets[i]->ResetSatelitesPositions();
 	}
 }
 
