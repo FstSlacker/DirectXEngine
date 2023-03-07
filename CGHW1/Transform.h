@@ -4,6 +4,7 @@
 #include <vector>
 
 constexpr float kDeg2Rad = 3.141592653589793238463f / 180.0f;
+constexpr float kRad2Deg = 1.0f / kDeg2Rad;
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
@@ -40,7 +41,7 @@ private:
 	std::vector<Transform3D*> childs;
 	Transform3D(const Transform3D& rhs);
 
-	void UpdateDirVectors();
+	void UpdateDirVectors(Vector3 eulerRadAngles);
 	void UpdateLocalTransform();
 	void UpdateWorldTransform();
 	void UpdateChildsTransform();
@@ -71,6 +72,8 @@ public:
 
 	void AddLocalRotation(Vector3 addEulerAngles);
 	void AddLocalPosition(Vector3 addPosition);
+
+	void RotateAroundAxis(Vector3 axis, float angleDeg);
 
 	Vector3 TransformPoint(Vector3 point) const;
 
