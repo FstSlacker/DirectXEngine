@@ -165,6 +165,7 @@
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="ImGuiWindow.cpp" />
     <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="KatamariComponent.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="PlaneComponent.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="ImGuiWindow.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputDevice.h" />
+    <ClInclude Include="KatamariComponent.h" />
     <ClInclude Include="Keys.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="pch.h" />

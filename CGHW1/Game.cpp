@@ -3,16 +3,14 @@
 
 Game::Game() : Gizmos(this)
 {
-	//...
+	MainCamera = new Camera(this, 1, 1);
 }
 
 bool Game::Initialize()
 {
 	Display = new DisplayWin32(1000, 800, Name);
 
-
-	MainCamera = new Camera(this, Display->ClientWidth, Display->ClientHeight);
-	MainCamera->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
+	MainCamera->SetAspectRatio(static_cast<float>(Display->ClientWidth) / static_cast<float>(Display->ClientHeight));
 
 	Input = new InputDevice(this);
 
