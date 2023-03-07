@@ -1,8 +1,8 @@
 #include "Transform.h"
 
-void Transform3D::UpdateDirVectors()
+void Transform3D::UpdateDirVectors(Vector3 eulerRadAngles)
 {
-	XMMATRIX rotationMat = GetWorldRotationMatrix();
+	XMMATRIX rotationMat = XMMatrixRotationRollPitchYaw(eulerRadAngles.x, eulerRadAngles.y, eulerRadAngles.z);
 
 	forward = XMVector3TransformCoord(Vector3(0.0f, 0.0f, 1.0f), rotationMat);
 	right = XMVector3TransformCoord(Vector3::Right, rotationMat);
@@ -27,9 +27,13 @@ void Transform3D::UpdateLocalTransform()
 	XMVECTOR p, r, s;
 	DirectX::XMMatrixDecompose(&s, &r, &p, transformMat);
 
+	Vector3 newAnglesRad = Quaternion(r).ToEuler();
+
 	this->position = p;
-	this->rotation = Quaternion(r).ToEuler() * (1.0f / kDeg2Rad);
+	this->rotation = newAnglesRad * kRad2Deg;
 	this->scale = s;
+
+	UpdateDirVectors(newAnglesRad);
 
 	UpdateChildsTransform();
 }
@@ -49,9 +53,13 @@ void Transform3D::UpdateWorldTransform()
 	XMVECTOR p, r, s;
 	DirectX::XMMatrixDecompose(&s, &r, &p, localMat);
 
+	Vector3 newAnglesRad = Quaternion(r).ToEuler();
+
 	this->localPosition = p;
-	this->localRotation = Quaternion(r).ToEuler() * (1.0f / kDeg2Rad);
+	this->localRotation = newAnglesRad * kRad2Deg;
 	this->localScale = s;
+
+	UpdateDirVectors(newAnglesRad);
 
 	UpdateChildsTransform();
 }
@@ -170,7 +178,6 @@ void Transform3D::SetRotation(Vector3 eulerAngles)
 	this->rotation = eulerAngles;
 	eulerAngles *= kDeg2Rad;
 	//this->rotationMat = DirectX::XMMatrixRotationRollPitchYaw(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-	UpdateDirVectors();
 	UpdateWorldTransform();
 }
 
@@ -198,7 +205,6 @@ void Transform3D::SetLocalRotation(Vector3 eulerAngles)
 	this->localRotation = eulerAngles;
 	eulerAngles *= kDeg2Rad;
 	//this->rotationMat = DirectX::XMMatrixRotationRollPitchYaw(eulerAngles.x, eulerAngles.y, eulerAngles.z);
-	UpdateDirVectors();
 	UpdateLocalTransform();
 }
 
@@ -231,6 +237,24 @@ void Transform3D::AddLocalPosition(Vector3 addPosition)
 {
 	localPosition += addPosition;
 	SetLocalPosition(localPosition);
+}
+
+void Transform3D::RotateAroundAxis(Vector3 axis, float angleDeg)
+{
+	XMMATRIX localRot = XMMatrixRotationRollPitchYaw(
+		localRotation.x * kDeg2Rad,
+		localRotation.y * kDeg2Rad,
+		localRotation.z * kDeg2Rad
+	);
+
+	XMMATRIX addRot = XMMatrixRotationAxis(axis, angleDeg * kDeg2Rad);
+
+	localRot = localRot * addRot;
+	
+	Quaternion q = XMQuaternionRotationMatrix(localRot);
+
+	Vector3 rotDeg = q.ToEuler() * kRad2Deg;
+	SetLocalRotation(rotDeg);
 }
 
 Vector3 Transform3D::TransformPoint(Vector3 point) const
