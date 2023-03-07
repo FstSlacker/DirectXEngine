@@ -1,7 +1,7 @@
 #include "Collision.h"
 #include "GameComponent.h"
 
-AABBCollider::AABBCollider(GameComponent* gameComp, Vector3 size) : ColliderBase(gameComp)
+AABBCollider::AABBCollider(GameComponent* gameComp, Vector3 size, Vector3 offsets) : ColliderBase(gameComp)
 {
 	this->Size = size;
 }
@@ -24,7 +24,7 @@ void AABBCollider::HandleCollision(ColliderBase* otherCollider)
 
 DirectX::BoundingBox AABBCollider::GetWorldBoundingBox() const
 {
-	Vector3 pos = gameComponent->Transform.GetPosition();
+	Vector3 pos = gameComponent->Transform.TransformPoint(Offsets);
 	Vector3 scale = gameComponent->Transform.GetScale() * 0.5f;
 
 	
@@ -84,7 +84,9 @@ bool ColliderBase::CheckIntersection(ColliderBase* otherCollider)
 
 BoundingSphere SphereCollider::GetWorldBoundingSphere() const
 {
-	return BoundingSphere(gameComponent->Transform.GetPosition() + Offsets, this->Radius);
+	Vector3 scale = gameComponent->Transform.GetScale();
+	float maxScale = std::max(scale.x, std::max(scale.y, scale.z));
+	return BoundingSphere(gameComponent->Transform.TransformPoint(Offsets), this->Radius * maxScale);
 }
 
 SphereCollider::SphereCollider(GameComponent* gameComp, float radius, Vector3 offsets)

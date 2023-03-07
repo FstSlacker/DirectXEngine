@@ -28,6 +28,20 @@ void DebugGizmos::DrawAxis(GameComponent* comp)
 	);
 }
 
+void DebugGizmos::DrawGrid()
+{
+	size_t xDivs = 20;
+	size_t yDivs = 20;
+	float gridSize = game->MainCamera->Transform.GetPosition().Length() + 10.0f;
+
+	if(ShowGridXZ)
+		DebugDraw::DrawGrid(primitiveBatch.get(), Vector3::Right * gridSize, Vector3::Forward * gridSize, Vector3::Zero, xDivs, yDivs, GridColor);
+	if(ShowGridXY)
+		DebugDraw::DrawGrid(primitiveBatch.get(), Vector3::Right * gridSize, Vector3::Up * gridSize, Vector3::Zero, xDivs, yDivs, GridColor);
+	if(ShowGridYZ)
+		DebugDraw::DrawGrid(primitiveBatch.get(), Vector3::Up * gridSize, Vector3::Forward * gridSize, Vector3::Zero, xDivs, yDivs, GridColor);
+}
+
 void DebugGizmos::Initialize()
 {
 	primitiveBatch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>(game->Gfx.GetContext());
@@ -40,9 +54,16 @@ void DebugGizmos::Initialize()
 DebugGizmos::DebugGizmos(Game* game)
 {
 	this->game = game;
+
 	this->ShowAxis = true;
 	this->ShowColliders = true;
+
+	this->ShowGridXZ = true;
+	this->ShowGridXY = false;
+	this->ShowGridYZ = false;
+
 	this->CollidersColor = Color(DirectX::Colors::LightGreen);
+	this->GridColor = Color(DirectX::Colors::White);
 }
 
 void DebugGizmos::DrawCollider(GameComponent* comp)
@@ -84,6 +105,10 @@ void DebugGizmos::Draw()
 		if (ShowColliders)
 		{
 			DrawCollider(game->Components[i]);
+		}
+		if (ShowGridXZ || ShowGridXY || ShowGridYZ)
+		{
+			DrawGrid();
 		}
 	}
 	primitiveBatch->End();

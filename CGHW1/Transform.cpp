@@ -233,6 +233,12 @@ void Transform3D::AddLocalPosition(Vector3 addPosition)
 	SetLocalPosition(localPosition);
 }
 
+Vector3 Transform3D::TransformPoint(Vector3 point) const
+{
+	XMMATRIX transMat = XMMatrixTranslation(point.x, point.y, point.z) * GetTransformMatrix();
+	return Vector3(transMat.r[3]);
+}
+
 const Vector3& Transform3D::GetScale() const
 {
 	return this->scale;

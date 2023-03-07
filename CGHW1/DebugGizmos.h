@@ -24,12 +24,18 @@ private:
 
 	void DrawCollider(GameComponent* comp);
 	void DrawAxis(GameComponent* comp);
+	void DrawGrid();
 
 public:
 	bool ShowAxis;
 	bool ShowColliders;
 
+	bool ShowGridXZ;
+	bool ShowGridXY;
+	bool ShowGridYZ;
+
 	Color CollidersColor;
+	Color GridColor;
 
 	DebugGizmos(Game* game);
 	void Initialize();

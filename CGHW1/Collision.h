@@ -37,8 +37,9 @@ class AABBCollider : public ColliderBase
 {
 public:
 	Vector3 Size;
+	Vector3 Offsets;
 
-	AABBCollider(GameComponent* gameComp, Vector3 size = Vector3::One);
+	AABBCollider(GameComponent* gameComp, Vector3 size = Vector3::One, Vector3 offsets = Vector3::Zero);
 	bool CheckIntersection(ColliderBase* otherCollider) override;
 	void HandleCollision(ColliderBase* otherCollider) override;
 

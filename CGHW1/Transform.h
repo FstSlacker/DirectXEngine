@@ -72,6 +72,8 @@ public:
 	void AddLocalRotation(Vector3 addEulerAngles);
 	void AddLocalPosition(Vector3 addPosition);
 
+	Vector3 TransformPoint(Vector3 point) const;
+
 	const Vector3& GetPosition() const;
 	const Vector3& GetRotation() const;
 	const Vector3& GetScale() const;

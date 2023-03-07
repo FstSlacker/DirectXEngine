@@ -47,6 +47,10 @@ void ImGuiGameInfoWindow::Bind()
 	{
 		ImGui::Checkbox("Show axis", &game->Gizmos.ShowAxis);
 		ImGui::Checkbox("Show colliders", &game->Gizmos.ShowColliders);
+
+		ImGui::Checkbox("Show grid XZ", &game->Gizmos.ShowGridXZ);
+		ImGui::Checkbox("Show grid XY", &game->Gizmos.ShowGridXY);
+		ImGui::Checkbox("Show grid YZ", &game->Gizmos.ShowGridYZ);
 		ImGui::Spacing();
 	}
 
@@ -164,6 +168,11 @@ void ImGuiGameCompWindow::Bind()
 				if (ImGui::DragFloat3("Size", size))
 				{
 					collider->Size = Vector3(size[0], size[1], size[2]);
+				}
+				float offsets[3] = { collider->Offsets.x, collider->Offsets.y, collider->Offsets.z };
+				if (ImGui::DragFloat3("Offsets", offsets))
+				{
+					collider->Offsets = Vector3(offsets[0], offsets[1], offsets[2]);
 				}
 			}
 		}
