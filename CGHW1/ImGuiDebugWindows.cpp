@@ -77,6 +77,11 @@ void ImGuiGameInfoWindow::Bind()
 	}
 }
 
+bool ImGuiGameInfoWindow::IsOpened() const
+{
+	return true;
+}
+
 
 void ImGuiGameCompWindow::GetTransform()
 {

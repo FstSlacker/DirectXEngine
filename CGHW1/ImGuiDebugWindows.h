@@ -16,6 +16,7 @@ protected:
 public:
 	ImGuiGameInfoWindow(Game* game);
 	virtual void Bind() override;
+	virtual bool IsOpened() const override;
 };
 
 class ImGuiGameCompWindow : public ImGuiBaseWindow

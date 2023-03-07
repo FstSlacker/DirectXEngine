@@ -10,7 +10,7 @@ protected:
 
 public:
 	ImGuiBaseWindow(std::string name);
-	bool IsOpened() const;
+	virtual bool IsOpened() const;
 	void Begin();
 	virtual void Bind() {}
 	void End();
