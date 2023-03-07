@@ -4,26 +4,27 @@
 void DebugGizmos::DrawAxis(GameComponent* comp)
 {
 	Transform3D& t = comp->Transform;
+	float axesSize = Vector3::Distance(t.GetPosition(), game->MainCamera->Transform.GetPosition()) * 0.1f;
 
 	DebugDraw::DrawRay(
 		primitiveBatch.get(),
 		t.GetPosition(),
-		t.GetForward(),
-		true,
+		t.GetForward() * axesSize,
+		false,
 		DirectX::Colors::Blue
 	);
 	DebugDraw::DrawRay(
 		primitiveBatch.get(),
 		t.GetPosition(),
-		t.GetUp(),
-		true,
+		t.GetUp() * axesSize,
+		false,
 		DirectX::Colors::Green
 	);
 	DebugDraw::DrawRay(
 		primitiveBatch.get(),
 		t.GetPosition(),
-		t.GetRight(),
-		true,
+		t.GetRight() * axesSize,
+		false,
 		DirectX::Colors::Red
 	);
 }
@@ -100,16 +101,19 @@ void DebugGizmos::Draw()
 
 		if (ShowAxis)
 		{
+			game->Gfx.SetDepthStencilEnable(false);
 			DrawAxis(game->Components[i]);
 		}
 		if (ShowColliders)
 		{
+			game->Gfx.SetDepthStencilEnable(false);
 			DrawCollider(game->Components[i]);
 		}
-		if (ShowGridXZ || ShowGridXY || ShowGridYZ)
-		{
-			DrawGrid();
-		}
+	}
+	if (ShowGridXZ || ShowGridXY || ShowGridYZ)
+	{
+		game->Gfx.SetDepthStencilEnable(true);
+		DrawGrid();
 	}
 	primitiveBatch->End();
 }

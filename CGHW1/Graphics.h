@@ -25,6 +25,8 @@ public:
 	void AddPixelShader(PixelShader* ps);
 	void AddTexture(Texture* tex);
 
+	void SetDepthStencilEnable(bool isEnable);
+
 	ID3D11DeviceContext* GetContext() const;
 	ID3D11Device* GetDevice() const;
 
@@ -47,6 +49,9 @@ private:
 	ID3D11Texture2D* backBuffer;
 	ID3D11Texture2D* depthStencilBuffer;
 	ID3D11DepthStencilView* depthStencilView;
+
 	ID3D11RasterizerState* rastState;
+	ID3D11DepthStencilState* depthStencilStateEnabled;
+	ID3D11DepthStencilState* depthStencilStateDisabled;
 };
 

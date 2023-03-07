@@ -48,6 +48,7 @@ void Graphics::PrepareFrame()
 	context->ClearState();
 
 	context->RSSetState(rastState);
+	SetDepthStencilEnable(true);
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.Width = static_cast<float>(displayWidth);
@@ -85,6 +86,18 @@ void Graphics::AddPixelShader(PixelShader* ps)
 void Graphics::AddTexture(Texture* tex)
 {
 	textures.push_back(tex);
+}
+
+void Graphics::SetDepthStencilEnable(bool isEnable)
+{
+	if (isEnable)
+	{
+		context->OMSetDepthStencilState(depthStencilStateEnabled, 0);
+	}
+	else
+	{
+		context->OMSetDepthStencilState(depthStencilStateDisabled, 0);
+	}
 }
 
 ID3D11DeviceContext* Graphics::GetContext() const
@@ -196,6 +209,7 @@ bool Graphics::InitializeResources()
 	if (FAILED(res))
 	{
 		std::cout << "Error to create depthStencilBuffer texture" << std::endl;
+		return false;
 	}
 
 	res = device->CreateDepthStencilView(depthStencilBuffer, nullptr, &depthStencilView);
@@ -203,6 +217,31 @@ bool Graphics::InitializeResources()
 	if (FAILED(res))
 	{
 		std::cout << "Error to create depthStencilView" << std::endl;
+		return false;
+	}
+
+	//Create depth stencil states
+	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc = {};
+	depthStencilStateDesc.DepthEnable = true;
+	depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
+
+	res = device->CreateDepthStencilState(&depthStencilStateDesc, &depthStencilStateEnabled);
+
+	if (FAILED(res))
+	{
+		std::cout << "Error to create depthStencilStateEnabled" << std::endl;
+		return false;
+	}
+
+	depthStencilStateDesc.DepthEnable = false;
+
+	res = device->CreateDepthStencilState(&depthStencilStateDesc, &depthStencilStateDisabled);
+
+	if (FAILED(res))
+	{
+		std::cout << "Error to create depthStencilStateDisabled" << std::endl;
+		return false;
 	}
 
 	//Create shaders

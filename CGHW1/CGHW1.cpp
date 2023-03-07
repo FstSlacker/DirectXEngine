@@ -33,16 +33,16 @@ int main()
 	game.Gfx.AddTexture(texWall);
 	game.Gfx.AddTexture(texGrass);
 
-	//ModelComponent* model = new ModelComponent(
-	//	&game,
-	//	"D:\\Documents\\3DModels\\Mashroom1.fbx"
-	//);
-	//model->Transform.SetRotation(Vector3(90.0f, 180.0f, 0.0f));
+	ModelComponent* model = new ModelComponent(
+		&game,
+		"D:\\Documents\\3DModels\\Mashroom1.fbx"
+	);
+	model->Transform.SetRotation(Vector3(90.0f, 180.0f, 0.0f));
 
-	//PlaneComponent* plane = new PlaneComponent(&game);
-	//plane->SetShaders(vs, ps);
-	//plane->SetTexture(texGrass);
-	//plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
+	PlaneComponent* plane = new PlaneComponent(&game);
+	plane->SetShaders(vs, ps);
+	plane->SetTexture(texGrass);
+	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 
