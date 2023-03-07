@@ -1,8 +1,89 @@
 #include "Shaders.h"
 
-VertexShader::VertexShader(std::wstring shaderPath)
+D3D11_INPUT_ELEMENT_DESC VertexShader::vertexPositionColorLayout[2] = {
+	D3D11_INPUT_ELEMENT_DESC {
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		0,
+		0,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0},
+	D3D11_INPUT_ELEMENT_DESC {
+		"COLOR",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D11_APPEND_ALIGNED_ELEMENT,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0}
+};
+
+D3D11_INPUT_ELEMENT_DESC VertexShader::vertexPositionTextureLayout[2] = {
+	D3D11_INPUT_ELEMENT_DESC {
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		0,
+		0,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0},
+	D3D11_INPUT_ELEMENT_DESC {
+		"TEXCOORD",
+		0,
+		DXGI_FORMAT_R32G32_FLOAT,
+		0,
+		D3D11_APPEND_ALIGNED_ELEMENT,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0}
+};
+
+D3D11_INPUT_ELEMENT_DESC VertexShader::vertexPositionColorTextureLayout[3] = {
+	D3D11_INPUT_ELEMENT_DESC {
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0},
+	D3D11_INPUT_ELEMENT_DESC {
+		"COLOR",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D11_APPEND_ALIGNED_ELEMENT,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0},
+	D3D11_INPUT_ELEMENT_DESC {
+		"TEXCOORD",
+		0,
+		DXGI_FORMAT_R32G32_FLOAT,
+		0,
+		D3D11_APPEND_ALIGNED_ELEMENT,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0}
+};
+VertexShader::VertexLayoutInfo VertexShader::layouts[3] = {
+
+	VertexShader::VertexLayoutInfo{
+		vertexPositionColorLayout,
+		2U
+	},
+	VertexShader::VertexLayoutInfo{
+		vertexPositionTextureLayout,
+		2U
+	},
+	VertexShader::VertexLayoutInfo{
+		vertexPositionColorTextureLayout,
+		3U
+	}
+};
+
+VertexShader::VertexShader(std::wstring shaderPath, VertexLayoutType layoutType)
 {
 	this->shaderPath = shaderPath;
+	this->layoutType = layoutType;
 }
 
 bool VertexShader::Initialize(ID3D11Device* device)
@@ -47,7 +128,7 @@ bool VertexShader::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	D3D11_INPUT_ELEMENT_DESC inputElements[] = {
+	/*D3D11_INPUT_ELEMENT_DESC inputElements[] = {
 		D3D11_INPUT_ELEMENT_DESC {
 			"POSITION",
 			0,
@@ -72,11 +153,11 @@ bool VertexShader::Initialize(ID3D11Device* device)
 			D3D11_APPEND_ALIGNED_ELEMENT,
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0}
-	};
+	};*/
 	
 	res = device->CreateInputLayout(
-		inputElements,
-		3,
+		layouts[(UINT)layoutType].Desc,
+		layouts[(UINT)layoutType].NumElements,
 		shaderByteCode->GetBufferPointer(),
 		shaderByteCode->GetBufferSize(),
 		inputLayout.GetAddressOf()

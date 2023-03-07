@@ -2,7 +2,7 @@
 
 int main()
 {
-	Game game = Game();
+	Game game;
 	game.Name = L"Game framework";
 
 	PixelShader* ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
@@ -12,12 +12,14 @@ int main()
 
 	SphereComponent* s1 = new SphereComponent(&game);
 	s1->Name = "Sphere1";
+	s1->Collider = new SphereCollider(s1);
 
 	s1->SetShaders(vs, ps);
 	s1->SetTexture(texWall);
 
 	SphereComponent* s2 = new SphereComponent(&game);
 	s2->Name = "Sphere2";
+	s2->Collider = new AABBCollider(s2);
 
 	s2->SetShaders(vs, ps);
 	s2->SetTexture(texWall);
@@ -31,16 +33,16 @@ int main()
 	game.Gfx.AddTexture(texWall);
 	game.Gfx.AddTexture(texGrass);
 
-	ModelComponent* model = new ModelComponent(
-		&game,
-		"D:\\Documents\\3DModels\\Mashroom1.fbx"
-	);
-	model->Transform.SetRotation(Vector3(90.0f, 180.0f, 0.0f));
+	//ModelComponent* model = new ModelComponent(
+	//	&game,
+	//	"D:\\Documents\\3DModels\\Mashroom1.fbx"
+	//);
+	//model->Transform.SetRotation(Vector3(90.0f, 180.0f, 0.0f));
 
-	PlaneComponent* plane = new PlaneComponent(&game);
-	plane->SetShaders(vs, ps);
-	plane->SetTexture(texGrass);
-	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
+	//PlaneComponent* plane = new PlaneComponent(&game);
+	//plane->SetShaders(vs, ps);
+	//plane->SetTexture(texGrass);
+	//plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

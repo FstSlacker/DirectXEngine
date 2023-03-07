@@ -43,6 +43,13 @@ void ImGuiGameInfoWindow::Bind()
 	}
 	ImGui::Spacing();
 
+	if (ImGui::CollapsingHeader("Gizmos", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Checkbox("Show axis", &game->Gizmos.ShowAxis);
+		ImGui::Checkbox("Show colliders", &game->Gizmos.ShowColliders);
+		ImGui::Spacing();
+	}
+
 	if (ImGui::CollapsingHeader("Hierarchy", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::TreeNodeEx(game->MainCamera->Name.c_str(), ImGuiTreeNodeFlags_Leaf))
@@ -135,7 +142,35 @@ void ImGuiGameCompWindow::Bind()
 
 	if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text(gameComp->Collider != nullptr ? "Yes" : "No");
+		ColliderBase* colliderBase = gameComp->Collider;
+		if (colliderBase != nullptr)
+		{
+			if (typeid(*colliderBase) == typeid(SphereCollider))
+			{
+				SphereCollider* collider = dynamic_cast<SphereCollider*>(colliderBase);
+				ImGui::Text("Type: Sphere");
+				ImGui::DragFloat("Radius", &collider->Radius);
+				float offsets[3] = { collider->Offsets.x, collider->Offsets.y, collider->Offsets.z };
+				if (ImGui::DragFloat3("Offsets", offsets))
+				{
+					collider->Offsets = Vector3(offsets[0], offsets[1], offsets[2]);
+				}
+			}
+			else if (typeid(*colliderBase) == typeid(AABBCollider))
+			{
+				AABBCollider* collider = dynamic_cast<AABBCollider*>(colliderBase);
+				ImGui::Text("Type: AABB");
+				float size[3] = { collider->Size.x, collider->Size.y, collider->Size.z };
+				if (ImGui::DragFloat3("Size", size))
+				{
+					collider->Size = Vector3(size[0], size[1], size[2]);
+				}
+			}
+		}
+		else
+		{
+			ImGui::Text("No");
+		}
 		ImGui::Spacing();
 	}
 

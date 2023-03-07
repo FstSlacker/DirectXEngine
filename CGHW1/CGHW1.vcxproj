@@ -148,6 +148,8 @@
     <ClCompile Include="CameraMoveComponent.cpp" />
     <ClCompile Include="CGHW1.cpp" />
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
+    <ClCompile Include="DebugGizmos.cpp" />
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWin32.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -168,7 +170,6 @@
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="Shaders.cpp" />
-    <ClCompile Include="SkyboxEffect.cpp" />
     <ClCompile Include="SphereComponent.cpp" />
     <ClCompile Include="StringHelper.cpp" />
     <ClCompile Include="Text2DComponent.cpp" />
@@ -181,6 +182,8 @@
     <ClInclude Include="CameraMoveComponent.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DebugDraw.h" />
+    <ClInclude Include="DebugGizmos.h" />
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="DisplayWin32.h" />
     <ClInclude Include="Game.h" />
@@ -207,7 +210,6 @@
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="Shaders.h" />
-    <ClInclude Include="SkyboxEffect.h" />
     <ClInclude Include="SphereComponent.h" />
     <ClInclude Include="StringHelper.h" />
     <ClInclude Include="Text2DComponent.h" />

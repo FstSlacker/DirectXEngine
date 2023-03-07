@@ -5,6 +5,7 @@
 #include "Delegates.h"
 
 using namespace DirectX::SimpleMath;
+using namespace DirectX;
 
 class GameComponent;
 
@@ -34,13 +35,25 @@ public:
 
 class AABBCollider : public ColliderBase
 {
-protected:
-
 public:
 	Vector3 Size;
 
-	AABBCollider(GameComponent* gameComp, Vector3 size);
+	AABBCollider(GameComponent* gameComp, Vector3 size = Vector3::One);
 	bool CheckIntersection(ColliderBase* otherCollider) override;
 	void HandleCollision(ColliderBase* otherCollider) override;
-	DirectX::BoundingBox GetWorldBoundingBox();
+
+	BoundingBox GetWorldBoundingBox() const;
+};
+
+class SphereCollider : public ColliderBase
+{
+public:
+	float Radius;
+	Vector3 Offsets;
+
+	SphereCollider(GameComponent* gameComp, float radius = 1.0f, Vector3 offsets = Vector3::Zero);
+	virtual bool CheckIntersection(ColliderBase* otherCollider) override;
+	virtual void HandleCollision(ColliderBase* otherCollider) override;
+
+	BoundingSphere GetWorldBoundingSphere() const;
 };

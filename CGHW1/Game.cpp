@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "InputDevice.h"
 
-Game::Game() 
+Game::Game() : Gizmos(this)
 {
 	//...
 }
@@ -22,6 +22,7 @@ bool Game::Initialize()
 	}
 
 	ImGUI.Initialize(Gfx.GetDevice(), Gfx.GetContext(), Display->hWnd);
+	Gizmos.Initialize();
 
 	for (int i = 0; i < Components.size(); i++) 
 	{
@@ -50,6 +51,9 @@ void Game::Draw()
 	for (int i = 0; i < Components.size(); i++) {
 		Components[i]->Draw();
 	}
+
+	//Draw debug
+	Gizmos.Draw();
 
 	//Draw ImGui
 	ImGUI.Draw();

@@ -24,6 +24,7 @@
 #include "Collision.h"
 #include "ImGuiManager.h"
 #include "ImGuiDebugWindows.h"
+#include "DebugGizmos.h"
 
 #include "GameComponent.h"
 #include "MeshComponent.h"
@@ -45,7 +46,9 @@ public:
 	Graphics Gfx;
 	DisplayWin32* Display;
 	InputDevice* Input;
+
 	ImGuiManager ImGUI;
+	DebugGizmos Gizmos;
 
 	Camera* MainCamera;
 
