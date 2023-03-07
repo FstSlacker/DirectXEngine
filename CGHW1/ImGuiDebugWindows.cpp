@@ -123,7 +123,7 @@ ImGuiGameCompWindow::ImGuiGameCompWindow(GameComponent* comp)
 void ImGuiGameCompWindow::Bind()
 {
 	GetTransform();
-
+	ImGui::Checkbox("Is enabled", &gameComp->IsEnabled);
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::RadioButton("World", isWorldTransform))

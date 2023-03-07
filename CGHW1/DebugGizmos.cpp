@@ -64,7 +64,7 @@ DebugGizmos::DebugGizmos(Game* game)
 	this->ShowGridYZ = false;
 
 	this->CollidersColor = Color(DirectX::Colors::LightGreen);
-	this->GridColor = Color(DirectX::Colors::White);
+	this->GridColor = Color(DirectX::Colors::LightGray);
 }
 
 void DebugGizmos::DrawCollider(GameComponent* comp)
@@ -99,6 +99,9 @@ void DebugGizmos::Draw()
 		if (typeid(*(game->Components[i])) == typeid(Camera))
 			continue;
 
+		if (!game->Components[i]->IsEnabled)
+			continue;
+
 		if (ShowAxis)
 		{
 			game->Gfx.SetDepthStencilEnable(false);
@@ -110,6 +113,7 @@ void DebugGizmos::Draw()
 			DrawCollider(game->Components[i]);
 		}
 	}
+
 	if (ShowGridXZ || ShowGridXY || ShowGridYZ)
 	{
 		game->Gfx.SetDepthStencilEnable(true);

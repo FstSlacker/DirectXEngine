@@ -5,6 +5,7 @@
 GameComponent::GameComponent(Game* game) : Transform(*this)
 {
 	this->game = game;
+	this->IsEnabled = true;
 	this->Name = "GameComponent_" + std::to_string(game->Components.size());
 	this->game->Components.push_back(this);
 }

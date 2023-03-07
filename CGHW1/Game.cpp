@@ -48,7 +48,11 @@ void Game::Draw()
 	Gfx.PrepareFrame();
 
 	//Draw components
-	for (int i = 0; i < Components.size(); i++) {
+	for (int i = 0; i < Components.size(); i++) 
+	{
+		if (!Components[i]->IsEnabled)
+			continue;
+
 		Components[i]->Draw();
 	}
 
@@ -149,6 +153,9 @@ void Game::Update()
 {
 	for (int i = 0; i < Components.size(); i++)
 	{
+		if (!Components[i]->IsEnabled)
+			continue;
+
 		Components[i]->Update();
 	}
 }
@@ -158,6 +165,9 @@ void Game::UpdateInternal()
 	//Update components
 	for (int i = 0; i < Components.size(); i++)
 	{
+		if (!Components[i]->IsEnabled)
+			continue;
+
 		Components[i]->FixedUpdate();
 	}
 
@@ -167,6 +177,9 @@ void Game::UpdateInternal()
 		for (int j = 0; j < Components.size(); j++)
 		{
 			if (i == j)
+				continue;
+
+			if (!Components[i]->IsEnabled || !Components[j]->IsEnabled)
 				continue;
 
 			ColliderBase* c1 = Components[i]->Collider;

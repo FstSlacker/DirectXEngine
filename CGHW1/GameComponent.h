@@ -13,6 +13,7 @@ class GameComponent
 
 public:
 	std::string Name;
+	bool IsEnabled;
 	Transform3D Transform;
 	ColliderBase* Collider = nullptr;
 
