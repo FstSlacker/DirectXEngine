@@ -2,13 +2,13 @@
 #include "GameComponent.h"
 #include "Collision.h"
 
-class SphereComponent;
+class MeshComponent;
 
 class KatamariComponent : public GameComponent
 {
 private:
 	GameComponent* rootComp;
-	SphereComponent* sphereComp;
+	GameComponent* sphereComp;
 	GameComponent* cameraRootComp;
 
 	float currentSize;

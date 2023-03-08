@@ -9,7 +9,7 @@ void KatamariComponent::UpdateRotation()
 	prevMousePos = currPos;
 
 	float speed = MoveSpeed * game->DeltaTime;
-	float rotSpeed = (MoveSpeed / currentSize) * 360.0f * game->DeltaTime;
+	float rotSpeed = (MoveSpeed / currentSize) * 180.0f * game->DeltaTime;
 
 	Vector3 moveDir = Vector3::Zero;
 	Vector3 rotDir = Vector3::Zero;
@@ -52,7 +52,7 @@ void KatamariComponent::UpdateRotation()
 void KatamariComponent::OnCollisionEnter(const CollisionArgs& args)
 {
 	this->rootComp->Transform.AddChild(args.CollidedComponent->Transform);
-	targetSize += 0.5f;
+	targetSize += 0.1f;
 }
 
 KatamariComponent::KatamariComponent(Game* game, float startSize)
@@ -62,29 +62,29 @@ KatamariComponent::KatamariComponent(Game* game, float startSize)
 	this->currentSize = startSize;
 	this->targetSize = startSize;
 	this->growSpeed = 1.0f;
-	this->MoveSpeed = 2.0f;
+	this->MoveSpeed = 3.0f;
 
-	PixelShader* ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
+	/*PixelShader* ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
 	VertexShader* vs = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
 	Texture* tex = new Texture("./Textures/brich_wall.jpg");
 
 	game->Gfx.AddPixelShader(ps);
 	game->Gfx.AddVertexShader(vs);
-	game->Gfx.AddTexture(tex);
+	game->Gfx.AddTexture(tex);*/
 
 	rootComp = new GameComponent(game);
 	this->Transform.AddChild(rootComp->Transform);
 	rootComp->Transform.SetLocalPosition(Vector3(0.0f, startSize * 0.5f, 0.0f));
 
-	sphereComp = new SphereComponent(game);
+	sphereComp = new ModelComponent(game, "D:\\Documents\\3DModels\\katamari_ball.obj");
 	sphereComp->Name = "Sphere";
 	this->rootComp->Transform.AddChild(sphereComp->Transform);
 	sphereComp->Transform.SetLocalPosition(Vector3::Zero);
 	sphereComp->Transform.SetLocalScale(Vector3(startSize, startSize, startSize));
 	sphereComp->Collider = new SphereCollider(sphereComp);
 	sphereComp->Collider->OnCollisionEnter.AddRaw(this, &KatamariComponent::OnCollisionEnter);
-	sphereComp->SetShaders(vs, ps);
-	sphereComp->SetTexture(tex);
+	/*sphereComp->SetShaders(vs, ps);
+	sphereComp->SetTexture(tex);*/
 
 	cameraRootComp = new GameComponent(game);
 	cameraRootComp->Name = "CameraRoot";
