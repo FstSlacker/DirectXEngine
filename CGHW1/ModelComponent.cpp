@@ -5,7 +5,7 @@
 
 bool ModelComponent::LoadModel(const std::string& path)
 {
-	this->modelPath = modelPath;
+	this->modelPath = path;
 	this->modelDirectory = FilePathHelper::GetFileDirectory(modelPath);
 
 	Assimp::Importer importer;
@@ -118,12 +118,22 @@ std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, 
 		{
 			aiString path;
 			material->GetTexture(texType, i, &path);
+
+			std::string name = FilePathHelper::GetFileName(path.C_Str());
+
 			TextureStorageType storeType = GetTextureStorageType(material, i, texType, scene);
 			switch (storeType)
 			{
 			case TextureStorageType::File:
-				std::cout << path.C_Str() << std::endl;
-				textures.push_back(new Texture(path.C_Str()));
+				if (!FilePathHelper::IsFileExist(path.C_Str()))
+				{
+					std::wstring findedFile = FilePathHelper::FindFileInParentDirectories(name, modelDirectory);
+					textures.push_back(new Texture(findedFile));
+				}
+				else
+				{
+					textures.push_back(new Texture(path.C_Str()));
+				}
 				break;
 			default:
 				textures.push_back(new Texture(Color(1.0f, 0.0f, 0.0f)));

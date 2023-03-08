@@ -26,7 +26,8 @@ class Texture : public Bindable
 public:
 	Texture();
 	Texture(Color color);
-	Texture(std::string imagePath);
+	Texture(std::string filePath);
+	Texture(std::wstring filePath);
 	HRESULT Initialize(ID3D11Device* device);
 	ID3D11ShaderResourceView* GetTextureView() const;
 	void Bind(ID3D11DeviceContext* context) override;
@@ -42,7 +43,7 @@ protected:
 	struct TextureData
 	{
 		TextureType Type;
-		std::string TexturePath;
+		std::wstring TexturePath;
 		Color TextureColor;
 	};
 
@@ -53,7 +54,7 @@ protected:
 	Sampler sampler;
 
 	HRESULT InitializeFromColor(ID3D11Device* device, const Color* colorData, UINT w, UINT h);
-	HRESULT InitializeFromFile(ID3D11Device* device, std::string path);
+	HRESULT InitializeFromFile(ID3D11Device* device, std::wstring path);
 
 };
 
