@@ -48,7 +48,7 @@ int main()
 
 	PointLightComponent* light = new PointLightComponent(&game);
 	light->Transform.SetPosition(Vector3(0.0f, 10.0f, 0.0f));
-	light->LightRange = 30.0f;
+	light->Range = 30.0f;
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

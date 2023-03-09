@@ -1,7 +1,9 @@
 cbuffer cLightBuf : register(b0)
 {
-    float3 lightColor;
-    float lightStrength;
+    float3 ambientColor;
+    float ambientIntensity;
+    float3 diffuseColor;
+    float diffuseIntensity;
     float3 lightPosition;
     float lightRange;
 };
@@ -21,26 +23,24 @@ float4 PSMain( PS_IN input ) : SV_Target
 {
     float3 texColor = objTexture.Sample(objSamplerState, input.texCord);
     
-    float3 appliedLightColor = float3(0.0f, 0.0f, 0.0f);
+    float3 appliedColor = ambientColor * ambientIntensity;
     
     float3 dirToLight = lightPosition - input.worldPos;
     
     float distToLight = length(dirToLight);
     
     if(distToLight == 0 || lightRange == 0)
-        return float4(appliedLightColor * texColor, 1.0f);
+        return float4(appliedColor * texColor, 1.0f);
     
     dirToLight /= distToLight;
     
     float diffuseDist = max(1.0f - distToLight / lightRange, 0.0f);
     
-    float3 diffuselightIntensity = max(dot(dirToLight, input.normal), 0);
+    float3 diffuse = max(dot(dirToLight, input.normal), 0) * diffuseDist * diffuseIntensity * diffuseColor;
     
-    float3 diffuselightColor = diffuselightIntensity * diffuseDist * lightStrength * lightColor;
+    appliedColor += diffuse;
     
-    appliedLightColor += diffuselightColor;
-    
-    float3 resColor = appliedLightColor * texColor;
+    float3 resColor = appliedColor * texColor;
     
     return float4(resColor, 1.0f);
 }

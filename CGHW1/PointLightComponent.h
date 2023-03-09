@@ -8,8 +8,10 @@ class PointLightComponent : public GameComponent
 private:
 	struct PointLightDataCbuf
 	{
-		DirectX::XMFLOAT3 LightColor;
-		float LightStrength;
+		DirectX::XMFLOAT3 AmbientColor;
+		float AmbientIntensity;
+		DirectX::XMFLOAT3 DiffuseColor;
+		float DiffuseIntensity;
 		DirectX::XMFLOAT3 LightPosition;
 		float LightRange;
 	};
@@ -17,9 +19,12 @@ private:
 	PSConstantBuffer<PointLightDataCbuf> psLightBuffer;
 
 public:
+	static DirectX::SimpleMath::Color AmbientColor;
+	static float AmbientIntensity;
+
 	DirectX::SimpleMath::Color LightColor;
-	float LightStrength;
-	float LightRange;
+	float Intensity;
+	float Range;
 
 	PointLightComponent(Game* game);
 

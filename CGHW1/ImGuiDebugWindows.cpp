@@ -249,7 +249,16 @@ ImGuiPointLightWindow::ImGuiPointLightWindow(PointLightComponent* comp) : ImGuiG
 void ImGuiPointLightWindow::Bind()
 {
 	ImGuiGameCompWindow::Bind();
-
+	if (ImGui::CollapsingHeader("Global Light", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float lightColor[3] = { PointLightComponent::AmbientColor.x, PointLightComponent::AmbientColor.y, PointLightComponent::AmbientColor.z };
+		if (ImGui::ColorEdit3("Ambient color", lightColor))
+		{
+			PointLightComponent::AmbientColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+		}
+		ImGui::DragFloat("Ambient intensity", &PointLightComponent::AmbientIntensity, 0.01f, 0.0f, 10.0f);
+		ImGui::Spacing();
+	}
 	if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		float lightColor[3] = { lightComp->LightColor.x, lightComp->LightColor.y, lightComp->LightColor.z };
@@ -257,8 +266,8 @@ void ImGuiPointLightWindow::Bind()
 		{
 			lightComp->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
 		}
-		ImGui::DragFloat("Strength", &lightComp->LightStrength, 0.01f, 0.0f, 10.0f);
-		ImGui::DragFloat("Range", &lightComp->LightRange, 0.1f, 0.0f, 1000.0f);
+		ImGui::DragFloat("Intensity", &lightComp->Intensity, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat("Range", &lightComp->Range, 0.1f, 0.0f, 1000.0f);
 		ImGui::Spacing();
 	}
 }

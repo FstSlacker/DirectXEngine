@@ -2,12 +2,15 @@
 #include "Game.h"
 #include "Logs.h"
 
+DirectX::SimpleMath::Color PointLightComponent::AmbientColor = DirectX::SimpleMath::Color(DirectX::Colors::White);
+float PointLightComponent::AmbientIntensity = 0.1f;
+
 PointLightComponent::PointLightComponent(Game* game) : GameComponent(game)
 {
 	this->Name = "PointLightComponent";
 	this->LightColor = DirectX::Colors::White;
-	this->LightStrength = 1.0f;
-	this->LightRange = 10.0f;
+	this->Intensity = 1.0f;
+	this->Range = 10.0f;
 	this->game->Light = this;
 }
 
@@ -23,10 +26,13 @@ void PointLightComponent::Initialize()
 
 void PointLightComponent::Bind()
 {
+	psLightBuffer.Data.AmbientColor = PointLightComponent::AmbientColor.ToVector3();
+	psLightBuffer.Data.AmbientIntensity = PointLightComponent::AmbientIntensity;
+
 	psLightBuffer.Data.LightPosition = this->Transform.GetPosition();
-	psLightBuffer.Data.LightStrength = this->LightStrength;
-	psLightBuffer.Data.LightColor = this->LightColor.ToVector3();
-	psLightBuffer.Data.LightRange = this->LightRange;
+	psLightBuffer.Data.DiffuseColor = this->LightColor.ToVector3();
+	psLightBuffer.Data.DiffuseIntensity = this->Intensity;
+	psLightBuffer.Data.LightRange = this->Range;
 
 	psLightBuffer.ApplyChanges(game->Gfx.GetContext());
 
