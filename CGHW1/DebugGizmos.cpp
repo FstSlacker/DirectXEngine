@@ -67,6 +67,16 @@ DebugGizmos::DebugGizmos(Game* game)
 	this->GridColor = Color(DirectX::Colors::LightGray);
 }
 
+void DebugGizmos::DrawLightRange(PointLightComponent* light)
+{
+	DirectX::BoundingSphere sphere = DirectX::BoundingSphere(
+		light->Transform.GetPosition(),
+		light->Range
+	);
+
+	DebugDraw::Draw(primitiveBatch.get(), sphere, DirectX::Colors::White);
+}
+
 void DebugGizmos::DrawCollider(GameComponent* comp)
 {
 	ColliderBase* colliderBase = comp->Collider;
@@ -94,6 +104,7 @@ void DebugGizmos::Draw()
 	game->Gfx.GetContext()->IASetInputLayout(inputLayout.Get());
 
 	primitiveBatch->Begin();
+
 	for (int i = 0; i < game->Components.size(); i++)
 	{
 		if (typeid(*(game->Components[i])) == typeid(Camera))
@@ -112,6 +123,11 @@ void DebugGizmos::Draw()
 			game->Gfx.SetDepthStencilEnable(false);
 			DrawCollider(game->Components[i]);
 		}
+	}
+
+	if (game->Light != nullptr)
+	{
+		DrawLightRange(game->Light);
 	}
 
 	if (ShowGridXZ || ShowGridXY || ShowGridYZ)

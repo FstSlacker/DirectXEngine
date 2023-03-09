@@ -10,8 +10,14 @@ private:
 	{
 		DirectX::XMFLOAT3 AmbientColor;
 		float AmbientIntensity;
+
 		DirectX::XMFLOAT3 DiffuseColor;
 		float DiffuseIntensity;
+
+		DirectX::XMFLOAT3 CameraPosition;
+		float SpecularIntensity;
+		float SpecularPower;
+
 		DirectX::XMFLOAT3 LightPosition;
 		float LightRange;
 	};
@@ -24,6 +30,8 @@ public:
 
 	DirectX::SimpleMath::Color LightColor;
 	float Intensity;
+	float SpecularIntensity;
+	float SpecularPower;
 	float Range;
 
 	PointLightComponent(Game* game);

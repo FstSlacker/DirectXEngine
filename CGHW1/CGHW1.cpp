@@ -43,7 +43,7 @@ int main()
 
 	PlaneComponent* plane = new PlaneComponent(&game);
 	plane->SetShaders(vs, ps);
-	plane->SetTexture(texGrass);
+	plane->SetTexture(texWall);
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	PointLightComponent* light = new PointLightComponent(&game);

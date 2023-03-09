@@ -267,6 +267,8 @@ void ImGuiPointLightWindow::Bind()
 			lightComp->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
 		}
 		ImGui::DragFloat("Intensity", &lightComp->Intensity, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat("Specular Intensity", &lightComp->SpecularIntensity, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat("Specular Power", &lightComp->SpecularPower, 0.01f, 0.0f, 10.0f);
 		ImGui::DragFloat("Range", &lightComp->Range, 0.1f, 0.0f, 1000.0f);
 		ImGui::Spacing();
 	}
