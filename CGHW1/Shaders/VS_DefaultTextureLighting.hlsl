@@ -25,7 +25,7 @@ PS_IN VSMain( VS_IN input )
 	
 	output.pos = mul(float4(input.pos, 1.0f), wvpMat);
 	output.texCord = input.texCord;
-    output.normal = input.normal;
+    output.normal = normalize(mul(float4(input.normal, 0.0f), worldMat));
     output.worldPos = mul(float4(input.pos, 1.0f), worldMat);
 	
 	return output;
