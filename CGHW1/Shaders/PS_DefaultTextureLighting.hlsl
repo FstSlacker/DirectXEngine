@@ -42,16 +42,16 @@ float4 PSMain( PS_IN input ) : SV_Target
     
     float diffuseDist = max(1.0f - distToLight / lightRange, 0.0f);
     
-    float totalDiffuseIntensityColor = diffuseDist * diffuseIntensity * diffuseColor;
+    float totalDiffuseIntensity = diffuseDist * diffuseIntensity;
     
-    float3 diffuse = max(dot(dirToLight, input.normal), 0) * totalDiffuseIntensityColor;
+    float3 diffuse = max(dot(dirToLight, input.normal), 0) * totalDiffuseIntensity * diffuseColor;
     
     float3 w = input.normal * dot(dirToLight, input.normal);
     float3 r = w * 2.0f - dirToLight;
     
-    float3 specular = totalDiffuseIntensityColor * specularIntensity * pow(max(0.0f, dot(normalize(r), normalize(cameraPosition - input.worldPos))), specularPower);
+    float3 specular = totalDiffuseIntensity * diffuseColor * specularIntensity * pow(max(0.0f, dot(normalize(r), normalize(cameraPosition - input.worldPos))), specularPower);
     
-    float3 resColor = (ambient + diffuse + specular) * texColor;
+    float3 resColor = (ambient + diffuse) * texColor.rgb + specular;
     
     return float4(resColor, 1.0f);
 }

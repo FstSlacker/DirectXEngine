@@ -9,7 +9,7 @@ int main()
 	VertexShader* vs = new VertexShader(L"./Shaders/VS_DefaultTextureLighting.hlsl", VertexShader::VertexLayoutType::VertexPositionTextureNormal);
 
 	Texture* texWall = new Texture("./Textures/brich_wall.jpg");
-	Texture* texGrass = new Texture("./Textures/grass-texture.jpg");
+	Texture* texGrass = new Texture("./Textures/obsidiant.jpg");
 
 	SphereComponent* s1 = new SphereComponent(&game);
 	s1->Name = "Sphere1";
@@ -43,7 +43,7 @@ int main()
 
 	PlaneComponent* plane = new PlaneComponent(&game);
 	plane->SetShaders(vs, ps);
-	plane->SetTexture(texWall);
+	plane->SetTexture(texGrass);
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	PointLightComponent* light = new PointLightComponent(&game);
