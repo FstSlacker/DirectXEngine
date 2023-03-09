@@ -47,6 +47,11 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
+	if (Light != nullptr)
+	{
+		Light->Bind();
+	}
+
 	//Draw components
 	for (int i = 0; i < Components.size(); i++) 
 	{

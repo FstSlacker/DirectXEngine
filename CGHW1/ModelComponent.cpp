@@ -1,7 +1,7 @@
 #include "ModelComponent.h"
 #include "Game.h"
 #include "StringHelper.h"
-#include <filesystem>
+#include "Vertex.h"
 
 bool ModelComponent::LoadModel(const std::string& path)
 {
@@ -35,12 +35,12 @@ void ModelComponent::ProcessNode(aiNode* node, const aiScene* scene)
 
 void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
-	std::vector<Vertex> verts;
+	std::vector<VertexPositionTextureNormal> verts;
 	std::vector<int> inds;
 
 	for (UINT i = 0; i < mesh->mNumVertices; i++)
 	{
-		Vertex vert;
+		VertexPositionTextureNormal vert;
 
 		vert.Position = Vector3(
 			mesh->mVertices[i].x,
@@ -55,6 +55,12 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 				(float)mesh->mTextureCoords[0][i].y
 			);
 		}
+
+		vert.Normal = Vector3(
+			mesh->mNormals[i].x,
+			mesh->mNormals[i].y,
+			mesh->mNormals[i].z
+		);
 
 		verts.push_back(vert);
 	}
@@ -190,8 +196,8 @@ ModelComponent::ModelComponent(Game* game, std::string modelPath) : GameComponen
 {
 	this->Name = "ModelComponent_" + std::to_string(game->Components.size());
 
-	ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
-	vs = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
+	ps = new PixelShader(L"./Shaders/PS_DefaultTextureLighting.hlsl");
+	vs = new VertexShader(L"./Shaders/VS_DefaultTextureLighting.hlsl", VertexShader::VertexLayoutType::VertexPositionTextureNormal);
 
 	game->Gfx.AddPixelShader(ps);
 	game->Gfx.AddVertexShader(vs);

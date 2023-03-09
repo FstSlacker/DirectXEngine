@@ -8,10 +8,10 @@ PlaneComponent::PlaneComponent(Game* game) : MeshComponent(game)
 	Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
 
 	points = {
-		Vertex{Vector3(0.5f, 0.0f, 0.5f), color, Vector2(1.0f, 1.0f)},
-		Vertex{Vector3(-0.5f, 0.0f, -0.5f), color, Vector2(0.0f, 0.0f)},
-		Vertex{Vector3(0.5f, 0.0f, -0.5f), color, Vector2(1.0f, 0.0f)},
-		Vertex{Vector3(-0.5f, 0.0f, 0.5f), color, Vector2(0.0f, 1.0f)}
+		VertexPositionTextureNormal{Vector3(0.5f, 0.0f, 0.5f), Vector2(1.0f, 1.0f), Vector3::Up},
+		VertexPositionTextureNormal{Vector3(-0.5f, 0.0f, -0.5f), Vector2(0.0f, 0.0f), Vector3::Up},
+		VertexPositionTextureNormal{Vector3(0.5f, 0.0f, -0.5f), Vector2(1.0f, 0.0f), Vector3::Up},
+		VertexPositionTextureNormal{Vector3(-0.5f, 0.0f, 0.5f), Vector2(0.0f, 1.0f), Vector3::Up}
 	};
 
 	indices = { 0,1,2, 1,0,3 };

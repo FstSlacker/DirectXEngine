@@ -21,14 +21,20 @@ class GameComponent;
 class MeshComponent : public GameComponent
 {
 protected:
+	struct TransformCbuf
+	{
+		DirectX::XMMATRIX WorldViewProjMatrix;
+		DirectX::XMMATRIX WorldMatrix;
+	};
+
 	std::vector<Bindable*> binds;
 
-	VertexBuffer<Vertex> vertexBuffer;
+	VertexBuffer<VertexPositionTextureNormal> vertexBuffer;
 	IndexBuffer indexBuffer;
 
-	ConstantBuffer<DirectX::XMMATRIX> transformMat;
+	VSConstantBuffer<TransformCbuf> transformMat;
 
-	std::vector<Vertex> points;
+	std::vector<VertexPositionTextureNormal> points;
 	std::vector<int> indices;
 
 public:
@@ -41,6 +47,6 @@ public:
 	void FixedUpdate() override;
 	void SetShaders(VertexShader* vShader, PixelShader* pShader);
 	void SetTexture(Texture* tex);
-	void SetVertices(std::vector<Vertex>& verts);
-	void SetIndices(std::vector<int>& inds);
+	void SetVertices(std::vector<VertexPositionTextureNormal> verts);
+	void SetIndices(std::vector<int> inds);
 };

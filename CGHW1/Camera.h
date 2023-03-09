@@ -26,6 +26,7 @@ public:
 
 	const XMMATRIX& GetViewMatrix();
 	const XMMATRIX& GetProjectionMatrix();
+	const XMMATRIX GetViewProjectionMatrix();
 
 protected:
 	float fovDegrees = 90.0f;

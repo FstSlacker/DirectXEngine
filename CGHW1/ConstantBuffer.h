@@ -1,10 +1,10 @@
 #pragma once
-
 #include <d3d11.h>
 #include <wrl/client.h>
+#include "Bindable.h"
 
-template<class T>
-class ConstantBuffer
+template<typename T>
+class ConstantBuffer : public Bindable
 {
 private:
 	ConstantBuffer(const ConstantBuffer<T>& rhs);
@@ -13,7 +13,6 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 
 public:
-
 	T Data;
 
 	ConstantBuffer() {}
@@ -59,16 +58,31 @@ public:
 		return true;
 	}
 
-	virtual void Bind(ID3D11DeviceContext* context) {}
+	virtual void Bind(ID3D11DeviceContext* context) override {}
+	virtual void DestroyResources() override {}
 
 };
 
-//template<class T>
-//class VSConstantBuffer : ConstantBuffer<T>
-//{
-//public:
-//	void Bind(ID3D11DeviceContext* context) override
-//	{
-//		context->VSSetConstantBuffers(0, 1, buffer.GetAddressOf());
-//	}
-//};
+template<typename T>
+class VSConstantBuffer : public ConstantBuffer<T>
+{
+public:
+	VSConstantBuffer() {}
+
+	virtual void Bind(ID3D11DeviceContext* context) override
+	{
+		context->VSSetConstantBuffers(0, 1, this->buffer.GetAddressOf());
+	}
+};
+
+template<typename T>
+class PSConstantBuffer : public ConstantBuffer<T>
+{
+public:
+	PSConstantBuffer() {}
+
+	virtual void Bind(ID3D11DeviceContext* context) override
+	{
+		context->PSSetConstantBuffers(0, 1, this->buffer.GetAddressOf());
+	}
+};

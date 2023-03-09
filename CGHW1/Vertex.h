@@ -4,17 +4,25 @@
 
 using namespace DirectX::SimpleMath;
 
-struct Vertex
+struct VertexPositionColor
 {
-public:
-	Vertex()
+	VertexPositionColor() {}
+
+	VertexPositionColor(Vector3 position, Color color)
 	{
-		Position = Vector3::Zero;
-		Color = SimpleMath::Color(0.0f, 0.0f, 0.0f, 1.0f);
-		UV = Vector2::Zero;
+		Position = position;
+		Color = color;
 	}
 
-	Vertex(Vector3 position, Color color, Vector2 uv)
+	Vector3 Position;
+	Color Color;
+};
+
+struct VertexPositionColorTexture
+{
+	VertexPositionColorTexture() {}
+
+	VertexPositionColorTexture(Vector3 position, Color color, Vector2 uv)
 	{
 		Position = position;
 		Color = color;
@@ -24,4 +32,20 @@ public:
 	Vector3 Position;
 	Color Color;
 	Vector2 UV;
+};
+
+struct VertexPositionTextureNormal
+{
+	VertexPositionTextureNormal() {}
+
+	VertexPositionTextureNormal(Vector3 position, Vector2 uv, Vector3 normal)
+	{
+		Position = position;
+		UV = uv;
+		Normal = normal;
+	}
+
+	Vector3 Position;
+	Vector2 UV;
+	Vector3 Normal;
 };

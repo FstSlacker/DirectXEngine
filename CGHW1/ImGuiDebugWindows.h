@@ -2,6 +2,7 @@
 #include "ImGuiWindow.h"
 #include "GameComponent.h"
 #include "Camera.h"
+#include "PointLightComponent.h"
 
 class Game;
 
@@ -52,5 +53,15 @@ protected:
 
 public:
 	ImGuiCameraWindow(Camera* comp);
+	virtual void Bind() override;
+};
+
+class ImGuiPointLightWindow : public ImGuiGameCompWindow
+{
+protected:
+	PointLightComponent* lightComp;
+
+public:
+	ImGuiPointLightWindow(PointLightComponent* comp);
 	virtual void Bind() override;
 };

@@ -57,6 +57,11 @@ const XMMATRIX& Camera::GetProjectionMatrix()
     return this->projMatrix;
 }
 
+const XMMATRIX Camera::GetViewProjectionMatrix()
+{
+    return this->GetViewMatrix() * this->GetProjectionMatrix();
+}
+
 void Camera::UpdateViewMatrix()
 {
     XMMATRIX rotMat = Transform.GetWorldRotationMatrix();

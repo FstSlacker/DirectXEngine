@@ -11,20 +11,20 @@ void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 		for (int y = 0; y < tslY; y++)
 		{
 			float t = (float)x / (float)tslX;
-			this->points.push_back(
-				Vertex(
-					Vector3(
-						cos(y * yStep) * sin(x * xStep),
-						cos(x * xStep),
-						sin(y * yStep) * sin(x * xStep)
-					),
-					DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f),
-					Vector2(
-						(float)y / (float)(tslY - 1),
-						(float)x / (float)(tslX - 1)
-					)
-				)
+
+			Vector3 pos = Vector3(
+				cos(y * yStep) * sin(x * xStep),
+				cos(x * xStep),
+				sin(y * yStep) * sin(x * xStep)
 			);
+			Vector2 uv = Vector2(
+				(float)y / (float)(tslY - 1),
+				(float)x / (float)(tslX - 1)
+			);
+			Vector3 norm = pos;
+			norm.Normalize();
+
+			this->points.push_back(VertexPositionTextureNormal(pos, uv, norm));
 		}
 	}
 

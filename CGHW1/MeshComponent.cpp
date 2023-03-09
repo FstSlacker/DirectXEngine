@@ -18,21 +18,23 @@ void MeshComponent::Draw(){
 
 	GameComponent::Draw();
 
+	transformMat.Data.WorldViewProjMatrix = DirectX::XMMatrixTranspose(
+		Transform.GetTransformMatrix() * game->MainCamera->GetViewProjectionMatrix()
+	);
+	transformMat.Data.WorldMatrix = DirectX::XMMatrixTranspose(
+		Transform.GetTransformMatrix()
+	);
+
+	if (!transformMat.ApplyChanges(game->Gfx.GetContext()))
+	{
+		std::cout << "Failed to apply transform mat!" << std::endl;
+	}
+	
 	for (int i = 0; i < binds.size(); i++)
 	{
 		binds[i]->Bind(game->Gfx.GetContext());
 	}
 
-	transformMat.Data = DirectX::XMMatrixTranspose(
-		Transform.GetTransformMatrix() * (game->MainCamera->GetViewMatrix() * game->MainCamera->GetProjectionMatrix())
-	);
-	
-	if (!transformMat.ApplyChanges(game->Gfx.GetContext()))
-	{
-		std::cout << "Failed to apply transform mat!" << std::endl;
-	}
-
-	game->Gfx.GetContext()->VSSetConstantBuffers(0, 1, transformMat.GetAddressOf());
 	game->Gfx.GetContext()->DrawIndexed(indexBuffer.BufferSize(), 0, 0);
 }
 
@@ -57,12 +59,12 @@ void MeshComponent::SetTexture(Texture* tex)
 	binds.push_back(tex);
 }
 
-void MeshComponent::SetVertices(std::vector<Vertex>& verts)
+void MeshComponent::SetVertices(std::vector<VertexPositionTextureNormal> verts)
 {
 	points = verts;
 }
 
-void MeshComponent::SetIndices(std::vector<int>& inds)
+void MeshComponent::SetIndices(std::vector<int> inds)
 {
 	indices = inds;
 }
@@ -73,9 +75,9 @@ void MeshComponent::Initialize() {
 
 	vertexBuffer.Initialize(game->Gfx.GetDevice(), points.data(), points.size());
 	indexBuffer.Initialize(game->Gfx.GetDevice(), indices.data(), indices.size());
+	transformMat.Initialize(game->Gfx.GetDevice());
 
 	binds.push_back(&vertexBuffer);
 	binds.push_back(&indexBuffer);
-
-	transformMat.Initialize(game->Gfx.GetDevice());
+	binds.push_back(&transformMat);
 }

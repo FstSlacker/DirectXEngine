@@ -65,6 +65,18 @@ void ImGuiGameInfoWindow::Bind()
 			
 			ImGui::TreePop();
 		}
+
+		if (ImGui::TreeNodeEx(game->Light->Name.c_str(), ImGuiTreeNodeFlags_Leaf))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				game->ImGUI.AddWindow(new ImGuiPointLightWindow(game->Light));
+			}
+
+			ImGui::TreePop();
+		}
+
+		ImGui::Separator();
 		
 		for (int i = 0; i < game->Components.size(); i++)
 		{
@@ -140,9 +152,9 @@ void ImGuiGameCompWindow::Bind()
 		{
 			isWorldTransform = false;
 		}
-		if (ImGui::DragFloat3("Position", position)
-			|| ImGui::DragFloat3("Rotation", rotation)
-			|| ImGui::DragFloat3("Scale", scale))
+		if (ImGui::DragFloat3("Position", position, 0.25f)
+			|| ImGui::DragFloat3("Rotation", rotation, 0.25f)
+			|| ImGui::DragFloat3("Scale", scale, 0.25f))
 		{
 			SetTransform();
 		}
@@ -227,7 +239,26 @@ void ImGuiCameraWindow::Bind()
 		}
 		ImGui::Spacing();
 	}
+}
 
-	
-	
+ImGuiPointLightWindow::ImGuiPointLightWindow(PointLightComponent* comp) : ImGuiGameCompWindow(comp)
+{
+	this->lightComp = comp;
+}
+
+void ImGuiPointLightWindow::Bind()
+{
+	ImGuiGameCompWindow::Bind();
+
+	if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float lightColor[3] = { lightComp->LightColor.x, lightComp->LightColor.y, lightComp->LightColor.z };
+		if (ImGui::ColorEdit3("Color", lightColor))
+		{
+			lightComp->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+		}
+		ImGui::DragFloat("Strength", &lightComp->LightStrength, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat("Range", &lightComp->LightRange, 0.1f, 0.0f, 1000.0f);
+		ImGui::Spacing();
+	}
 }

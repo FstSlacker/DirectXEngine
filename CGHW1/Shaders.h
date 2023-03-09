@@ -15,7 +15,8 @@ public:
 	{
 		VertexPositionColor,
 		VertexPositionTexture,
-		VertexPositionColorTexture
+		VertexPositionColorTexture,
+		VertexPositionTextureNormal
 	};
 
 	VertexShader(std::wstring shaderPath, VertexLayoutType layoutType = VertexLayoutType::VertexPositionColorTexture);
@@ -44,7 +45,8 @@ private:
 	static D3D11_INPUT_ELEMENT_DESC vertexPositionColorLayout[2];
 	static D3D11_INPUT_ELEMENT_DESC	vertexPositionTextureLayout[2];
 	static D3D11_INPUT_ELEMENT_DESC	vertexPositionColorTextureLayout[3];
-	static VertexLayoutInfo layouts[3];
+	static D3D11_INPUT_ELEMENT_DESC	vertexPositionTextureNormalLayout[3];
+	static VertexLayoutInfo layouts[4];
 };
 
 
