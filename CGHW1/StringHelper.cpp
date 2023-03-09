@@ -131,3 +131,9 @@ std::wstring FilePathHelper::FindFileInDirectory(std::wstring path, std::wstring
 
     return L"";
 }
+
+std::wstring StringConverter::StringToWide(std::string str)
+{
+    std::wstring wStr = std::wstring(str.begin(), str.end());
+    return wStr;
+}

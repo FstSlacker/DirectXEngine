@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Logs.h"
 
 Texture::Texture()
 {
@@ -24,27 +25,32 @@ Texture::Texture(std::wstring filePath)
 	textureData.TexturePath = filePath;
 }
 
-HRESULT Texture::Initialize(ID3D11Device* device)
+bool Texture::Initialize(ID3D11Device* device)
 {
 	HRESULT res = sampler.Initialize(device);
 
 	if (FAILED(res))
 	{
-		return res;
+		Logs::LogError(res, "Failed to initialize TextureSampler");
+		return false;
 	}
 	if (textureData.Type == TextureType::FilePath)
 	{
-		return InitializeFromFile(device, textureData.TexturePath);
+		res = InitializeFromFile(device, textureData.TexturePath);
 	}
 	else if (textureData.Type == TextureType::ColorArray)
 	{
 		Color* colorData = new Color[1]{ textureData.TextureColor };
 		res = InitializeFromColor(device, colorData, 1, 1);
 		delete[] colorData;
-		return res;
+	}
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to Initialize Texture");
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
 ID3D11ShaderResourceView* Texture::GetTextureView() const

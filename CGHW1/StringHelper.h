@@ -3,6 +3,12 @@
 #include <Windows.h>
 #include <iostream>
 
+class StringConverter
+{
+public:
+	static std::wstring StringToWide(std::string str);
+};
+
 class FilePathHelper
 {
 public:

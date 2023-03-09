@@ -165,6 +165,7 @@
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="ImGuiWindow.cpp" />
     <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="Logs.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="PlaneComponent.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
+    <ClInclude Include="Logs.h" />
     <ClInclude Include="PointLightComponent.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="pch.h" />

@@ -25,10 +25,7 @@ void MeshComponent::Draw(){
 		Transform.GetTransformMatrix()
 	);
 
-	if (!transformMat.ApplyChanges(game->Gfx.GetContext()))
-	{
-		std::cout << "Failed to apply transform mat!" << std::endl;
-	}
+	transformMat.ApplyChanges(game->Gfx.GetContext());
 	
 	for (int i = 0; i < binds.size(); i++)
 	{
@@ -73,9 +70,25 @@ void MeshComponent::Initialize() {
 
 	GameComponent::Initialize();
 
-	vertexBuffer.Initialize(game->Gfx.GetDevice(), points.data(), points.size());
-	indexBuffer.Initialize(game->Gfx.GetDevice(), indices.data(), indices.size());
-	transformMat.Initialize(game->Gfx.GetDevice());
+	HRESULT hr;
+
+	hr = vertexBuffer.Initialize(game->Gfx.GetDevice(), points.data(), points.size());
+	if (FAILED(hr))
+	{
+		Logs::LogError(hr, "Failed to initialize vertexBuffer");
+	}
+
+	hr = indexBuffer.Initialize(game->Gfx.GetDevice(), indices.data(), indices.size());
+	if (FAILED(hr))
+	{
+		Logs::LogError(hr, "Failed to initialize indexBuffer");
+	}
+
+	hr = transformMat.Initialize(game->Gfx.GetDevice());
+	if (FAILED(hr))
+	{
+		Logs::LogError(hr, "Failed to initialize transformMat");
+	}
 
 	binds.push_back(&vertexBuffer);
 	binds.push_back(&indexBuffer);

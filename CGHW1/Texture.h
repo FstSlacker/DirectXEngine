@@ -28,7 +28,7 @@ public:
 	Texture(Color color);
 	Texture(std::string filePath);
 	Texture(std::wstring filePath);
-	HRESULT Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device);
 	ID3D11ShaderResourceView* GetTextureView() const;
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;

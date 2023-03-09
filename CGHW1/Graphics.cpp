@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "Logs.h"
 
 bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 {
@@ -7,12 +8,12 @@ bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 
     if (!InitializeDirectX(hWnd))
     {
-        std::cout << "Error init directx" << std::endl;
+		Logs::Log("Failed to init directx", false);
         return false;
     }
 	if (!InitializeResources())
 	{
-		std::cout << "Error init graphics resources" << std::endl;
+		Logs::Log("Failed to init graphics resources", false);
 		return false;
 	}
 
@@ -150,7 +151,7 @@ bool Graphics::InitializeDirectX(HWND hWnd)
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create device and swapchain" << std::endl;
+		Logs::LogError(res, "Failed to create Device and Swapchain");
 		return false;
 	}
 
@@ -158,7 +159,7 @@ bool Graphics::InitializeDirectX(HWND hWnd)
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create back buffer" << std::endl;
+		Logs::LogError(res, "Failed to create BackBuffer");
 		return false;
 	}
 
@@ -166,7 +167,7 @@ bool Graphics::InitializeDirectX(HWND hWnd)
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create RenderTargetView" << std::endl;
+		Logs::LogError(res, "Failed to create RenderTargetView");
 		return false;
 	}
     return true;
@@ -184,7 +185,7 @@ bool Graphics::InitializeResources()
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create rasterization state" << std::endl;
+		Logs::LogError(res, "Failed to create RasterizationState");
 		return false;
 	}
 
@@ -208,7 +209,7 @@ bool Graphics::InitializeResources()
 
 	if (FAILED(res))
 	{
-		std::cout << "Error to create depthStencilBuffer texture" << std::endl;
+		Logs::LogError(res, "Failed to create DepthStencilBuffer texture");
 		return false;
 	}
 
@@ -216,7 +217,7 @@ bool Graphics::InitializeResources()
 
 	if (FAILED(res))
 	{
-		std::cout << "Error to create depthStencilView" << std::endl;
+		Logs::LogError(res, "Failed to create DepthStencilView");
 		return false;
 	}
 
@@ -230,7 +231,7 @@ bool Graphics::InitializeResources()
 
 	if (FAILED(res))
 	{
-		std::cout << "Error to create depthStencilStateEnabled" << std::endl;
+		Logs::LogError(res, "Failed to create DepthStencilStateEnabled");
 		return false;
 	}
 
@@ -240,7 +241,7 @@ bool Graphics::InitializeResources()
 
 	if (FAILED(res))
 	{
-		std::cout << "Error to create depthStencilStateDisabled" << std::endl;
+		Logs::LogError(res, "Failed to create DepthStencilStateDisabled");
 		return false;
 	}
 
@@ -264,9 +265,8 @@ bool Graphics::InitializeResources()
 	//Create textures
 	for (int i = 0; i < textures.size(); i++)
 	{
-		if (FAILED(textures[i]->Initialize(device.Get())))
+		if (!textures[i]->Initialize(device.Get()))
 		{
-			std::cout << "Texture " << i << " init failed" << std::endl;
 			return false;
 		}
 	}

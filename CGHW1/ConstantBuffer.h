@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "Bindable.h"
+#include "Logs.h"
 
 template<typename T>
 class ConstantBuffer : public Bindable
@@ -42,20 +43,20 @@ public:
 		return res;
 	}
 
-	bool ApplyChanges(ID3D11DeviceContext* context)
+	HRESULT ApplyChanges(ID3D11DeviceContext* context)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT res = context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 		if (FAILED(res)) 
 		{
-			//...
-			return false;
+			Logs::LogError(res, "Failed to apply ConstantBuffer", false);
+			return res;
 		}
 
 		CopyMemory(mappedResource.pData, &Data, sizeof(T));
 		context->Unmap(buffer.Get(), 0);
-		return true;
+		return res;
 	}
 
 	virtual void Bind(ID3D11DeviceContext* context) override {}

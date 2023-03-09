@@ -1,4 +1,5 @@
 #include "Shaders.h"
+#include "Logs.h"
 
 D3D11_INPUT_ELEMENT_DESC VertexShader::vertexPositionColorLayout[2] = {
 	D3D11_INPUT_ELEMENT_DESC {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -66,15 +67,7 @@ bool VertexShader::Initialize(ID3D11Device* device)
 
 	if (FAILED(res)) 
 	{
-		if (errorCode) 
-		{
-			char* compileErrors = (char*)(errorCode->GetBufferPointer());
-			std::cout << compileErrors << std::endl;
-		}
-		else
-		{
-			std::cout << "Vertex shader file not found:" << shaderPath.c_str() << std::endl;
-		}
+		Logs::LogError(res, "Failed to compile VertexShader");
 		return false;
 	}
 
@@ -86,7 +79,7 @@ bool VertexShader::Initialize(ID3D11Device* device)
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create vertex shader (" << shaderPath.c_str() << ")" << std::endl;
+		Logs::LogError(res, "Failed to create VertexShader");
 		return false;
 	}
 	
@@ -100,7 +93,7 @@ bool VertexShader::Initialize(ID3D11Device* device)
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create input layout for shader (" << shaderPath.c_str() << ")" << std::endl;
+		Logs::LogError(res, "Failed to create InputLayout for VertexShader");
 		return false;
 	}
 
@@ -162,15 +155,7 @@ bool PixelShader::Initialize(ID3D11Device* device)
 
 	if (FAILED(res)) 
 	{
-		if (errorCode)
-		{
-			char* compileErrors = (char*)(errorCode->GetBufferPointer());
-			std::cout << compileErrors << std::endl;
-		}
-		else
-		{
-			std::cout << "Pixel shader file not found:" << shaderPath.c_str() << std::endl;
-		}
+		Logs::LogError(res, "Failed to compile PixelShader");
 		return false;
 	}
 
@@ -183,7 +168,8 @@ bool PixelShader::Initialize(ID3D11Device* device)
 
 	if (FAILED(res))
 	{
-		std::cout << "Failed to create pixel shader (" << shaderPath.c_str() << ")" << std::endl;
+		Logs::LogError(res, "Failed to create PixelShader");
+		return false;
 	}
 
 	return true;

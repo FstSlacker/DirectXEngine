@@ -1,5 +1,6 @@
 #include "PointLightComponent.h"
 #include "Game.h"
+#include "Logs.h"
 
 PointLightComponent::PointLightComponent(Game* game) : GameComponent(game)
 {
@@ -12,10 +13,10 @@ PointLightComponent::PointLightComponent(Game* game) : GameComponent(game)
 
 void PointLightComponent::Initialize()
 {
-	HRESULT res = psLightBuffer.Initialize(game->Gfx.GetDevice());
-	if (FAILED(res))
+	HRESULT hr = psLightBuffer.Initialize(game->Gfx.GetDevice());
+	if (FAILED(hr))
 	{
-		std::cout << "Failed to create psLightBuffer" << std::endl;
+		Logs::LogError(hr, "Failed to initialize psLightBuffer");
 	}
 
 }
@@ -27,15 +28,12 @@ void PointLightComponent::Bind()
 	psLightBuffer.Data.LightColor = this->LightColor.ToVector3();
 	psLightBuffer.Data.LightRange = this->LightRange;
 
-	if (!psLightBuffer.ApplyChanges(game->Gfx.GetContext()))
-	{
-		std::cout << "Failed to apply changes in psLightBuffer" << std::endl;
-	}
+	psLightBuffer.ApplyChanges(game->Gfx.GetContext());
 
 	psLightBuffer.Bind(game->Gfx.GetContext());
 }
 
 void PointLightComponent::Draw()
 {
-	
+	//...
 }
