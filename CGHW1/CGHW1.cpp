@@ -50,6 +50,10 @@ int main()
 	light->Transform.SetPosition(Vector3(0.0f, 10.0f, 0.0f));
 	light->Range = 30.0f;
 
+	PointLightComponent* light2 = new PointLightComponent(&game);
+	light2->Transform.SetPosition(Vector3(0.0f, -10.0f, 0.0f));
+	light2->Range = 30.0f;
+
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 
 	moveComp->Name = "CameraMoveComp";

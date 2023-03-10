@@ -14,6 +14,7 @@
 #include "Texture.h"
 #include "Sampler.h"
 #include "Bindable.h"
+#include "Material.h"
 
 class Game;
 class GameComponent;
@@ -33,6 +34,7 @@ protected:
 	IndexBuffer indexBuffer;
 
 	VSConstantBuffer<TransformCbuf> transformMat;
+	Material material;
 
 	std::vector<VertexPositionTextureNormal> points;
 	std::vector<int> indices;

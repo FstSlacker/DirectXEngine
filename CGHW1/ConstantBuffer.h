@@ -67,23 +67,39 @@ public:
 template<typename T>
 class VSConstantBuffer : public ConstantBuffer<T>
 {
+private:
+	UINT slotInd;
+
 public:
-	VSConstantBuffer() {}
+	VSConstantBuffer() { slotInd = 0; }
+
+	void SetSlot(UINT slot)
+	{
+		this->slotInd = slot;
+	}
 
 	virtual void Bind(ID3D11DeviceContext* context) override
 	{
-		context->VSSetConstantBuffers(0, 1, this->buffer.GetAddressOf());
+		context->VSSetConstantBuffers(slotInd, 1, this->buffer.GetAddressOf());
 	}
 };
 
 template<typename T>
 class PSConstantBuffer : public ConstantBuffer<T>
 {
+private:
+	UINT slotInd;
+
 public:
-	PSConstantBuffer() {}
+	PSConstantBuffer() { slotInd = 0; }
+
+	void SetSlot(UINT slot)
+	{
+		this->slotInd = slot;
+	}
 
 	virtual void Bind(ID3D11DeviceContext* context) override
 	{
-		context->PSSetConstantBuffers(0, 1, this->buffer.GetAddressOf());
+		context->PSSetConstantBuffers(slotInd, 1, this->buffer.GetAddressOf());
 	}
 };

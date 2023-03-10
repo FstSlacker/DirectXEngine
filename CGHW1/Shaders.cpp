@@ -155,7 +155,15 @@ bool PixelShader::Initialize(ID3D11Device* device)
 
 	if (FAILED(res)) 
 	{
-		Logs::LogError(res, "Failed to compile PixelShader");
+		if (errorCode)
+		{
+			char* errors = (char*)(errorCode->GetBufferPointer());
+			Logs::LogError(res, errors);
+		}
+		else
+		{
+			Logs::LogError(res, "Failed to compile PixelShader");
+		}
 		return false;
 	}
 

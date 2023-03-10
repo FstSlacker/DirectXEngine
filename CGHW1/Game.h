@@ -33,7 +33,7 @@
 #include "Text2DComponent.h"
 #include "Camera.h"
 #include "CameraMoveComponent.h"
-#include "PointLightComponent.h"
+#include "Light.h"
 
 #include "SphereComponent.h"
 #include "ModelComponent.h"
@@ -44,7 +44,7 @@ class Game
 
 public:
 	std::vector<GameComponent*> Components;
-	PointLightComponent* Light;
+	Light Light;
 
 	Graphics Gfx;
 	DisplayWin32* Display;

@@ -125,10 +125,10 @@ void DebugGizmos::Draw()
 		}
 	}
 
-	if (game->Light != nullptr)
-	{
-		DrawLightRange(game->Light);
-	}
+	//if (game->Light != nullptr)
+	//{
+	//	DrawLightRange(game->Light);
+	//}
 
 	if (ShowGridXZ || ShowGridXY || ShowGridYZ)
 	{

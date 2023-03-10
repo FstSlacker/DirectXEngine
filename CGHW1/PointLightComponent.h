@@ -3,6 +3,8 @@
 #include "ConstantBuffer.h"
 #include <SimpleMath.h>
 
+class Light;
+
 class PointLightComponent : public GameComponent
 {
 private:

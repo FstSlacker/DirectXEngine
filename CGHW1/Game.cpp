@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "InputDevice.h"
 
-Game::Game() : Gizmos(this)
+Game::Game() : Gizmos(this), Light(this)
 {
 	//...
 }
@@ -17,6 +17,11 @@ bool Game::Initialize()
 	Input = new InputDevice(this);
 
 	if (!Gfx.Initialize(Display->hWnd, Display->ClientWidth, Display->ClientHeight))
+	{
+		return false;
+	}
+
+	if (!Light.Initialize())
 	{
 		return false;
 	}
@@ -47,10 +52,7 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
-	if (Light != nullptr)
-	{
-		Light->Bind();
-	}
+	Light.Bind();
 
 	//Draw components
 	for (int i = 0; i < Components.size(); i++) 

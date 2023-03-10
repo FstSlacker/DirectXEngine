@@ -90,6 +90,23 @@ void MeshComponent::Initialize() {
 		Logs::LogError(hr, "Failed to initialize transformMat");
 	}
 
+	hr = material.Initialize(game->Gfx.GetDevice());
+
+	if (FAILED(hr))
+	{
+		Logs::LogError(hr, "Failed to initialize material");
+	}
+
+	material.Parameters = Material::MaterialCbuf{
+		DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT4(0.24725f, 0.1995f, 0.0745f, 1.0f),
+		DirectX::XMFLOAT4(0.75164f, 0.60648f, 0.22648f, 1.0f),
+		DirectX::XMFLOAT4(0.628281f, 0.555802f, 0.366065f, 1.0f),
+		51.2f,
+		false
+	};
+
+	binds.push_back(&material);
 	binds.push_back(&vertexBuffer);
 	binds.push_back(&indexBuffer);
 	binds.push_back(&transformMat);

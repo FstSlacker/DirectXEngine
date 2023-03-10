@@ -66,14 +66,17 @@ void ImGuiGameInfoWindow::Bind()
 			ImGui::TreePop();
 		}
 
-		if (ImGui::TreeNodeEx(game->Light->Name.c_str(), ImGuiTreeNodeFlags_Leaf))
+		for (int i = 0; i < game->Light.GetLightSourcesCount(); i++)
 		{
-			if (ImGui::IsItemClicked())
+			if (ImGui::TreeNodeEx(game->Light.GetLightComponent(i)->Name.c_str(), ImGuiTreeNodeFlags_Leaf))
 			{
-				game->ImGUI.AddWindow(new ImGuiPointLightWindow(game->Light));
-			}
+				if (ImGui::IsItemClicked())
+				{
+					game->ImGUI.AddWindow(new ImGuiPointLightWindow(game->Light.GetLightComponent(i)));
+				}
 
-			ImGui::TreePop();
+				ImGui::TreePop();
+			}
 		}
 
 		ImGui::Separator();
@@ -251,12 +254,12 @@ void ImGuiPointLightWindow::Bind()
 	ImGuiGameCompWindow::Bind();
 	if (ImGui::CollapsingHeader("Global Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		float lightColor[3] = { PointLightComponent::AmbientColor.x, PointLightComponent::AmbientColor.y, PointLightComponent::AmbientColor.z };
+		float lightColor[3] = { Light::AmbientColor.x, Light::AmbientColor.y, Light::AmbientColor.z };
 		if (ImGui::ColorEdit3("Ambient color", lightColor))
 		{
-			PointLightComponent::AmbientColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+			Light::AmbientColor = Color(lightColor[0], lightColor[1], lightColor[2]);
 		}
-		ImGui::DragFloat("Ambient intensity", &PointLightComponent::AmbientIntensity, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat("Ambient intensity", &Light::AmbientIntensity, 0.01f, 0.0f, 10.0f);
 		ImGui::Spacing();
 	}
 	if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))

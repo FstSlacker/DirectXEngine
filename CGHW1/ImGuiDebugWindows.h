@@ -2,7 +2,7 @@
 #include "ImGuiWindow.h"
 #include "GameComponent.h"
 #include "Camera.h"
-#include "PointLightComponent.h"
+#include "Light.h"
 
 class Game;
 
