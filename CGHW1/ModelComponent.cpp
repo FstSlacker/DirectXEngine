@@ -92,19 +92,17 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	meshComp->SetVertices(verts);
 	meshComp->SetIndices(inds);
 
-	Material* mat = new Material(game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* mat = new Material(game, game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
 	mat->EmissiveColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
 	mat->AmbientColor = Color(0.0f, 0.0f, 0.0f);
 	mat->DiffuseColor = Color(1.0f, 1.0f, 1.0f);
 	mat->SpecularColor = Color(1.0f, 1.0f, 1.0f);
 	mat->SpecularPower = 32.0f;
 
-	game->Gfx.AddMaterial(mat);
 	meshComp->Material = mat;
 
 	for (int i = 0; i < textures.size(); i++)
 	{
-		game->Gfx.AddTexture(textures[i]);
 		meshComp->Material->DiffuseTexture = textures[i];
 	}
 }
@@ -123,7 +121,7 @@ std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, 
 		{
 		case aiTextureType_DIFFUSE:
 			material->Get(AI_MATKEY_COLOR_DIFFUSE, diffColor);
-			textures.push_back(new Texture(Color(diffColor.r, diffColor.g, diffColor.b)));
+			textures.push_back(new Texture(game, Color(diffColor.r, diffColor.g, diffColor.b)));
 			return textures;
 		}
 	}
@@ -143,15 +141,15 @@ std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, 
 				if (!FilePathHelper::IsFileExist(path.C_Str()))
 				{
 					std::wstring findedFile = FilePathHelper::FindFileInParentDirectories(name, modelDirectory);
-					textures.push_back(new Texture(findedFile));
+					textures.push_back(new Texture(game, findedFile));
 				}
 				else
 				{
-					textures.push_back(new Texture(path.C_Str()));
+					textures.push_back(new Texture(game, path.C_Str()));
 				}
 				break;
 			default:
-				textures.push_back(new Texture(Color(1.0f, 0.0f, 0.0f)));
+				textures.push_back(new Texture(game, Color(1.0f, 0.0f, 0.0f)));
 				break;
 			}
 		}

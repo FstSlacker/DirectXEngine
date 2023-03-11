@@ -9,22 +9,15 @@ int main()
 	game.Gfx.AddPixelShader(L"PS_DefaultUnlit.hlsl");
 	game.Gfx.AddVertexShader(L"VS_Default.hlsl");
 
-	Texture* texWall = new Texture("./Textures/brich_wall.jpg");
-	Texture* texGrass = new Texture("./Textures/obsidiant.jpg");
+	Texture* texWall = new Texture(&game, "./Textures/brich_wall.jpg");
+	Texture* texGrass = new Texture(&game, "./Textures/obsidiant.jpg");
 
-	game.Gfx.AddTexture(texWall);
-	game.Gfx.AddTexture(texGrass);
-
-	Material* matLit1 = new Material(game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* matLit1 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
 	matLit1->DiffuseTexture = texGrass;
-	Material* matLit2 = new Material(game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* matLit2 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
 	matLit2->DiffuseTexture = texWall;
-	Material* matUnlit1 = new Material(game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultUnlit.hlsl"));
+	Material* matUnlit1 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultUnlit.hlsl"));
 	matUnlit1->DiffuseTexture = texWall;
-
-	game.Gfx.AddMaterial(matLit1);
-	game.Gfx.AddMaterial(matLit2);
-	game.Gfx.AddMaterial(matUnlit1);
 
 
 	SphereComponent* s1 = new SphereComponent(&game);

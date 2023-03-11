@@ -2,13 +2,16 @@
 #include <DirectXMath.h>
 #include "ConstantBuffer.h"
 #include "Bindable.h"
-#include "Texture.h"
 #include "Shaders.h"
+#include "Texture.h"
 
+class Game;
 class Graphics;
 
 class Material : public Bindable
 {
+    friend class Graphics;
+
 public:
     Color EmissiveColor;
     Color AmbientColor;
@@ -18,9 +21,8 @@ public:
 
     Texture* DiffuseTexture;
 
-    Material(VertexShader* vs, PixelShader* ps);
+    Material(Game* game, VertexShader* vs, PixelShader* ps);
 
-    bool Initialize(ID3D11Device* device);
     virtual void Bind(ID3D11DeviceContext* context) override;
     virtual void DestroyResources() override;
 
@@ -35,6 +37,8 @@ private:
         float SpecularPower; // 4
         bool UseTexture; // 4
     };
+
+    bool Initialize(ID3D11Device* device);
 
     PixelShader* pixelShader;
     VertexShader* vertexShader;

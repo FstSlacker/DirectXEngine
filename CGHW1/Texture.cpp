@@ -1,28 +1,33 @@
 #include "Texture.h"
 #include "Logs.h"
+#include "Game.h"
 
-Texture::Texture()
+Texture::Texture(Game* game)
 {
 	textureData.Type = TextureType::ColorArray;
 	textureData.TextureColor = Color(1.0f, 0.0f, 0.0f);
+	game->Gfx.AddTexture(this);
 }
 
-Texture::Texture(Color color)
+Texture::Texture(Game* game, Color color)
 {
 	textureData.Type = TextureType::ColorArray;
 	textureData.TextureColor = color;
+	game->Gfx.AddTexture(this);
 }
 
-Texture::Texture(std::string filePath)
+Texture::Texture(Game* game, std::string filePath)
 {
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = std::wstring(filePath.begin(), filePath.end());
+	game->Gfx.AddTexture(this);
 }
 
-Texture::Texture(std::wstring filePath)
+Texture::Texture(Game* game, std::wstring filePath)
 {
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = filePath;
+	game->Gfx.AddTexture(this);
 }
 
 bool Texture::Initialize(ID3D11Device* device)

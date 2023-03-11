@@ -77,10 +77,6 @@ float4 CalculateSpecular(LightData light, float3 dirToCamera, float3 dirToLight,
     float3 r = normalize(reflect(-dirToLight, normal));
     float rDotV = max(0, dot(r, dirToCamera));
 
-    // Blinn-Phong lighting
-    float3 h = normalize(dirToLight + dirToCamera);
-    float nDotH = max(0, dot(normal, h));
-
     return light.Color * pow(rDotV, Material.SpecularPower);
 }
 
@@ -215,6 +211,6 @@ float4 PSMain( PS_IN input ) : SV_Target
         pointColor = input.color;
     }
 
-    float4 finalColor = (emissive + ambient + diffuse + specular) * pointColor;
+    float4 finalColor = (emissive + ambient + diffuse) * pointColor + specular;
     return finalColor;
 }

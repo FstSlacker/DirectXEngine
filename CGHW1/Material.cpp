@@ -1,7 +1,8 @@
 #include "Material.h"
 #include <DirectXColors.h>
+#include "Game.h"
 
-Material::Material(VertexShader* vs, PixelShader* ps)
+Material::Material(Game* game, VertexShader* vs, PixelShader* ps)
 {
 	this->EmissiveColor = Color(DirectX::Colors::Black);
 	this->AmbientColor = Color(DirectX::Colors::White);
@@ -12,6 +13,8 @@ Material::Material(VertexShader* vs, PixelShader* ps)
 
 	this->vertexShader = vs;
 	this->pixelShader = ps;
+
+	game->Gfx.AddMaterial(this);
 }
 
 bool Material::Initialize(ID3D11Device* device)
