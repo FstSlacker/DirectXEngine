@@ -3,11 +3,15 @@
 #include <DirectXMath.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>
-#include "PointLightComponent.h"
+#include "GameComponent.h"
 
 #define MAX_LIGHTS 8
 
 class Game;
+class LightComponent;
+class PointLightComponent;
+class DirectionalLightComponent;
+class SpotLightComponent;
 
 class Light
 {
@@ -44,7 +48,7 @@ private:
 	};
 
 	PSConstantBuffer<LightCbuf> lightsBuffer;
-	std::vector<PointLightComponent*> lights;
+	std::vector<LightComponent*> lights;
 	Game* game;
 
 
@@ -54,10 +58,43 @@ public:
 
 	Light(Game* game);
 
-	void AddLightComponent(PointLightComponent* lightComp);
-	PointLightComponent* GetLightComponent(int ind) const;
+	void AddLightComponent(LightComponent* lightComp);
+	LightComponent* GetLightComponent(int ind) const;
 	int GetLightSourcesCount() const;
 	bool Initialize();
 	void Bind();
 };
+
+class LightComponent : public GameComponent
+{
+protected:
+	LightComponent(Game* game);
+
+public:
+	Color LightColor;
+	float Intensity;
+};
+
+class PointLightComponent : public LightComponent
+{
+public:
+	float Range;
+
+	PointLightComponent(Game* game);
+};
+
+class DirectionalLightComponent : public LightComponent
+{
+public:
+	DirectionalLightComponent(Game* game);
+};
+
+class SpotLightComponent : public LightComponent
+{
+public:
+	float ConeAngle;
+
+	SpotLightComponent(Game* game);
+};
+
 

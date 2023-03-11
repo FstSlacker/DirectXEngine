@@ -1,6 +1,8 @@
 #include "Graphics.h"
 #include "Logs.h"
 
+std::wstring Graphics::kShaderFolder = L"./Shaders/";
+
 bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 {
 	this->displayWidth = width;
@@ -22,14 +24,16 @@ bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 
 void Graphics::DestroyResources()
 {
-	for (int i = 0; i < vertexShaders.size(); i++)
+	std::map<std::wstring, std::unique_ptr<VertexShader>>::iterator itVs;
+	for (itVs = vertexShaders.begin(); itVs != vertexShaders.end(); itVs++)
 	{
-		vertexShaders[i]->DestroyResources();
+		itVs->second->DestroyResources();
 	}
 
-	for (int i = 0; i < pixelShaders.size(); i++)
+	std::map<std::wstring, std::unique_ptr<PixelShader>>::iterator itPs;
+	for (itPs = pixelShaders.begin(); itPs != pixelShaders.end(); itPs++)
 	{
-		pixelShaders[i]->DestroyResources();
+		itPs->second->DestroyResources();
 	}
 
 	for (int i = 0; i < textures.size(); i++)
@@ -74,19 +78,44 @@ void Graphics::EndFrame()
 	swapChain->Present(1, 0);
 }
 
-void Graphics::AddVertexShader(VertexShader* vs)
+void Graphics::AddVertexShader(std::wstring name)
 {
-	vertexShaders.push_back(vs);
+	vertexShaders[name] = std::make_unique<VertexShader>(kShaderFolder + name, VertexShader::VertexLayoutType::VectrxPositionColorTextureNormal);
 }
 
-void Graphics::AddPixelShader(PixelShader* ps)
+void Graphics::AddPixelShader(std::wstring name)
 {
-	pixelShaders.push_back(ps);
+	pixelShaders[name] = std::make_unique<PixelShader>(kShaderFolder + name);
+}
+
+VertexShader* Graphics::FindVertexShader(std::wstring name) const
+{
+	if (vertexShaders.count(name))
+	{
+		return vertexShaders.at(name).get();
+	}
+
+	return nullptr;
+}
+
+PixelShader* Graphics::FindPixelShader(std::wstring name) const
+{
+	if (pixelShaders.count(name))
+	{
+		return pixelShaders.at(name).get();
+	}
+
+	return nullptr;
 }
 
 void Graphics::AddTexture(Texture* tex)
 {
 	textures.push_back(tex);
+}
+
+void Graphics::AddMaterial(Material* mat)
+{
+	this->materials.push_back(mat);
 }
 
 void Graphics::SetDepthStencilEnable(bool isEnable)
@@ -245,24 +274,27 @@ bool Graphics::InitializeResources()
 		return false;
 	}
 
-	//Create shaders
-	for (int i = 0; i < vertexShaders.size(); i++)
+	//Init shaders
+
+	std::map<std::wstring, std::unique_ptr<VertexShader>>::iterator itVs;
+	for (itVs = vertexShaders.begin(); itVs != vertexShaders.end(); itVs++)
 	{
-		if (!vertexShaders[i]->Initialize(device.Get()))
+		if (!itVs->second->Initialize(device.Get()))
 		{
 			return false;
 		}
 	}
 
-	for (int i = 0; i < pixelShaders.size(); i++)
+	std::map<std::wstring, std::unique_ptr<PixelShader>>::iterator itPs;
+	for (itPs = pixelShaders.begin(); itPs != pixelShaders.end(); itPs++)
 	{
-		if (!pixelShaders[i]->Initialize(device.Get()))
+		if (!itPs->second->Initialize(device.Get()))
 		{
 			return false;
 		}
 	}
 
-	//Create textures
+	//Init textures
 	for (int i = 0; i < textures.size(); i++)
 	{
 		if (!textures[i]->Initialize(device.Get()))
@@ -270,5 +302,15 @@ bool Graphics::InitializeResources()
 			return false;
 		}
 	}
+
+	//Init materials
+	for (int i = 0; i < materials.size(); i++)
+	{
+		if (!materials[i]->Initialize(device.Get()))
+		{
+			return false;
+		}
+	}
+
 	return true;
 }

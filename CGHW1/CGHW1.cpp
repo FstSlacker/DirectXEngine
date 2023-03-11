@@ -5,34 +5,43 @@ int main()
 	Game game;
 	game.Name = L"Game framework";
 
-	PixelShader* ps = new PixelShader(L"./Shaders/PS_DefaultTextureLighting.hlsl");
-	VertexShader* vs = new VertexShader(L"./Shaders/VS_DefaultTextureLighting.hlsl", VertexShader::VertexLayoutType::VertexPositionTextureNormal);
+	game.Gfx.AddPixelShader(L"PS_DefaultLit.hlsl");
+	game.Gfx.AddPixelShader(L"PS_DefaultUnlit.hlsl");
+	game.Gfx.AddVertexShader(L"VS_Default.hlsl");
 
 	Texture* texWall = new Texture("./Textures/brich_wall.jpg");
 	Texture* texGrass = new Texture("./Textures/obsidiant.jpg");
+
+	game.Gfx.AddTexture(texWall);
+	game.Gfx.AddTexture(texGrass);
+
+	Material* matLit1 = new Material(game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	matLit1->DiffuseTexture = texGrass;
+	Material* matLit2 = new Material(game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	matLit2->DiffuseTexture = texWall;
+	Material* matUnlit1 = new Material(game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultUnlit.hlsl"));
+	matUnlit1->DiffuseTexture = texWall;
+
+	game.Gfx.AddMaterial(matLit1);
+	game.Gfx.AddMaterial(matLit2);
+	game.Gfx.AddMaterial(matUnlit1);
+
 
 	SphereComponent* s1 = new SphereComponent(&game);
 	s1->Name = "Sphere1";
 	s1->Collider = new SphereCollider(s1);
 
-	s1->SetShaders(vs, ps);
-	s1->SetTexture(texWall);
+	s1->Material = matLit1;
 
 	SphereComponent* s2 = new SphereComponent(&game);
 	s2->Name = "Sphere2";
 	s2->Collider = new AABBCollider(s2);
 
-	s2->SetShaders(vs, ps);
-	s2->SetTexture(texWall);
+	s2->Material = matUnlit1;
 
 	s2->Transform.SetPosition(Vector3(2.0f, 0.0f, 0.0f));
 
 	s1->Transform.AddChild(s2->Transform);
-
-	game.Gfx.AddPixelShader(ps);
-	game.Gfx.AddVertexShader(vs);
-	game.Gfx.AddTexture(texWall);
-	game.Gfx.AddTexture(texGrass);
 
 	ModelComponent* model = new ModelComponent(
 		&game,
@@ -42,17 +51,18 @@ int main()
 	model->Transform.SetScale(Vector3(0.02f, 0.02f, 0.02f));
 
 	PlaneComponent* plane = new PlaneComponent(&game);
-	plane->SetShaders(vs, ps);
-	plane->SetTexture(texGrass);
+	plane->Material = matLit2;
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	PointLightComponent* light = new PointLightComponent(&game);
-	light->Transform.SetPosition(Vector3(0.0f, 10.0f, 0.0f));
+	light->Transform.SetPosition(Vector3(10.0f, 10.0f, 0.0f));
 	light->Range = 30.0f;
 
-	PointLightComponent* light2 = new PointLightComponent(&game);
-	light2->Transform.SetPosition(Vector3(0.0f, -10.0f, 0.0f));
-	light2->Range = 30.0f;
+	SpotLightComponent* light2 = new SpotLightComponent(&game);
+	light2->Transform.SetPosition(Vector3(-10.0f, 10.0f, 0.0f));
+
+	DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
+	light3->Transform.SetPosition(Vector3(0.0f, 10.0f, 10.0f));
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

@@ -18,6 +18,9 @@ void MeshComponent::Draw(){
 
 	GameComponent::Draw();
 
+	if (this->Material == nullptr)
+		return;
+
 	transformMat.Data.WorldViewProjMatrix = DirectX::XMMatrixTranspose(
 		Transform.GetTransformMatrix() * game->MainCamera->GetViewProjectionMatrix()
 	);
@@ -31,6 +34,8 @@ void MeshComponent::Draw(){
 	{
 		binds[i]->Bind(game->Gfx.GetContext());
 	}
+	
+	this->Material->Bind(game->Gfx.GetContext());
 
 	game->Gfx.GetContext()->DrawIndexed(indexBuffer.BufferSize(), 0, 0);
 }
@@ -45,20 +50,9 @@ void MeshComponent::FixedUpdate()
 	GameComponent::FixedUpdate();
 }
 
-void MeshComponent::SetShaders(VertexShader* vShader, PixelShader* pShader)
+void MeshComponent::SetVertices(std::vector<Vertex> verts)
 {
-	binds.push_back(vShader);
-	binds.push_back(pShader);
-}
-
-void MeshComponent::SetTexture(Texture* tex)
-{
-	binds.push_back(tex);
-}
-
-void MeshComponent::SetVertices(std::vector<VertexPositionTextureNormal> verts)
-{
-	points = verts;
+	vertices = verts;
 }
 
 void MeshComponent::SetIndices(std::vector<int> inds)
@@ -72,7 +66,7 @@ void MeshComponent::Initialize() {
 
 	HRESULT hr;
 
-	hr = vertexBuffer.Initialize(game->Gfx.GetDevice(), points.data(), points.size());
+	hr = vertexBuffer.Initialize(game->Gfx.GetDevice(), vertices.data(), vertices.size());
 	if (FAILED(hr))
 	{
 		Logs::LogError(hr, "Failed to initialize vertexBuffer");
@@ -90,23 +84,6 @@ void MeshComponent::Initialize() {
 		Logs::LogError(hr, "Failed to initialize transformMat");
 	}
 
-	hr = material.Initialize(game->Gfx.GetDevice());
-
-	if (FAILED(hr))
-	{
-		Logs::LogError(hr, "Failed to initialize material");
-	}
-
-	material.Parameters = Material::MaterialCbuf{
-		DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT4(0.24725f, 0.1995f, 0.0745f, 1.0f),
-		DirectX::XMFLOAT4(0.75164f, 0.60648f, 0.22648f, 1.0f),
-		DirectX::XMFLOAT4(0.628281f, 0.555802f, 0.366065f, 1.0f),
-		51.2f,
-		false
-	};
-
-	binds.push_back(&material);
 	binds.push_back(&vertexBuffer);
 	binds.push_back(&indexBuffer);
 	binds.push_back(&transformMat);

@@ -126,9 +126,6 @@
     <ClCompile Include="DebugGizmos.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="PointLightComponent.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Logs.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -259,9 +256,6 @@
     </ClInclude>
     <ClInclude Include="DebugGizmos.h">
       <Filter>Файлы заголовков\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLightComponent.h">
-      <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Logs.h">
       <Filter>Файлы заголовков</Filter>

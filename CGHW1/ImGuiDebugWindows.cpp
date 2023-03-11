@@ -12,7 +12,15 @@ void ImGuiGameInfoWindow::ShowGameComponent(GameComponent* comp)
 	{
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 		{
-			game->ImGUI.AddWindow(new ImGuiGameCompWindow(comp));
+			MeshComponent* meshComp = dynamic_cast<MeshComponent*>(comp);
+			if (meshComp != nullptr)
+			{
+				game->ImGUI.AddWindow(new ImGuiMeshCompWindow(meshComp));
+			}
+			else
+			{
+				game->ImGUI.AddWindow(new ImGuiGameCompWindow(comp));
+			}
 		}
 		for (int i = 0; i < childsCount; i++)
 		{
@@ -72,7 +80,7 @@ void ImGuiGameInfoWindow::Bind()
 			{
 				if (ImGui::IsItemClicked())
 				{
-					game->ImGUI.AddWindow(new ImGuiPointLightWindow(game->Light.GetLightComponent(i)));
+					game->ImGUI.AddWindow(new ImGuiLightCompWindow(game->Light.GetLightComponent(i)));
 				}
 
 				ImGui::TreePop();
@@ -244,12 +252,12 @@ void ImGuiCameraWindow::Bind()
 	}
 }
 
-ImGuiPointLightWindow::ImGuiPointLightWindow(PointLightComponent* comp) : ImGuiGameCompWindow(comp)
+ImGuiLightCompWindow::ImGuiLightCompWindow(LightComponent* comp) : ImGuiGameCompWindow(comp)
 {
 	this->lightComp = comp;
 }
 
-void ImGuiPointLightWindow::Bind()
+void ImGuiLightCompWindow::Bind()
 {
 	ImGuiGameCompWindow::Bind();
 	if (ImGui::CollapsingHeader("Global Light", ImGuiTreeNodeFlags_DefaultOpen))
@@ -262,7 +270,16 @@ void ImGuiPointLightWindow::Bind()
 		ImGui::DragFloat("Ambient intensity", &Light::AmbientIntensity, 0.01f, 0.0f, 10.0f);
 		ImGui::Spacing();
 	}
-	if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen))
+
+	std::string lightName = "<error name>";
+	if (typeid(*lightComp) == typeid(PointLightComponent))
+		lightName = "Point Light";
+	else if (typeid(*lightComp) == typeid(DirectionalLightComponent))
+		lightName = "Directional Light";
+	else if (typeid(*lightComp) == typeid(SpotLightComponent))
+		lightName = "Spot Light";
+
+	if (ImGui::CollapsingHeader(lightName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		float lightColor[3] = { lightComp->LightColor.x, lightComp->LightColor.y, lightComp->LightColor.z };
 		if (ImGui::ColorEdit3("Color", lightColor))
@@ -270,9 +287,75 @@ void ImGuiPointLightWindow::Bind()
 			lightComp->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
 		}
 		ImGui::DragFloat("Intensity", &lightComp->Intensity, 0.01f, 0.0f, 10.0f);
-		ImGui::DragFloat("Specular Intensity", &lightComp->SpecularIntensity, 0.01f, 0.0f, 10.0f);
-		ImGui::DragFloat("Specular Power", &lightComp->SpecularPower, 0.01f, 0.0f, 10.0f);
-		ImGui::DragFloat("Range", &lightComp->Range, 0.1f, 0.0f, 1000.0f);
+
+		if (typeid(*lightComp) == typeid(PointLightComponent))
+		{
+			ImGui::DragFloat("Range", &dynamic_cast<PointLightComponent*>(lightComp)->Range);
+		}
+		else if (typeid(*lightComp) == typeid(SpotLightComponent))
+		{
+			ImGui::DragFloat("ConeAngle", &dynamic_cast<SpotLightComponent*>(lightComp)->ConeAngle);
+		}
+
+		ImGui::Spacing();
+	}
+}
+
+
+ImGuiMeshCompWindow::ImGuiMeshCompWindow(MeshComponent* comp) : ImGuiGameCompWindow(comp)
+{
+	this->meshComp = comp;
+}
+
+void ImGuiMeshCompWindow::Bind()
+{
+	ImGuiGameCompWindow::Bind();
+	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float color[3] = { meshComp->Material->AmbientColor.x, meshComp->Material->AmbientColor.y, meshComp->Material->AmbientColor.z };
+		if (ImGui::ColorEdit3("AmbientColor", color))
+		{
+			meshComp->Material->AmbientColor = Color(color[0], color[1], color[2]);
+		}
+
+		color[0] = meshComp->Material->EmissiveColor.x; 
+		color[1] = meshComp->Material->EmissiveColor.y;
+		color[2] = meshComp->Material->EmissiveColor.z;
+
+		if (ImGui::ColorEdit3("EmissiveColor", color))
+		{
+			meshComp->Material->EmissiveColor = Color(color[0], color[1], color[2]);
+		}
+
+		color[0] = meshComp->Material->DiffuseColor.x;
+		color[1] = meshComp->Material->DiffuseColor.y;
+		color[2] = meshComp->Material->DiffuseColor.z;
+
+		if (ImGui::ColorEdit3("DiffuseColor", color))
+		{
+			meshComp->Material->DiffuseColor = Color(color[0], color[1], color[2]);
+		}
+
+		color[0] = meshComp->Material->SpecularColor.x;
+		color[1] = meshComp->Material->SpecularColor.y;
+		color[2] = meshComp->Material->SpecularColor.z;
+
+		if (ImGui::ColorEdit3("SpecularColor", color))
+		{
+			meshComp->Material->SpecularColor = Color(color[0], color[1], color[2]);
+		}
+
+		ImGui::DragFloat("SpecularPower", &meshComp->Material->SpecularPower);
+
+		if (meshComp->Material->DiffuseTexture != nullptr)
+		{
+			ImGui::Text("DiffuseTexture: YES");
+		}
+		else
+		{
+			ImGui::Text("DiffuseTexture: NO");
+		}
+
 		ImGui::Spacing();
 	}
 }

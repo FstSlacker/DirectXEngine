@@ -58,6 +58,7 @@ cbuffer cLightBuf : register(b1)
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
+    float4 color : COLOR;
  	float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLD_POSITION;
@@ -203,8 +204,17 @@ float4 PSMain( PS_IN input ) : SV_Target
     float4 diffuse = Material.Diffuse * lit.Diffuse;
     float4 specular = Material.Specular * lit.Specular;
     
-    float4 texColor = texColor = objTexture.Sample(objSamplerState, input.texCord);
+    float4 pointColor;
+    
+    if(Material.UseTexture)
+    {
+        pointColor = objTexture.Sample(objSamplerState, input.texCord);
+    }
+    else
+    {
+        pointColor = input.color;
+    }
 
-    float4 finalColor = (emissive + ambient + diffuse + specular) * texColor;
+    float4 finalColor = (emissive + ambient + diffuse + specular) * pointColor;
     return finalColor;
 }

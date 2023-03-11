@@ -2,10 +2,29 @@
 #include <DirectXMath.h>
 #include "ConstantBuffer.h"
 #include "Bindable.h"
+#include "Texture.h"
+#include "Shaders.h"
+
+class Graphics;
 
 class Material : public Bindable
 {
 public:
+    Color EmissiveColor;
+    Color AmbientColor;
+    Color DiffuseColor;
+    Color SpecularColor;
+    float SpecularPower;
+
+    Texture* DiffuseTexture;
+
+    Material(VertexShader* vs, PixelShader* ps);
+
+    bool Initialize(ID3D11Device* device);
+    virtual void Bind(ID3D11DeviceContext* context) override;
+    virtual void DestroyResources() override;
+
+private:
     struct MaterialCbuf
     {
         DirectX::XMFLOAT4 Emissive; // 16
@@ -17,14 +36,9 @@ public:
         bool UseTexture; // 4
     };
 
-    MaterialCbuf Parameters;
-
-    HRESULT Initialize(ID3D11Device* device);
-    virtual void Bind(ID3D11DeviceContext* context) override;
-    virtual void DestroyResources() override;
-
-private:
+    PixelShader* pixelShader;
+    VertexShader* vertexShader;
+    MaterialCbuf parameters;
     PSConstantBuffer<MaterialCbuf> materialBuffer;
-
 };
 

@@ -7,9 +7,9 @@
 #include <iostream>
 #include <vector>
 #include <wrl.h>
+#include <map>
 
-#include "Shaders.h"
-#include "Texture.h"
+#include "Material.h"
 
 class Graphics
 {
@@ -21,9 +21,14 @@ public:
 	void PrepareFrame();
 	void EndFrame();
 
-	void AddVertexShader(VertexShader* vs);
-	void AddPixelShader(PixelShader* ps);
+	void AddVertexShader(std::wstring name);
+	void AddPixelShader(std::wstring name);
+
+	VertexShader* FindVertexShader(std::wstring name) const;
+	PixelShader* FindPixelShader(std::wstring name) const;
+
 	void AddTexture(Texture* tex);
+	void AddMaterial(Material* mat);
 
 	void SetDepthStencilEnable(bool isEnable);
 
@@ -34,6 +39,8 @@ private:
 	bool InitializeDirectX(HWND hWnd);
 	bool InitializeResources();
 
+	static std::wstring kShaderFolder;
+
 	UINT displayWidth;
 	UINT displayHeight;
 
@@ -42,9 +49,11 @@ private:
 	ID3D11RenderTargetView* renderView;
 	IDXGISwapChain* swapChain;
 
-	std::vector<VertexShader*> vertexShaders;
-	std::vector<PixelShader*> pixelShaders;
+	std::map<std::wstring, std::unique_ptr<VertexShader>> vertexShaders;
+	std::map<std::wstring, std::unique_ptr<PixelShader>> pixelShaders;
+
 	std::vector<Texture*> textures;
+	std::vector<Material*> materials;
 
 	ID3D11Texture2D* backBuffer;
 	ID3D11Texture2D* depthStencilBuffer;

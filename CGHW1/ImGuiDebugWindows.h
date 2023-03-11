@@ -1,6 +1,7 @@
 #pragma once
 #include "ImGuiWindow.h"
 #include "GameComponent.h"
+#include "MeshComponent.h"
 #include "Camera.h"
 #include "Light.h"
 
@@ -56,12 +57,22 @@ public:
 	virtual void Bind() override;
 };
 
-class ImGuiPointLightWindow : public ImGuiGameCompWindow
+class ImGuiLightCompWindow : public ImGuiGameCompWindow
 {
 protected:
-	PointLightComponent* lightComp;
+	LightComponent* lightComp;
 
 public:
-	ImGuiPointLightWindow(PointLightComponent* comp);
+	ImGuiLightCompWindow(LightComponent* comp);
+	virtual void Bind() override;
+};
+
+class ImGuiMeshCompWindow : public ImGuiGameCompWindow
+{
+protected:
+	MeshComponent* meshComp;
+
+public:
+	ImGuiMeshCompWindow(MeshComponent* comp);
 	virtual void Bind() override;
 };

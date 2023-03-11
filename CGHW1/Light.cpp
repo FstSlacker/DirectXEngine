@@ -4,12 +4,12 @@
 DirectX::SimpleMath::Color Light::AmbientColor = DirectX::SimpleMath::Color(DirectX::Colors::White);
 float Light::AmbientIntensity = 0.1f;
 
-void Light::AddLightComponent(PointLightComponent* lightComp)
+void Light::AddLightComponent(LightComponent* lightComp)
 {
 	lights.push_back(lightComp);
 }
 
-PointLightComponent* Light::GetLightComponent(int ind) const
+LightComponent* Light::GetLightComponent(int ind) const
 {
 	return lights[ind];
 }
@@ -51,18 +51,30 @@ void Light::Bind()
 
 		if (i < lights.size())
 		{
-			PointLightComponent* light = lights[i];
-			lightData.Position = DirectX::SimpleMath::Vector4(light->Transform.GetPosition()); // 16 
-			lightData.Direction = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f); // 16 
-			lightData.Color = light->LightColor; // 16 
+			LightComponent* light = lights[i];
 
-			lightData.SpotAngle = 0.0f;
+			lightData.Position = DirectX::SimpleMath::Vector4(light->Transform.GetPosition()); 
+			lightData.Color = light->LightColor; 
 			lightData.ConstantAtt = 1.0f;
 			lightData.LinearAtt = 0.08f;
 			lightData.QuadraticAtt = 0.0f;
-
-			lightData.LightType = (int)LightType::Point;
 			lightData.Enabled = true;
+
+			if (typeid(*light) == typeid(PointLightComponent))
+			{
+				lightData.LightType = (int)LightType::Point;
+			}
+			else if (typeid(*light) == typeid(DirectionalLightComponent))
+			{
+				lightData.Direction = Vector4(lights[i]->Transform.GetForward());
+				lightData.LightType = (int)LightType::Directional;
+			}
+			else if (typeid(*light) == typeid(SpotLightComponent))
+			{
+				lightData.Direction = Vector4(lights[i]->Transform.GetForward());
+				lightData.SpotAngle = dynamic_cast<SpotLightComponent*>(light)->ConeAngle * 0.01745329f;
+				lightData.LightType = (int)LightType::Spot;
+			}
 		}
 
 		lightsBuffer.Data.Lights[i] = lightData;
@@ -77,4 +89,30 @@ void Light::Bind()
 	}
 
 	lightsBuffer.Bind(game->Gfx.GetContext());
+}
+
+LightComponent::LightComponent(Game* game) : GameComponent(game)
+{
+	this->LightColor = Color(DirectX::Colors::White);
+	this->Intensity = 1.0f;
+}
+
+PointLightComponent::PointLightComponent(Game* game) : LightComponent(game)
+{
+	this->Name = "PointLight_" + std::to_string(game->Light.GetLightSourcesCount());
+	this->Range = 10.0f;
+	game->Light.AddLightComponent(this);
+}
+
+DirectionalLightComponent::DirectionalLightComponent(Game* game) : LightComponent(game)
+{
+	this->Name = "DirectionalLight_" + std::to_string(game->Light.GetLightSourcesCount());
+	game->Light.AddLightComponent(this);
+}
+
+SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
+{
+	this->Name = "SpotLight_" + std::to_string(game->Light.GetLightSourcesCount());
+	this->ConeAngle = 45.0f;
+	game->Light.AddLightComponent(this);
 }

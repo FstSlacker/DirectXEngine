@@ -1,5 +1,6 @@
 #include "SphereComponent.h"
 #include <math.h>
+#include <DirectXColors.h>
 
 void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 {
@@ -23,8 +24,8 @@ void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 			);
 			Vector3 norm = pos;
 			norm.Normalize();
-
-			this->points.push_back(VertexPositionTextureNormal(pos, uv, norm));
+			Color color = Color(DirectX::Colors::White);
+			this->vertices.push_back(Vertex(pos, color, uv, norm));
 		}
 	}
 

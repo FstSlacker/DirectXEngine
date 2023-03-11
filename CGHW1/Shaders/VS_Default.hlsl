@@ -6,7 +6,8 @@ cbuffer cBuf : register(b0)
 
 struct VS_IN
 {
-	float3 pos : POSITION0;
+    float3 pos : POSITION0;
+    float4 color : COLOR0;
     float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
 };
@@ -14,6 +15,7 @@ struct VS_IN
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
+    float4 color : COLOR;
  	float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLD_POSITION;
@@ -24,6 +26,7 @@ PS_IN VSMain( VS_IN input )
 	PS_IN output = (PS_IN)0;
 	
 	output.pos = mul(float4(input.pos, 1.0f), wvpMat);
+    output.color = input.color;
 	output.texCord = input.texCord;
     output.normal = normalize(mul(float4(input.normal, 0.0f), worldMat));
     output.worldPos = mul(float4(input.pos, 1.0f), worldMat);

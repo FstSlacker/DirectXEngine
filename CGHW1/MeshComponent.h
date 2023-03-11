@@ -30,16 +30,16 @@ protected:
 
 	std::vector<Bindable*> binds;
 
-	VertexBuffer<VertexPositionTextureNormal> vertexBuffer;
+	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indexBuffer;
 
 	VSConstantBuffer<TransformCbuf> transformMat;
-	Material material;
 
-	std::vector<VertexPositionTextureNormal> points;
+	std::vector<Vertex> vertices;
 	std::vector<int> indices;
 
 public:
+	Material* Material;
 
 	MeshComponent(Game* game);
 	void DestroyResources() override;
@@ -47,8 +47,7 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void FixedUpdate() override;
-	void SetShaders(VertexShader* vShader, PixelShader* pShader);
-	void SetTexture(Texture* tex);
-	void SetVertices(std::vector<VertexPositionTextureNormal> verts);
+
+	void SetVertices(std::vector<Vertex> verts);
 	void SetIndices(std::vector<int> inds);
 };

@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "StringHelper.h"
 #include "Vertex.h"
+#include "Material.h"
 
 bool ModelComponent::LoadModel(const std::string& path)
 {
@@ -35,12 +36,12 @@ void ModelComponent::ProcessNode(aiNode* node, const aiScene* scene)
 
 void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
-	std::vector<VertexPositionTextureNormal> verts;
+	std::vector<Vertex> verts;
 	std::vector<int> inds;
 
 	for (UINT i = 0; i < mesh->mNumVertices; i++)
 	{
-		VertexPositionTextureNormal vert;
+		Vertex vert;
 
 		vert.Position = Vector3(
 			mesh->mVertices[i].x,
@@ -91,12 +92,20 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	meshComp->SetVertices(verts);
 	meshComp->SetIndices(inds);
 
-	meshComp->SetShaders(vs, ps);
+	Material* mat = new Material(game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	mat->EmissiveColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+	mat->AmbientColor = Color(0.0f, 0.0f, 0.0f);
+	mat->DiffuseColor = Color(1.0f, 1.0f, 1.0f);
+	mat->SpecularColor = Color(1.0f, 1.0f, 1.0f);
+	mat->SpecularPower = 32.0f;
+
+	game->Gfx.AddMaterial(mat);
+	meshComp->Material = mat;
 
 	for (int i = 0; i < textures.size(); i++)
 	{
 		game->Gfx.AddTexture(textures[i]);
-		meshComp->SetTexture(textures[i]);
+		meshComp->Material->DiffuseTexture = textures[i];
 	}
 }
 
@@ -195,12 +204,6 @@ TextureStorageType ModelComponent::GetTextureStorageType(aiMaterial* material, U
 ModelComponent::ModelComponent(Game* game, std::string modelPath) : GameComponent(game)
 {
 	this->Name = "ModelComponent_" + std::to_string(game->Components.size());
-
-	ps = new PixelShader(L"./Shaders/PS_DefaultTextureLighting.hlsl");
-	vs = new VertexShader(L"./Shaders/VS_DefaultTextureLighting.hlsl", VertexShader::VertexLayoutType::VertexPositionTextureNormal);
-
-	game->Gfx.AddPixelShader(ps);
-	game->Gfx.AddVertexShader(vs);
 
 	LoadModel(modelPath);
 }

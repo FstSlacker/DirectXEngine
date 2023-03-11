@@ -49,3 +49,21 @@ struct VertexPositionTextureNormal
 	Vector2 UV;
 	Vector3 Normal;
 };
+
+struct Vertex
+{
+	Vertex() {}
+
+	Vertex(Vector3 position, Color color, Vector2 uv, Vector3 normal)
+	{
+		Position = position;
+		Color = color;
+		UV = uv;
+		Normal = normal;
+	}
+
+	Vector3 Position;
+	Color Color;
+	Vector2 UV;
+	Vector3 Normal;
+};
