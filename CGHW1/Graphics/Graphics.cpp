@@ -19,7 +19,81 @@ bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 		return false;
 	}
 
+	isInitialized = true;
+
     return true;
+}
+
+bool Graphics::Resize(UINT width, UINT height)
+{
+	if (!isInitialized)
+		return false;
+
+	this->displayWidth = width;
+	this->displayHeight = height;
+
+	HRESULT res;
+
+	context->OMSetRenderTargets(0, 0, 0);
+
+	renderView->Release();
+	depthStencilView->Release();
+	backBuffer->Release();
+	depthStencilBuffer->Release();
+
+	res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to resize Swapchain");
+		return false;
+	}
+
+	res = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)backBuffer.GetAddressOf());
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to create BackBuffer");
+		return false;
+	}
+
+	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
+	depthStencilDesc.Width = displayWidth;
+	depthStencilDesc.Height = displayHeight;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	res = device->CreateTexture2D(&depthStencilDesc, nullptr, depthStencilBuffer.GetAddressOf());
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to create DepthStencilBuffer texture");
+		return false;
+	}
+
+	res = device->CreateRenderTargetView(backBuffer.Get(), nullptr, renderView.GetAddressOf());
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to create RenderTargetView");
+		return false;
+	}
+
+	res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to create DepthStencilView");
+		return false;
+	}
+	return true;
 }
 
 void Graphics::DestroyResources()

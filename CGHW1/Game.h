@@ -66,12 +66,14 @@ public:
 	void Exit();
 	void Pause();
 	void RestoreTarget();
+	bool ResizeWindow(UINT width, UINT height);
 
 private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
 
 	bool isExitRequested = false;
 	bool isPauseRequested = false;
+	bool isInitialized = false;
 
 	void DestroyResources();
 	void Draw();

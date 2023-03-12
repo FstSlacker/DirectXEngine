@@ -17,6 +17,7 @@ public:
 	Color BackgroundColor = Color(0.0f, 0.0f, 0.0f);
 
 	bool Initialize(HWND hWnd, UINT width, UINT height);
+	bool Resize(UINT width, UINT height);
 	void DestroyResources();
 	void PrepareFrame();
 	void EndFrame();
@@ -43,6 +44,7 @@ private:
 
 	UINT displayWidth;
 	UINT displayHeight;
+	bool isInitialized = false;
 
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
 	Microsoft::WRL::ComPtr<ID3D11Device> device;

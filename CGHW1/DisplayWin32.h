@@ -14,13 +14,16 @@ public:
 	int ClientHeight;
 	HWND hWnd;
 
-	DisplayWin32(int width, int height, LPCWSTR name);
+	DisplayWin32(Game& game, int width, int height, LPCWSTR name);
 
 private:
 	HINSTANCE hInstance;
 	WNDCLASSEX wc;
-	static Game* game;
+	Game* game;
 
-	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
+	LRESULT HandleWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
+
+	static LRESULT CALLBACK SetupWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK RedirectWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 };
 

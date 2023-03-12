@@ -9,6 +9,14 @@ void Logs::Log(std::string msg, bool showMsgBox)
 		ShowMsgBox(msg.c_str(), "Message", MB_ICONINFORMATION);
 }
 
+void Logs::LogError(std::string msg, bool showMsgBox)
+{
+	PrintToConsole(msg.c_str());
+
+	if (showMsgBox)
+		ShowMsgBox(msg.c_str(), "Error", MB_ICONERROR);
+}
+
 void Logs::LogError(HRESULT hr, std::string msg, bool showMsgBox)
 {
 	_com_error hrInfo(hr);

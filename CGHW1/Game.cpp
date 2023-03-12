@@ -7,7 +7,7 @@ Game::Game() : Gizmos(this), Light(this)
 
 bool Game::Initialize()
 {
-	Display = new DisplayWin32(1200, 700, Name);
+	Display = new DisplayWin32(*this, 1200, 700, Name);
 
 
 	MainCamera = new Camera(this, Display->ClientWidth, Display->ClientHeight);
@@ -32,6 +32,23 @@ bool Game::Initialize()
 	{
 		Components[i]->Initialize();
 	}
+
+	isInitialized = true;
+
+	return true;
+}
+
+bool Game::ResizeWindow(UINT width, UINT height)
+{
+	if (!isInitialized)
+		return false;
+
+	if (!Gfx.Resize(width, height))
+	{
+		return false;
+	}
+
+	MainCamera->SetAspectRatio((float)width / (float)height);
 
 	return true;
 }
@@ -85,7 +102,8 @@ void Game::Pause()
 void Game::MessageHandler()
 {
 	MSG msg{};
-	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) 
+	{
 
 		if (msg.message == WM_KEYDOWN || msg.message == WM_KEYUP)
 		{
@@ -111,7 +129,6 @@ void Game::MessageHandler()
 			};
 			Input->OnMouseMove(args);
 		}
-
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
