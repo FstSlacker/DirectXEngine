@@ -24,15 +24,18 @@ struct LightData
     float4 Position; // 16 
     float4 Direction; // 16 
     float4 Color; // 16 
+    
+    float Intensity; // 4
+    float Range; // 4
 
     float SpotAngle; // 4 
-    float ConstantAtt; // 4 
+    float ConstantAtt; // 4
+    
     float LinearAtt; // 4 
     float QuadraticAtt; // 4 
-
+    
     int LightType; // 4 
-    bool Enabled; // 4 
-    //int2 Padding; // 8 
+    bool Enabled; // 4
 };
 
 struct LightingResult
@@ -68,7 +71,7 @@ float4 CalculateDiffuse(LightData light, float3 dirToLight, float3 normal)
 {
     float res = max(0, dot(dirToLight, normal));
     
-    return light.Color * res;
+    return light.Color * res * light.Intensity;
 }
 
 float4 CalculateSpecular(LightData light, float3 dirToCamera, float3 dirToLight, float3 normal)
@@ -77,12 +80,13 @@ float4 CalculateSpecular(LightData light, float3 dirToCamera, float3 dirToLight,
     float3 r = normalize(reflect(-dirToLight, normal));
     float rDotV = max(0, dot(r, dirToCamera));
 
-    return light.Color * pow(rDotV, Material.SpecularPower);
+    return light.Color * pow(rDotV, Material.SpecularPower) * light.Intensity;
 }
 
 float CalculateAttenuation(LightData light, float dist)
 {
-    return 1.0f / (light.ConstantAtt + light.LinearAtt * dist + light.QuadraticAtt * dist * dist);
+    float att = (light.ConstantAtt + light.LinearAtt * dist + light.QuadraticAtt * dist * dist);
+    return max(1.0f - att / light.Range, 0.0f);
 }
 
 LightingResult DoPointLight(LightData light, float3 dirToCamera, float4 vertPos, float3 norm)
@@ -96,6 +100,13 @@ LightingResult DoPointLight(LightData light, float3 dirToCamera, float4 vertPos,
 
     dirToLight = dirToLight / distToLight;
 
+    if (distToLight == 0.0f || light.Range == 0.0f)
+    {
+        res.Diffuse = (float4) 0;
+        res.Specular = (float4) 0;
+        return res;
+    }
+    
     float att = CalculateAttenuation(light, distToLight);
 
     res.Diffuse = CalculateDiffuse(light, dirToLight, norm) * att;
@@ -134,6 +145,14 @@ LightingResult DoSpotLight(LightData light, float3 dirToCamera, float4 vertPos, 
 
     float distToLight = length(dirToLight);
 
+    if(distToLight == 0.0f || light.Range == 0.0f)
+    {
+        res.Diffuse = (float4)0;
+        res.Specular = (float4)0;
+        return res;
+    }
+        
+    
     dirToLight = dirToLight / distToLight;
 
     float att = CalculateAttenuation(light, distToLight);

@@ -55,6 +55,7 @@ void ImGuiGameInfoWindow::Bind()
 	{
 		ImGui::Checkbox("Show axis", &game->Gizmos.ShowAxis);
 		ImGui::Checkbox("Show colliders", &game->Gizmos.ShowColliders);
+		ImGui::Checkbox("Show lights", &game->Gizmos.ShowLightSources);
 
 		ImGui::Checkbox("Show grid XZ", &game->Gizmos.ShowGridXZ);
 		ImGui::Checkbox("Show grid XY", &game->Gizmos.ShowGridXY);
@@ -290,11 +291,30 @@ void ImGuiLightCompWindow::Bind()
 
 		if (typeid(*lightComp) == typeid(PointLightComponent))
 		{
-			ImGui::DragFloat("Range", &dynamic_cast<PointLightComponent*>(lightComp)->Range);
+			PointLightComponent* pLight = dynamic_cast<PointLightComponent*>(lightComp);
+
+			ImGui::DragFloat("Range", &pLight->Range);
+
+			ImGui::Spacing();
+
+			ImGui::Text("Attenuation:");
+			ImGui::DragFloat("Constant", &pLight->ConstantAttenuation);
+			ImGui::DragFloat("Linear", &pLight->LinearAttenuation);
+			ImGui::DragFloat("Quadric", &pLight->QuadricAttenuation);
 		}
 		else if (typeid(*lightComp) == typeid(SpotLightComponent))
 		{
-			ImGui::DragFloat("ConeAngle", &dynamic_cast<SpotLightComponent*>(lightComp)->ConeAngle);
+			SpotLightComponent* pLight = dynamic_cast<SpotLightComponent*>(lightComp);
+
+			ImGui::DragFloat("Range", &pLight->Range);
+			ImGui::DragFloat("ConeAngle", &pLight->ConeAngle);
+
+			ImGui::Spacing();
+
+			ImGui::Text("Attenuation:");
+			ImGui::DragFloat("Constant", &pLight->ConstantAttenuation);
+			ImGui::DragFloat("Linear", &pLight->LinearAttenuation);
+			ImGui::DragFloat("Quadric", &pLight->QuadricAttenuation);
 		}
 
 		ImGui::Spacing();

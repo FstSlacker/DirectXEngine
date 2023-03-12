@@ -28,14 +28,17 @@ private:
 		DirectX::XMFLOAT4 Direction; // 16 
 		DirectX::XMFLOAT4 Color; // 16 
 
+		float Intensity; // 4
+		float Range; // 4
+
 		float SpotAngle; // 4 
 		float ConstantAtt; // 4 
+
 		float LinearAtt; // 4 
 		float QuadraticAtt; // 4 
 
 		int LightType; // 4 
-		bool Enabled; // 4 
-		float padding[2]; // 8
+		bool Enabled; // 4
 	};
 
 	struct LightCbuf
@@ -79,6 +82,9 @@ class PointLightComponent : public LightComponent
 {
 public:
 	float Range;
+	float ConstantAttenuation;
+	float LinearAttenuation;
+	float QuadricAttenuation;
 
 	PointLightComponent(Game* game);
 };
@@ -92,7 +98,11 @@ public:
 class SpotLightComponent : public LightComponent
 {
 public:
+	float Range;
 	float ConeAngle;
+	float ConstantAttenuation;
+	float LinearAttenuation;
+	float QuadricAttenuation;
 
 	SpotLightComponent(Game* game);
 };

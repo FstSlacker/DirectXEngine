@@ -55,13 +55,16 @@ void Light::Bind()
 
 			lightData.Position = DirectX::SimpleMath::Vector4(light->Transform.GetPosition()); 
 			lightData.Color = light->LightColor; 
-			lightData.ConstantAtt = 1.0f;
-			lightData.LinearAtt = 0.08f;
-			lightData.QuadraticAtt = 0.0f;
+			lightData.Intensity = light->Intensity;
 			lightData.Enabled = true;
 
 			if (typeid(*light) == typeid(PointLightComponent))
 			{
+				PointLightComponent* pLight = dynamic_cast<PointLightComponent*>(light);
+				lightData.Range = pLight->Range;
+				lightData.ConstantAtt = pLight->ConstantAttenuation;
+				lightData.LinearAtt = pLight->LinearAttenuation;
+				lightData.QuadraticAtt = pLight->QuadricAttenuation;
 				lightData.LightType = (int)LightType::Point;
 			}
 			else if (typeid(*light) == typeid(DirectionalLightComponent))
@@ -71,6 +74,11 @@ void Light::Bind()
 			}
 			else if (typeid(*light) == typeid(SpotLightComponent))
 			{
+				SpotLightComponent* spLight = dynamic_cast<SpotLightComponent*>(light);
+				lightData.Range = spLight->Range;
+				lightData.ConstantAtt = spLight->ConstantAttenuation;
+				lightData.LinearAtt = spLight->LinearAttenuation;
+				lightData.QuadraticAtt = spLight->QuadricAttenuation;
 				lightData.Direction = Vector4(lights[i]->Transform.GetForward());
 				lightData.SpotAngle = dynamic_cast<SpotLightComponent*>(light)->ConeAngle * 0.01745329f;
 				lightData.LightType = (int)LightType::Spot;
@@ -101,6 +109,9 @@ PointLightComponent::PointLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "PointLight_" + std::to_string(game->Light.GetLightSourcesCount());
 	this->Range = 10.0f;
+	this->ConstantAttenuation = 0.0f;
+	this->LinearAttenuation = 1.0f;
+	this->QuadricAttenuation = 0.0f;
 	game->Light.AddLightComponent(this);
 }
 
@@ -114,5 +125,9 @@ SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "SpotLight_" + std::to_string(game->Light.GetLightSourcesCount());
 	this->ConeAngle = 45.0f;
+	this->Range = 10.0f;
+	this->ConstantAttenuation = 0.0f;
+	this->LinearAttenuation = 1.0f;
+	this->QuadricAttenuation = 0.0f;
 	game->Light.AddLightComponent(this);
 }

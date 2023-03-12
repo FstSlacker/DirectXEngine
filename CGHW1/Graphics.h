@@ -44,10 +44,10 @@ private:
 	UINT displayWidth;
 	UINT displayHeight;
 
-	ID3D11DeviceContext* context;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
-	ID3D11RenderTargetView* renderView;
-	IDXGISwapChain* swapChain;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderView;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
 
 	std::map<std::wstring, std::unique_ptr<VertexShader>> vertexShaders;
 	std::map<std::wstring, std::unique_ptr<PixelShader>> pixelShaders;
@@ -55,12 +55,12 @@ private:
 	std::vector<Texture*> textures;
 	std::vector<Material*> materials;
 
-	ID3D11Texture2D* backBuffer;
-	ID3D11Texture2D* depthStencilBuffer;
-	ID3D11DepthStencilView* depthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
 
-	ID3D11RasterizerState* rastState;
-	ID3D11DepthStencilState* depthStencilStateEnabled;
-	ID3D11DepthStencilState* depthStencilStateDisabled;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rastState;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStateEnabled;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStateDisabled;
 };
 

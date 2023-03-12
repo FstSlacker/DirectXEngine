@@ -58,6 +58,7 @@ DebugGizmos::DebugGizmos(Game* game)
 
 	this->ShowAxis = true;
 	this->ShowColliders = true;
+	this->ShowLightSources = true;
 
 	this->ShowGridXZ = true;
 	this->ShowGridXY = false;
@@ -67,14 +68,40 @@ DebugGizmos::DebugGizmos(Game* game)
 	this->GridColor = Color(DirectX::Colors::LightGray);
 }
 
-void DebugGizmos::DrawLightRange(PointLightComponent* light)
+void DebugGizmos::DrawLight(LightComponent* light)
 {
-	DirectX::BoundingSphere sphere = DirectX::BoundingSphere(
-		light->Transform.GetPosition(),
-		light->Range
+	Vector3 center = light->Transform.GetPosition();
+	float pScale = (center - game->MainCamera->Transform.GetPosition()).Length() * 0.04f;
+
+	DebugDraw::DrawRing(
+		primitiveBatch.get(),
+		center,
+		game->MainCamera->Transform.GetRight() * 0.5f * pScale,
+		game->MainCamera->Transform.GetUp() * 0.5f * pScale,
+		DirectX::Colors::Yellow
 	);
 
-	DebugDraw::Draw(primitiveBatch.get(), sphere, DirectX::Colors::White);
+	Vector3 right = game->MainCamera->Transform.GetRight();
+	Vector3 up = game->MainCamera->Transform.GetUp();
+
+	DebugDraw::DrawQuad(
+		primitiveBatch.get(),
+		center + (right * 0.15f + -up * 0.8f) * pScale,
+		center + (-right * 0.15f + -up * 0.8f) * pScale,
+		center + (-right * 0.25f + -up * 0.5f) * pScale,
+		center + (right * 0.25f + -up * 0.5f) * pScale,
+		DirectX::Colors::Yellow
+	);
+
+	if (typeid(*light) == typeid(PointLightComponent))
+	{
+		DirectX::BoundingSphere sphere = DirectX::BoundingSphere(
+			light->Transform.GetPosition(),
+			dynamic_cast<PointLightComponent*>(light)->Range
+		);
+		DebugDraw::Draw(primitiveBatch.get(), sphere, DirectX::Colors::White);
+	}
+
 }
 
 void DebugGizmos::DrawCollider(GameComponent* comp)
@@ -125,10 +152,13 @@ void DebugGizmos::Draw()
 		}
 	}
 
-	//if (game->Light != nullptr)
-	//{
-	//	DrawLightRange(game->Light);
-	//}
+	if (ShowLightSources)
+	{
+		for (int i = 0; i < game->Light.GetLightSourcesCount(); i++)
+		{
+			DrawLight(game->Light.GetLightComponent(i));
+		}
+	}
 
 	if (ShowGridXZ || ShowGridXY || ShowGridYZ)
 	{

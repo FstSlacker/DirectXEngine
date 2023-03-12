@@ -52,7 +52,7 @@ void Graphics::PrepareFrame()
 {
 	context->ClearState();
 
-	context->RSSetState(rastState);
+	context->RSSetState(rastState.Get());
 	SetDepthStencilEnable(true);
 
 	D3D11_VIEWPORT viewport = {};
@@ -65,11 +65,11 @@ void Graphics::PrepareFrame()
 
 	context->RSSetViewports(1, &viewport);
 
-	context->OMSetRenderTargets(1, &renderView, depthStencilView);
+	context->OMSetRenderTargets(1, renderView.GetAddressOf(), depthStencilView.Get());
 
 	float color[] = { BackgroundColor.x, BackgroundColor.y, BackgroundColor.z, 1.0f };
-	context->ClearRenderTargetView(renderView, color);
-	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	context->ClearRenderTargetView(renderView.Get(), color);
+	context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 }
 
 void Graphics::EndFrame()
@@ -122,17 +122,17 @@ void Graphics::SetDepthStencilEnable(bool isEnable)
 {
 	if (isEnable)
 	{
-		context->OMSetDepthStencilState(depthStencilStateEnabled, 0);
+		context->OMSetDepthStencilState(depthStencilStateEnabled.Get(), 0);
 	}
 	else
 	{
-		context->OMSetDepthStencilState(depthStencilStateDisabled, 0);
+		context->OMSetDepthStencilState(depthStencilStateDisabled.Get(), 0);
 	}
 }
 
 ID3D11DeviceContext* Graphics::GetContext() const
 {
-	return this->context;
+	return this->context.Get();
 }
 
 ID3D11Device* Graphics::GetDevice() const
@@ -172,10 +172,10 @@ bool Graphics::InitializeDirectX(HWND hWnd)
 		1,
 		D3D11_SDK_VERSION,
 		&swapDesc,
-		&swapChain,
-		&device,
+		swapChain.GetAddressOf(),
+		device.GetAddressOf(),
 		nullptr,
-		&context
+		context.GetAddressOf()
 	);
 
 	if (FAILED(res))
@@ -184,7 +184,7 @@ bool Graphics::InitializeDirectX(HWND hWnd)
 		return false;
 	}
 
-	res = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	res = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)backBuffer.GetAddressOf());
 
 	if (FAILED(res))
 	{
@@ -192,7 +192,7 @@ bool Graphics::InitializeDirectX(HWND hWnd)
 		return false;
 	}
 
-	res = device->CreateRenderTargetView(backBuffer, nullptr, &renderView);
+	res = device->CreateRenderTargetView(backBuffer.Get(), nullptr, renderView.GetAddressOf());
 
 	if (FAILED(res))
 	{
@@ -210,7 +210,7 @@ bool Graphics::InitializeResources()
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
-	res = device->CreateRasterizerState(&rastDesc, &rastState);
+	res = device->CreateRasterizerState(&rastDesc, rastState.GetAddressOf());
 
 	if (FAILED(res))
 	{
@@ -218,7 +218,7 @@ bool Graphics::InitializeResources()
 		return false;
 	}
 
-	context->RSSetState(rastState);
+	context->RSSetState(rastState.Get());
 
 	//Create depth stencil view
 	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
@@ -234,7 +234,7 @@ bool Graphics::InitializeResources()
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
-	res = device->CreateTexture2D(&depthStencilDesc, nullptr, &depthStencilBuffer);
+	res = device->CreateTexture2D(&depthStencilDesc, nullptr, depthStencilBuffer.GetAddressOf());
 
 	if (FAILED(res))
 	{
@@ -242,7 +242,7 @@ bool Graphics::InitializeResources()
 		return false;
 	}
 
-	res = device->CreateDepthStencilView(depthStencilBuffer, nullptr, &depthStencilView);
+	res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
 
 	if (FAILED(res))
 	{
@@ -256,7 +256,7 @@ bool Graphics::InitializeResources()
 	depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
 	depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
 
-	res = device->CreateDepthStencilState(&depthStencilStateDesc, &depthStencilStateEnabled);
+	res = device->CreateDepthStencilState(&depthStencilStateDesc, depthStencilStateEnabled.GetAddressOf());
 
 	if (FAILED(res))
 	{
@@ -266,7 +266,7 @@ bool Graphics::InitializeResources()
 
 	depthStencilStateDesc.DepthEnable = false;
 
-	res = device->CreateDepthStencilState(&depthStencilStateDesc, &depthStencilStateDisabled);
+	res = device->CreateDepthStencilState(&depthStencilStateDesc, depthStencilStateDisabled.GetAddressOf());
 
 	if (FAILED(res))
 	{

@@ -12,7 +12,7 @@ using namespace DirectX::SimpleMath;
 
 class Game;
 class GameComponent;
-class PointLightComponent;
+class LightComponent;
 
 class DebugGizmos
 {
@@ -23,7 +23,7 @@ private:
 
 	Game* game;
 
-	void DrawLightRange(PointLightComponent* light);
+	void DrawLight(LightComponent* light);
 	void DrawCollider(GameComponent* comp);
 	void DrawAxis(GameComponent* comp);
 	void DrawGrid();
@@ -31,6 +31,7 @@ private:
 public:
 	bool ShowAxis;
 	bool ShowColliders;
+	bool ShowLightSources;
 
 	bool ShowGridXZ;
 	bool ShowGridXY;
