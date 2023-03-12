@@ -76,6 +76,9 @@ protected:
 public:
 	Color LightColor;
 	float Intensity;
+
+	virtual void DrawGizmos() override;
+	virtual void DrawGizmosIcon(Vector3 right, Vector3 up, float scale) override;
 };
 
 class PointLightComponent : public LightComponent
@@ -87,12 +90,16 @@ public:
 	float QuadricAttenuation;
 
 	PointLightComponent(Game* game);
+
+	virtual void DrawGizmos() override;
 };
 
 class DirectionalLightComponent : public LightComponent
 {
 public:
 	DirectionalLightComponent(Game* game);
+
+	virtual void DrawGizmos() override;
 };
 
 class SpotLightComponent : public LightComponent
@@ -105,6 +112,8 @@ public:
 	float QuadricAttenuation;
 
 	SpotLightComponent(Game* game);
+
+	virtual void DrawGizmos() override;
 };
 
 

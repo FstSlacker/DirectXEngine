@@ -1,4 +1,5 @@
 #include "DisplayWin32.h"
+#include "Game.h"
 
 DisplayWin32::DisplayWin32(int width, int height, LPCWSTR name)
 {
@@ -12,7 +13,7 @@ DisplayWin32::DisplayWin32(int width, int height, LPCWSTR name)
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
+	wc.hIcon = LoadIcon(nullptr, IDI_EXCLAMATION);
 	wc.hIconSm = wc.hIcon;
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
@@ -53,6 +54,12 @@ LRESULT CALLBACK DisplayWin32::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, 
 
 	switch (umessage)
 	{
+		case WM_CLOSE:
+		{
+			PostQuitMessage(0);
+			DestroyWindow(hwnd);
+			return 0;
+		}
 		case WM_KEYDOWN:
 		{
 			// If a key is pressed send it to the input object so it can record that state.

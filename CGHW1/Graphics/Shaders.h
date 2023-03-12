@@ -40,7 +40,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> shader;
 	Microsoft::WRL::ComPtr<ID3DBlob> shaderByteCode;
-	Microsoft::WRL::ComPtr <ID3D11InputLayout> inputLayout;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 	std::wstring shaderPath;
 	VertexLayoutType layoutType;
 

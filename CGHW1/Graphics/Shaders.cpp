@@ -112,9 +112,9 @@ bool VertexShader::Initialize(ID3D11Device* device)
 
 void VertexShader::DestroyResources()
 {
-	shader->Release();
-	shaderByteCode->Release();
-	inputLayout->Release();
+	//shader->Release();
+	//shaderByteCode->Release();
+	//inputLayout->Release();
 }
 
 ID3D11VertexShader* VertexShader::GetShader()
@@ -200,8 +200,8 @@ void PixelShader::Bind(ID3D11DeviceContext* context)
 
 void PixelShader::DestroyResources()
 {
-	shader->Release();
-	shaderByteCode->Release();
+	//shader->Release();
+	//shaderByteCode->Release();
 }
 
 ID3D11PixelShader* PixelShader::GetShader()

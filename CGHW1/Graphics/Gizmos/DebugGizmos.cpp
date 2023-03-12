@@ -29,6 +29,27 @@ void DebugGizmos::DrawAxis(GameComponent* comp)
 	);
 }
 
+void DebugGizmos::DrawRing(Vector3 origin, Vector3 axis1, Vector3 axis2, Color color)
+{
+	DebugDraw::DrawRing(primitiveBatch.get(), origin, axis1, axis2, color);
+}
+
+void DebugGizmos::DrawQuad(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, Color color)
+{
+	DebugDraw::DrawQuad(primitiveBatch.get(), p1, p2, p3, p4, color);
+}
+
+void DebugGizmos::DrawRay(Vector3 origin, Vector3 direction, Color color)
+{
+	DebugDraw::DrawRay(primitiveBatch.get(), origin, direction, false, color);
+}
+
+void DebugGizmos::DrawSphere(Vector3 origin, float radius, Color color)
+{
+	DirectX::BoundingSphere sphere = DirectX::BoundingSphere(origin, radius);
+	DebugDraw::Draw(primitiveBatch.get(), sphere, color);
+}
+
 void DebugGizmos::DrawGrid()
 {
 	size_t xDivs = 20;
@@ -56,9 +77,8 @@ DebugGizmos::DebugGizmos(Game* game)
 {
 	this->game = game;
 
-	this->ShowAxis = true;
-	this->ShowColliders = true;
-	this->ShowLightSources = true;
+	this->ShowObjectsIcons = true;
+	this->ShowObjectsGizmos = false;
 
 	this->ShowGridXZ = true;
 	this->ShowGridXY = false;
@@ -66,83 +86,6 @@ DebugGizmos::DebugGizmos(Game* game)
 
 	this->CollidersColor = Color(DirectX::Colors::LightGreen);
 	this->GridColor = Color(DirectX::Colors::LightGray);
-}
-
-void DebugGizmos::DrawLight(LightComponent* light)
-{
-	Vector3 center = light->Transform.GetPosition();
-	float pScale = (center - game->MainCamera->Transform.GetPosition()).Length() * 0.04f;
-
-	DebugDraw::DrawRing(
-		primitiveBatch.get(),
-		center,
-		game->MainCamera->Transform.GetRight() * 0.5f * pScale,
-		game->MainCamera->Transform.GetUp() * 0.5f * pScale,
-		DirectX::Colors::Yellow
-	);
-
-	Vector3 right = game->MainCamera->Transform.GetRight();
-	Vector3 up = game->MainCamera->Transform.GetUp();
-
-	DebugDraw::DrawQuad(
-		primitiveBatch.get(),
-		center + (right * 0.15f + -up * 0.8f) * pScale,
-		center + (-right * 0.15f + -up * 0.8f) * pScale,
-		center + (-right * 0.25f + -up * 0.5f) * pScale,
-		center + (right * 0.25f + -up * 0.5f) * pScale,
-		DirectX::Colors::Yellow
-	);
-
-	if (typeid(*light) == typeid(PointLightComponent))
-	{
-		DirectX::BoundingSphere sphere = DirectX::BoundingSphere(
-			light->Transform.GetPosition(),
-			dynamic_cast<PointLightComponent*>(light)->Range
-		);
-		DebugDraw::Draw(primitiveBatch.get(), sphere, DirectX::Colors::White);
-	}
-	else if (typeid(*light) == typeid(SpotLightComponent))
-	{
-		SpotLightComponent* sLight = dynamic_cast<SpotLightComponent*>(light);
-
-		float ringRadius = std::tan(sLight->ConeAngle * kDeg2Rad) * sLight->Range;
-
-		Vector3 sLightPos = sLight->Transform.GetPosition();
-		Vector3 ringCenter = sLightPos + sLight->Transform.GetForward() * sLight->Range;
-		Vector3 ringUp = sLight->Transform.GetUp() * ringRadius;
-		Vector3 ringRight = sLight->Transform.GetRight() * ringRadius;
-
-		DebugDraw::DrawRing(
-			primitiveBatch.get(),
-			ringCenter,
-			ringUp,
-			ringRight,
-			DirectX::Colors::White
-		);
-
-		Vector3 p1 = ringCenter + ringUp;
-		Vector3 p2 = ringCenter + ringRight;
-		Vector3 p3 = ringCenter - ringUp;
-		Vector3 p4 = ringCenter - ringRight;
-
-		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p1 - sLightPos, false, DirectX::Colors::White);
-		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p2 - sLightPos, false, DirectX::Colors::White);
-		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p3 - sLightPos, false, DirectX::Colors::White);
-		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p4 - sLightPos, false, DirectX::Colors::White);
-	}
-	else if (typeid(*light) == typeid(DirectionalLightComponent))
-	{
-		Vector3 o = light->Transform.GetPosition();
-		Vector3 lf = light->Transform.GetForward();
-		Vector3 lr = light->Transform.GetRight();
-		Vector3 lu = light->Transform.GetUp();
-
-		DebugDraw::DrawRay(primitiveBatch.get(), o + lr * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
-		DebugDraw::DrawRay(primitiveBatch.get(), o + -lr * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
-		DebugDraw::DrawRay(primitiveBatch.get(), o + lu * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
-		DebugDraw::DrawRay(primitiveBatch.get(), o + -lu * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
-	}
-
 }
 
 void DebugGizmos::DrawCollider(GameComponent* comp)
@@ -175,30 +118,22 @@ void DebugGizmos::Draw()
 
 	for (int i = 0; i < game->Components.size(); i++)
 	{
-		if (typeid(*(game->Components[i])) == typeid(Camera))
+		if (!game->Components[i]->IsEnabled())
 			continue;
 
-		if (!game->Components[i]->IsEnabled)
-			continue;
-
-		if (ShowAxis)
+		if (ShowObjectsGizmos)
 		{
 			game->Gfx.SetDepthStencilEnable(false);
-			DrawAxis(game->Components[i]);
+			game->Components[i]->DrawGizmos();
 		}
-		if (ShowColliders)
+		if (ShowObjectsIcons)
 		{
+			Vector3 right = game->MainCamera->Transform.GetRight();
+			Vector3 up = game->MainCamera->Transform.GetUp();
+			float iconScale = (game->MainCamera->Transform.GetPosition() - game->Components[i]->Transform.GetPosition()).Length() * 0.03f;
+			
 			game->Gfx.SetDepthStencilEnable(false);
-			DrawCollider(game->Components[i]);
-		}
-	}
-
-	if (ShowLightSources)
-	{
-		for (int i = 0; i < game->Light.GetLightSourcesCount(); i++)
-		{
-			if(game->Light.GetLightComponent(i)->IsEnabled)
-				DrawLight(game->Light.GetLightComponent(i));
+			game->Components[i]->DrawGizmosIcon(right, up, iconScale);
 		}
 	}
 

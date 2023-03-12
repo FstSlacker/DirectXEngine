@@ -11,7 +11,7 @@ class ImGuiGameInfoWindow : public ImGuiBaseWindow
 {
 protected:
 	Game* game;
-	float backColor[3];
+	GameComponent* selectedComp;
 
 	void ShowGameComponent(GameComponent* comp);
 

@@ -22,5 +22,5 @@ void Sampler::Bind(ID3D11DeviceContext* context)
 
 void Sampler::DestroyResources()
 {
-	sampler->Release();
+	//sampler->Release();
 }

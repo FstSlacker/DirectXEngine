@@ -5,6 +5,8 @@
 #include <iostream>
 #include "Graphics/ImGui/Source/imgui_impl_win32.h"
 
+class Game;
+
 class DisplayWin32
 {
 public:
@@ -17,6 +19,7 @@ public:
 private:
 	HINSTANCE hInstance;
 	WNDCLASSEX wc;
+	static Game* game;
 
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 };

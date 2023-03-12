@@ -24,28 +24,28 @@ bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 
 void Graphics::DestroyResources()
 {
-	std::map<std::wstring, std::unique_ptr<VertexShader>>::iterator itVs;
-	for (itVs = vertexShaders.begin(); itVs != vertexShaders.end(); itVs++)
-	{
-		itVs->second->DestroyResources();
-	}
+	//std::map<std::wstring, std::unique_ptr<VertexShader>>::iterator itVs;
+	//for (itVs = vertexShaders.begin(); itVs != vertexShaders.end(); itVs++)
+	//{
+	//	itVs->second->DestroyResources();
+	//}
 
-	std::map<std::wstring, std::unique_ptr<PixelShader>>::iterator itPs;
-	for (itPs = pixelShaders.begin(); itPs != pixelShaders.end(); itPs++)
-	{
-		itPs->second->DestroyResources();
-	}
+	//std::map<std::wstring, std::unique_ptr<PixelShader>>::iterator itPs;
+	//for (itPs = pixelShaders.begin(); itPs != pixelShaders.end(); itPs++)
+	//{
+	//	itPs->second->DestroyResources();
+	//}
 
 	for (int i = 0; i < textures.size(); i++)
 	{
-		textures[i]->DestroyResources();
+		delete textures[i];
 	}
 
-	swapChain->Release();
-	device->Release();
-	context->Release();
-	backBuffer->Release();
-	renderView->Release();
+	//swapChain->Release();
+	//device->Release();
+	//context->Release();
+	//backBuffer->Release();
+	//renderView->Release();
 }
 
 void Graphics::PrepareFrame()

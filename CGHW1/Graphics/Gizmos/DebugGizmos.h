@@ -1,5 +1,4 @@
 #pragma once
-#include "DebugDraw.h"
 #include <d3d.h>
 #include <d3d11.h>
 #include <memory>
@@ -7,6 +6,8 @@
 #include <wrl.h>
 #include <DirectXHelpers.h>
 #include <SimpleMath.h>
+
+#include "DebugDraw.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -23,16 +24,11 @@ private:
 
 	Game* game;
 
-	void DrawLight(LightComponent* light);
-	void DrawCollider(GameComponent* comp);
-	void DrawAxis(GameComponent* comp);
 	void DrawGrid();
 
 public:
-	bool ShowAxis;
-	bool ShowColliders;
-	bool ShowLightSources;
-
+	bool ShowObjectsGizmos;
+	bool ShowObjectsIcons;
 	bool ShowGridXZ;
 	bool ShowGridXY;
 	bool ShowGridYZ;
@@ -41,6 +37,12 @@ public:
 	Color GridColor;
 
 	DebugGizmos(Game* game);
+	void DrawCollider(GameComponent* comp);
+	void DrawAxis(GameComponent* comp);
+	void DrawRing(Vector3 origin, Vector3 axis1, Vector3 axis2, Color color = Color(DirectX::Colors::White));
+	void DrawQuad(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, Color color = Color(DirectX::Colors::White));
+	void DrawRay(Vector3 origin, Vector3 direction, Color color = Color(DirectX::Colors::White));
+	void DrawSphere(Vector3 origin, float radius, Color color = Color(DirectX::Colors::White));
 	void Initialize();
 	void Draw();
 };

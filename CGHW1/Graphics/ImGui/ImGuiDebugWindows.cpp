@@ -8,14 +8,27 @@ void ImGuiGameInfoWindow::ShowGameComponent(GameComponent* comp)
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
 		| (childsCount == 0 ? ImGuiTreeNodeFlags_Leaf : 0);
 
+	bool isEnabledColor = comp->IsEnabled();
+
+	if (!isEnabledColor) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+
 	if (ImGui::TreeNodeEx(comp->Name.c_str(), flags))
 	{
+		if (!isEnabledColor) ImGui::PopStyleColor();
+
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 		{
-			MeshComponent* meshComp = dynamic_cast<MeshComponent*>(comp);
-			if (meshComp != nullptr)
+			if (typeid(*comp) == typeid(MeshComponent))
 			{
-				game->ImGUI.AddWindow(new ImGuiMeshCompWindow(meshComp));
+				game->ImGUI.AddWindow(new ImGuiMeshCompWindow(dynamic_cast<MeshComponent*>(comp)));
+			}
+			else if (typeid(*comp) == typeid(Camera))
+			{
+				game->ImGUI.AddWindow(new ImGuiCameraWindow(dynamic_cast<Camera*>(comp)));
+			}
+			else if (dynamic_cast<LightComponent*>(comp) != nullptr)
+			{
+				game->ImGUI.AddWindow(new ImGuiLightCompWindow(dynamic_cast<LightComponent*>(comp)));
 			}
 			else
 			{
@@ -27,6 +40,10 @@ void ImGuiGameInfoWindow::ShowGameComponent(GameComponent* comp)
 			ShowGameComponent(comp->Transform.GetChild(i)->GetGameComponent());
 		}
 		ImGui::TreePop();
+	}
+	else
+	{
+		if (!isEnabledColor) ImGui::PopStyleColor();
 	}
 }
 
@@ -41,6 +58,7 @@ void ImGuiGameInfoWindow::Bind()
 	ImGui::Text("FPS: %.2f", 1.0f / game->DeltaTime);
 	ImGui::Text("ImGui windows count: %d", game->ImGUI.GetWindowsCount());
 
+	float backColor[3];
 	backColor[0] = game->Gfx.BackgroundColor.x;
 	backColor[1] = game->Gfx.BackgroundColor.y;
 	backColor[2] = game->Gfx.BackgroundColor.z;
@@ -53,43 +71,22 @@ void ImGuiGameInfoWindow::Bind()
 
 	if (ImGui::CollapsingHeader("Gizmos", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Checkbox("Show axis", &game->Gizmos.ShowAxis);
-		ImGui::Checkbox("Show colliders", &game->Gizmos.ShowColliders);
-		ImGui::Checkbox("Show lights", &game->Gizmos.ShowLightSources);
+		ImGui::Text("Objects");
+		ImGui::Checkbox("Icons", &game->Gizmos.ShowObjectsIcons);
+		ImGui::SameLine();
+		ImGui::Checkbox("Objects", &game->Gizmos.ShowObjectsGizmos);
 
-		ImGui::Checkbox("Show grid XZ", &game->Gizmos.ShowGridXZ);
-		ImGui::Checkbox("Show grid XY", &game->Gizmos.ShowGridXY);
-		ImGui::Checkbox("Show grid YZ", &game->Gizmos.ShowGridYZ);
+		ImGui::Text("Grid:");
+		ImGui::Checkbox("XZ", &game->Gizmos.ShowGridXZ);
+		ImGui::SameLine();
+		ImGui::Checkbox("XY", &game->Gizmos.ShowGridXY);
+		ImGui::SameLine();
+		ImGui::Checkbox("YZ", &game->Gizmos.ShowGridYZ);
 		ImGui::Spacing();
 	}
 
 	if (ImGui::CollapsingHeader("Hierarchy", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (ImGui::TreeNodeEx(game->MainCamera->Name.c_str(), ImGuiTreeNodeFlags_Leaf))
-		{
-			if (ImGui::IsItemClicked())
-			{
-				game->ImGUI.AddWindow(new ImGuiCameraWindow(game->MainCamera));
-			}
-			
-			ImGui::TreePop();
-		}
-
-		for (int i = 0; i < game->Light.GetLightSourcesCount(); i++)
-		{
-			if (ImGui::TreeNodeEx(game->Light.GetLightComponent(i)->Name.c_str(), ImGuiTreeNodeFlags_Leaf))
-			{
-				if (ImGui::IsItemClicked())
-				{
-					game->ImGUI.AddWindow(new ImGuiLightCompWindow(game->Light.GetLightComponent(i)));
-				}
-
-				ImGui::TreePop();
-			}
-		}
-
-		ImGui::Separator();
-		
 		for (int i = 0; i < game->Components.size(); i++)
 		{
 			if (game->Components[i]->Transform.GetParent() == nullptr)
@@ -152,7 +149,11 @@ ImGuiGameCompWindow::ImGuiGameCompWindow(GameComponent* comp)
 void ImGuiGameCompWindow::Bind()
 {
 	GetTransform();
-	ImGui::Checkbox("Is enabled", &gameComp->IsEnabled);
+	bool isCompEnabled = gameComp->IsEnabled();
+	if (ImGui::Checkbox("Is enabled", &isCompEnabled))
+	{
+		gameComp->SetEnable(isCompEnabled);
+	}
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::RadioButton("World", isWorldTransform))

@@ -71,8 +71,8 @@ void Texture::Bind(ID3D11DeviceContext* context)
 
 void Texture::DestroyResources()
 {
-	textureView->Release();
-	sampler.DestroyResources();
+	//textureView->Release();
+	//sampler.DestroyResources();
 }
 
 HRESULT Texture::InitializeFromColor(ID3D11Device* device, const Color* colorData, UINT w, UINT h)

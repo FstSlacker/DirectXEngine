@@ -7,7 +7,7 @@ Game::Game() : Gizmos(this), Light(this)
 
 bool Game::Initialize()
 {
-	Display = new DisplayWin32(1000, 800, Name);
+	Display = new DisplayWin32(1200, 700, Name);
 
 
 	MainCamera = new Camera(this, Display->ClientWidth, Display->ClientHeight);
@@ -41,6 +41,7 @@ void Game::DestroyResources()
 	for (int i = 0; i < Components.size(); i++) 
 	{
 		Components[i]->DestroyResources();
+		delete Components[i];
 	}
 
 	Gfx.DestroyResources();
@@ -56,7 +57,7 @@ void Game::Draw()
 	//Draw components
 	for (int i = 0; i < Components.size(); i++) 
 	{
-		if (!Components[i]->IsEnabled)
+		if (!Components[i]->IsEnabled())
 			continue;
 
 		Components[i]->Draw();
@@ -100,7 +101,6 @@ void Game::MessageHandler()
 		{
 			InputDevice::RawMouseEventArgs args
 			{
-				/*MOUSE_MOVE_RELATIVE*/
 				msg.message,
 				msg.wParam,
 				0,
@@ -112,12 +112,13 @@ void Game::MessageHandler()
 			Input->OnMouseMove(args);
 		}
 
-		if (msg.message == WM_CLOSE) {
-			isExitRequested = true;
-		}
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+
+		if (msg.message == WM_QUIT) {
+			this->Exit();
+		}
 	}
 }
 
@@ -159,7 +160,7 @@ void Game::Update()
 {
 	for (int i = 0; i < Components.size(); i++)
 	{
-		if (!Components[i]->IsEnabled)
+		if (!Components[i]->IsEnabled())
 			continue;
 
 		Components[i]->Update();
@@ -171,7 +172,7 @@ void Game::UpdateInternal()
 	//Update components
 	for (int i = 0; i < Components.size(); i++)
 	{
-		if (!Components[i]->IsEnabled)
+		if (!Components[i]->IsEnabled())
 			continue;
 
 		Components[i]->FixedUpdate();
@@ -185,7 +186,7 @@ void Game::UpdateInternal()
 			if (i == j)
 				continue;
 
-			if (!Components[i]->IsEnabled || !Components[j]->IsEnabled)
+			if (!Components[i]->IsEnabled() || !Components[j]->IsEnabled())
 				continue;
 
 			ColliderBase* c1 = Components[i]->Collider;
