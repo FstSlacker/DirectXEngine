@@ -1,8 +1,8 @@
 #pragma once
 #include <d3d11.h>
-#include "Graphics/ImGui/imgui.h"
-#include "Graphics/ImGui/imgui_impl_win32.h"
-#include "Graphics/ImGui/imgui_impl_dx11.h"
+#include "Source/imgui.h"
+#include "Source/imgui_impl_win32.h"
+#include "Source/imgui_impl_dx11.h"
 #include "ImGuiWindow.h"
 #include <vector>
 

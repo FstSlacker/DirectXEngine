@@ -1,6 +1,6 @@
 #include "Material.h"
 #include <DirectXColors.h>
-#include "Game.h"
+#include "../Game.h"
 
 Material::Material(Game* game, VertexShader* vs, PixelShader* ps)
 {

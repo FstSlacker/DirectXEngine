@@ -1,5 +1,6 @@
 #pragma once
 #include "GameComponent.h"
+
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
 #include <string>

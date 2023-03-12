@@ -1,9 +1,9 @@
 #pragma once
 #include "ImGuiWindow.h"
-#include "GameComponent.h"
-#include "MeshComponent.h"
-#include "Camera.h"
-#include "Light.h"
+#include "../../Components/GameComponent.h"
+#include "../../Components/MeshComponent.h"
+#include "../../Components/Camera.h"
+#include "../../Components/Light.h"
 
 class Game;
 

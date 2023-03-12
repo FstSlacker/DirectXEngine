@@ -1,5 +1,4 @@
 #include "Game.h"
-#include "InputDevice.h"
 
 Game::Game() : Gizmos(this), Light(this)
 {

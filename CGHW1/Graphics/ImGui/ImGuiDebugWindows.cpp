@@ -1,5 +1,5 @@
 #include "ImGuiDebugWindows.h"
-#include "Game.h"
+#include "../../Game.h"
 
 void ImGuiGameInfoWindow::ShowGameComponent(GameComponent* comp)
 {

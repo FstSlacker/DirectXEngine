@@ -1,9 +1,9 @@
 #include "MeshComponent.h"
-#include "Game.h"
+#include "../Game.h"
 
 MeshComponent::MeshComponent(Game* game) : GameComponent(game)
 {
-	//...
+	this->Name = "Mesh_" + std::to_string(game->Components.size());
 }
 
 void MeshComponent::DestroyResources(){

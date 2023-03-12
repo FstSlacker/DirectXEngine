@@ -1,8 +1,9 @@
 #include "CameraMoveComponent.h"
-#include "Game.h"
+#include "../Game.h"
 
 CameraMoveComponent::CameraMoveComponent(Game* game) : GameComponent(game)
 {
+	this->Name = "CameraMover";
 	this->MoveSpeed = 5.0f;
 }
 

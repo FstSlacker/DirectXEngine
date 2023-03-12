@@ -1,9 +1,9 @@
 #include "Text2DComponent.h"
-#include "Game.h"
+#include "../Game.h"
 
 Text2DComponent::Text2DComponent(Game* game) : GameComponent(game)
 {
-
+	this->Name = "Text2D_" + std::to_string(game->Components.size());
 }
 
 void Text2DComponent::Initialize()

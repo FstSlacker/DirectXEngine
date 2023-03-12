@@ -1,11 +1,12 @@
 #pragma once
-#include "Bindable.h"
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
-#include "StringHelper.h"
-#include "Sampler.h"
-#include <SimpleMath.h>
 #include <assimp/material.h>
+#include <SimpleMath.h>
+
+#include "Bindable.h"
+#include "Sampler.h"
+#include "../StringHelper.h"
 
 using namespace DirectX::SimpleMath;
 

@@ -1,6 +1,9 @@
 #include "SphereComponent.h"
-#include <math.h>
+
 #include <DirectXColors.h>
+#include <math.h>
+
+#include "../Game.h"
 
 void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 {
@@ -48,5 +51,6 @@ void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 SphereComponent::SphereComponent(Game* game, float radius, size_t tesselation) 
 	: MeshComponent(game)
 {
+	this->Name = "Sphere_" + std::to_string(game->Components.size());
 	CreateSphereMesh(tesselation, tesselation);
 }

@@ -1,5 +1,5 @@
 #include "Light.h"
-#include "Game.h"
+#include "../Game.h"
 
 DirectX::SimpleMath::Color Light::AmbientColor = DirectX::SimpleMath::Color(DirectX::Colors::White);
 float Light::AmbientIntensity = 0.1f;

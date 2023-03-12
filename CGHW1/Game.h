@@ -19,24 +19,25 @@
 #pragma comment(lib, "dxguid.lib")
 
 #include "Logs.h"
-#include "Graphics.h"
 #include "DisplayWin32.h"
-#include "InputDevice.h"
-#include "Collision.h"
-#include "ImGuiManager.h"
-#include "ImGuiDebugWindows.h"
-#include "DebugGizmos.h"
+#include "Input/InputDevice.h"
 
-#include "GameComponent.h"
-#include "MeshComponent.h"
-#include "PlaneComponent.h"
-#include "Text2DComponent.h"
-#include "Camera.h"
-#include "CameraMoveComponent.h"
-#include "Light.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/ImGui/ImGuiManager.h"
+#include "Graphics/ImGui/ImGuiDebugWindows.h"
+#include "Graphics/Gizmos/DebugGizmos.h"
 
-#include "SphereComponent.h"
-#include "ModelComponent.h"
+#include "Components/Camera.h"
+#include "Components/Light.h"
+#include "Components/Collision.h"
+
+#include "Components/GameComponent.h"
+#include "Components/MeshComponent.h"
+#include "Components/PlaneComponent.h"
+#include "Components/Text2DComponent.h"
+#include "Components/CameraMoveComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/ModelComponent.h"
 
 
 class Game

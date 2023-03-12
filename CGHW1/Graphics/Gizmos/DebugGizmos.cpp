@@ -1,5 +1,5 @@
 #include "DebugGizmos.h"
-#include "Game.h"
+#include "../../Game.h"
 
 void DebugGizmos::DrawAxis(GameComponent* comp)
 {

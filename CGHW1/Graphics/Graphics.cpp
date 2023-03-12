@@ -1,5 +1,5 @@
 #include "Graphics.h"
-#include "Logs.h"
+#include "../Logs.h"
 
 std::wstring Graphics::kShaderFolder = L"./Shaders/";
 

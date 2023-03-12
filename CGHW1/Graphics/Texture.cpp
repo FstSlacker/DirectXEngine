@@ -1,6 +1,6 @@
 #include "Texture.h"
-#include "Logs.h"
-#include "Game.h"
+#include "../Logs.h"
+#include "../Game.h"
 
 Texture::Texture(Game* game)
 {

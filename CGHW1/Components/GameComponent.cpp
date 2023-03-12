@@ -1,6 +1,6 @@
 #include "GameComponent.h"
 #include <iostream>
-#include "Game.h"
+#include "../Game.h"
 
 GameComponent::GameComponent(Game* game) : Transform(*this)
 {

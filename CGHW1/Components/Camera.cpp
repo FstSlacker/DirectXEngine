@@ -3,7 +3,7 @@
 Camera::Camera(Game* game, UINT width, UINT height) : GameComponent(game)
 {
     this->aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-    this->Name = "CameraComponent";
+    this->Name = "Camera";
 }
 
 void Camera::SetFov(float angleDeg)

@@ -5,16 +5,11 @@
 #include <vector>
 #include "GameComponent.h"
 
-#include "Vertex.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-
-#include "ConstantBuffer.h"
-#include "Shaders.h"
-#include "Texture.h"
-#include "Sampler.h"
-#include "Bindable.h"
-#include "Material.h"
+#include "../Graphics/Vertex.h"
+#include "../Graphics/VertexBuffer.h"
+#include "../Graphics/IndexBuffer.h"
+#include "../Graphics/ConstantBuffer.h"
+#include "../Graphics/Material.h"
 
 class Game;
 class GameComponent;

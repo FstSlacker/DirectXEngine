@@ -1,8 +1,10 @@
 #include "ModelComponent.h"
-#include "Game.h"
-#include "StringHelper.h"
-#include "Vertex.h"
-#include "Material.h"
+
+#include "../Game.h"
+#include "../StringHelper.h"
+
+#include "../Graphics/Vertex.h"
+#include "../Graphics/Material.h"
 
 bool ModelComponent::LoadModel(const std::string& path)
 {
@@ -201,7 +203,7 @@ TextureStorageType ModelComponent::GetTextureStorageType(aiMaterial* material, U
 
 ModelComponent::ModelComponent(Game* game, std::string modelPath) : GameComponent(game)
 {
-	this->Name = "ModelComponent_" + std::to_string(game->Components.size());
+	this->Name = "Model_" + std::to_string(game->Components.size());
 
 	LoadModel(modelPath);
 }

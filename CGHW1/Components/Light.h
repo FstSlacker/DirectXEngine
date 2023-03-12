@@ -1,5 +1,5 @@
 #pragma once
-#include "ConstantBuffer.h"
+#include "../Graphics/ConstantBuffer.h"
 #include <DirectXMath.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>

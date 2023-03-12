@@ -1,9 +1,9 @@
 #include "PlaneComponent.h"
-#include "Game.h"
+#include "../Game.h"
 
 PlaneComponent::PlaneComponent(Game* game) : MeshComponent(game)
 {
-	this->Name = "PlaneComponent_" + std::to_string(game->Components.size());
+	this->Name = "Plane_" + std::to_string(game->Components.size());
 
 	Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
 

@@ -2,7 +2,7 @@
 #include <unordered_set>
 #include <SimpleMath.h>
 #include <DirectXCollision.h>
-#include "Delegates.h"
+#include "../Delegates.h"
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;

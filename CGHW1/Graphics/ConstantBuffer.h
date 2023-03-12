@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "Bindable.h"
-#include "Logs.h"
+#include "../Logs.h"
 
 template<typename T>
 class ConstantBuffer : public Bindable

@@ -4,8 +4,7 @@
 #include "Keys.h"
 #include <DirectXMath.h>
 #include <SimpleMath.h>
-#include "Delegates.h"
-//#include "Exports.h"
+#include "../Delegates.h"
 
 
 class Game;

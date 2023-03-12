@@ -1,11 +1,10 @@
-#include "pch.h"
 #include "InputDevice.h"
-#include <iostream>
-#include "Game.h"
 
+#include "../pch.h"
+#include "../Game.h"
+#include "../Logs.h"
 
 using namespace DirectX::SimpleMath;
-
 
 InputDevice::InputDevice(Game* inGame) : game(inGame)
 {
@@ -26,7 +25,7 @@ InputDevice::InputDevice(Game* inGame) : game(inGame)
 	if (RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])) == FALSE)
 	{
 		auto errorCode = GetLastError();
-		std::cout << "ERROR: " << errorCode << std::endl;
+		Logs::Log("Failed to create input device: " + std::to_string(errorCode));
 	}
 }
 
