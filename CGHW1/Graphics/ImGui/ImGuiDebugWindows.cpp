@@ -369,7 +369,12 @@ void ImGuiMeshCompWindow::Bind()
 
 		if (meshComp->Material->DiffuseTexture != nullptr)
 		{
-			ImGui::Text("DiffuseTexture: YES");
+			ImGui::Text("DiffuseTexture: ");
+			ImGui::SameLine();
+			ImGui::Image(
+				(void*)meshComp->Material->DiffuseTexture->GetTextureView(), 
+				ImVec2(30, 30)
+			);
 		}
 		else
 		{

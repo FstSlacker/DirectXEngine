@@ -101,6 +101,47 @@ void DebugGizmos::DrawLight(LightComponent* light)
 		);
 		DebugDraw::Draw(primitiveBatch.get(), sphere, DirectX::Colors::White);
 	}
+	else if (typeid(*light) == typeid(SpotLightComponent))
+	{
+		SpotLightComponent* sLight = dynamic_cast<SpotLightComponent*>(light);
+
+		float ringRadius = std::tan(sLight->ConeAngle * kDeg2Rad) * sLight->Range;
+
+		Vector3 sLightPos = sLight->Transform.GetPosition();
+		Vector3 ringCenter = sLightPos + sLight->Transform.GetForward() * sLight->Range;
+		Vector3 ringUp = sLight->Transform.GetUp() * ringRadius;
+		Vector3 ringRight = sLight->Transform.GetRight() * ringRadius;
+
+		DebugDraw::DrawRing(
+			primitiveBatch.get(),
+			ringCenter,
+			ringUp,
+			ringRight,
+			DirectX::Colors::White
+		);
+
+		Vector3 p1 = ringCenter + ringUp;
+		Vector3 p2 = ringCenter + ringRight;
+		Vector3 p3 = ringCenter - ringUp;
+		Vector3 p4 = ringCenter - ringRight;
+
+		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p1 - sLightPos, false, DirectX::Colors::White);
+		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p2 - sLightPos, false, DirectX::Colors::White);
+		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p3 - sLightPos, false, DirectX::Colors::White);
+		DebugDraw::DrawRay(primitiveBatch.get(), sLightPos, p4 - sLightPos, false, DirectX::Colors::White);
+	}
+	else if (typeid(*light) == typeid(DirectionalLightComponent))
+	{
+		Vector3 o = light->Transform.GetPosition();
+		Vector3 lf = light->Transform.GetForward();
+		Vector3 lr = light->Transform.GetRight();
+		Vector3 lu = light->Transform.GetUp();
+
+		DebugDraw::DrawRay(primitiveBatch.get(), o + lr * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
+		DebugDraw::DrawRay(primitiveBatch.get(), o + -lr * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
+		DebugDraw::DrawRay(primitiveBatch.get(), o + lu * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
+		DebugDraw::DrawRay(primitiveBatch.get(), o + -lu * 0.5f * pScale, lf * pScale * 4.0f, false, DirectX::Colors::White);
+	}
 
 }
 
@@ -156,7 +197,8 @@ void DebugGizmos::Draw()
 	{
 		for (int i = 0; i < game->Light.GetLightSourcesCount(); i++)
 		{
-			DrawLight(game->Light.GetLightComponent(i));
+			if(game->Light.GetLightComponent(i)->IsEnabled)
+				DrawLight(game->Light.GetLightComponent(i));
 		}
 	}
 

@@ -49,7 +49,7 @@ void Light::Bind()
 		LightData lightData = {};
 		lightData.Enabled = false;
 
-		if (i < lights.size())
+		if (i < lights.size() && lights[i]->IsEnabled)
 		{
 			LightComponent* light = lights[i];
 
@@ -124,7 +124,7 @@ DirectionalLightComponent::DirectionalLightComponent(Game* game) : LightComponen
 SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "SpotLight_" + std::to_string(game->Light.GetLightSourcesCount());
-	this->ConeAngle = 45.0f;
+	this->ConeAngle = 30.0f;
 	this->Range = 10.0f;
 	this->ConstantAttenuation = 0.0f;
 	this->LinearAttenuation = 1.0f;
