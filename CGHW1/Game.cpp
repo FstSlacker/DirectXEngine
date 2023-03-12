@@ -1,20 +1,24 @@
 #include "Game.h"
-#include "InputDevice.h"
 
-Game::Game() : Gizmos(this)
+Game::Game() : Gizmos(this), Light(this)
 {
 	MainCamera = new Camera(this, 1, 1);
 }
 
 bool Game::Initialize()
 {
-	Display = new DisplayWin32(1000, 800, Name);
+	Display = new DisplayWin32(*this, 1200, 700, Name);
 
 	MainCamera->SetAspectRatio(static_cast<float>(Display->ClientWidth) / static_cast<float>(Display->ClientHeight));
 
 	Input = new InputDevice(this);
 
 	if (!Gfx.Initialize(Display->hWnd, Display->ClientWidth, Display->ClientHeight))
+	{
+		return false;
+	}
+
+	if (!Light.Initialize())
 	{
 		return false;
 	}
@@ -27,6 +31,23 @@ bool Game::Initialize()
 		Components[i]->Initialize();
 	}
 
+	isInitialized = true;
+
+	return true;
+}
+
+bool Game::ResizeWindow(UINT width, UINT height)
+{
+	if (!isInitialized)
+		return false;
+
+	if (!Gfx.Resize(width, height))
+	{
+		return false;
+	}
+
+	MainCamera->SetAspectRatio((float)width / (float)height);
+
 	return true;
 }
 
@@ -35,6 +56,7 @@ void Game::DestroyResources()
 	for (int i = 0; i < Components.size(); i++) 
 	{
 		Components[i]->DestroyResources();
+		delete Components[i];
 	}
 
 	Gfx.DestroyResources();
@@ -45,10 +67,12 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
+	Light.Bind();
+
 	//Draw components
 	for (int i = 0; i < Components.size(); i++) 
 	{
-		if (!Components[i]->IsEnabled)
+		if (!Components[i]->IsEnabled())
 			continue;
 
 		Components[i]->Draw();
@@ -76,7 +100,8 @@ void Game::Pause()
 void Game::MessageHandler()
 {
 	MSG msg{};
-	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) 
+	{
 
 		if (msg.message == WM_KEYDOWN || msg.message == WM_KEYUP)
 		{
@@ -92,7 +117,6 @@ void Game::MessageHandler()
 		{
 			InputDevice::RawMouseEventArgs args
 			{
-				/*MOUSE_MOVE_RELATIVE*/
 				msg.message,
 				msg.wParam,
 				0,
@@ -104,12 +128,12 @@ void Game::MessageHandler()
 			Input->OnMouseMove(args);
 		}
 
-		if (msg.message == WM_CLOSE) {
-			isExitRequested = true;
-		}
-
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+
+		if (msg.message == WM_QUIT) {
+			this->Exit();
+		}
 	}
 }
 
@@ -151,7 +175,7 @@ void Game::Update()
 {
 	for (int i = 0; i < Components.size(); i++)
 	{
-		if (!Components[i]->IsEnabled)
+		if (!Components[i]->IsEnabled())
 			continue;
 
 		Components[i]->Update();
@@ -163,7 +187,7 @@ void Game::UpdateInternal()
 	//Update components
 	for (int i = 0; i < Components.size(); i++)
 	{
-		if (!Components[i]->IsEnabled)
+		if (!Components[i]->IsEnabled())
 			continue;
 
 		Components[i]->FixedUpdate();
@@ -177,7 +201,7 @@ void Game::UpdateInternal()
 			if (i == j)
 				continue;
 
-			if (!Components[i]->IsEnabled || !Components[j]->IsEnabled)
+			if (!Components[i]->IsEnabled() || !Components[j]->IsEnabled())
 				continue;
 
 			ColliderBase* c1 = Components[i]->Collider;
