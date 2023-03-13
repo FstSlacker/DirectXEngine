@@ -18,11 +18,11 @@ void ImGuiGameInfoWindow::ShowGameComponent(GameComponent* comp)
 
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 		{
-			if (typeid(*comp) == typeid(MeshComponent))
+			if (dynamic_cast<MeshComponent*>(comp) != nullptr)
 			{
 				game->ImGUI.AddWindow(new ImGuiMeshCompWindow(dynamic_cast<MeshComponent*>(comp)));
 			}
-			else if (typeid(*comp) == typeid(Camera))
+			else if (dynamic_cast<Camera*>(comp) != nullptr)
 			{
 				game->ImGUI.AddWindow(new ImGuiCameraWindow(dynamic_cast<Camera*>(comp)));
 			}
@@ -103,6 +103,11 @@ bool ImGuiGameInfoWindow::IsOpened() const
 	return true;
 }
 
+void ImGuiGameInfoWindow::Begin()
+{
+	ImGui::Begin(name.c_str(), &isOpened);
+}
+
 
 void ImGuiGameCompWindow::GetTransform()
 {
@@ -173,12 +178,11 @@ void ImGuiGameCompWindow::Bind()
 		}
 		ImGui::Spacing();
 	}
-
-	if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen))
+	if (gameComp->Collider != nullptr)
 	{
-		ColliderBase* colliderBase = gameComp->Collider;
-		if (colliderBase != nullptr)
+		if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			ColliderBase* colliderBase = gameComp->Collider;
 			if (typeid(*colliderBase) == typeid(SphereCollider))
 			{
 				SphereCollider* collider = dynamic_cast<SphereCollider*>(colliderBase);
@@ -205,16 +209,9 @@ void ImGuiGameCompWindow::Bind()
 					collider->Offsets = Vector3(offsets[0], offsets[1], offsets[2]);
 				}
 			}
+			ImGui::Spacing();
 		}
-		else
-		{
-			ImGui::Text("No");
-		}
-		ImGui::Spacing();
 	}
-
-
-	
 }
 
 
@@ -236,12 +233,32 @@ void ImGuiCameraWindow::Bind()
 
 	GetCameraSettings();
 
-	if (ImGui::CollapsingHeader("Camera settings", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (ImGui::SliderFloat("FOV", &fov, 0.01f, 360.0f))
+		int currentItem = static_cast<int>(comp->GetProjectionMode());
+		const char* items[] = { "Perspective", "Orthographic" };
+
+		if (ImGui::Combo("Mode", &currentItem, items, IM_ARRAYSIZE(items)))
 		{
-			comp->SetFov(fov);
+			comp->SetProjectionMode(static_cast<Camera::ProjectionMode>(currentItem));
 		}
+		if (static_cast<Camera::ProjectionMode>(currentItem) == Camera::ProjectionMode::Perspective)
+		{
+			if (ImGui::SliderFloat("FOV", &fov, 0.01f, 360.0f))
+			{
+				comp->SetFov(fov);
+			}
+		}
+		else
+		{
+			float orthSize = comp->GetOrthographicSize();
+			if (ImGui::DragFloat("Size", &orthSize, 0.1f, 0.1f))
+			{
+				orthSize = orthSize < 0.1f ? 0.1f : orthSize;
+				comp->SetOrthographicSize(orthSize);
+			}
+		}
+
 		if (ImGui::InputFloat("Near Z", &nearZ))
 		{
 			comp->SetNear(nearZ);
@@ -368,18 +385,43 @@ void ImGuiMeshCompWindow::Bind()
 
 		ImGui::DragFloat("SpecularPower", &meshComp->Material->SpecularPower);
 
-		if (meshComp->Material->DiffuseTexture != nullptr)
+		if (ImGui::BeginTable("split", 2, ImGuiTableFlags_SizingFixedFit))
 		{
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
 			ImGui::Text("DiffuseTexture: ");
-			ImGui::SameLine();
-			ImGui::Image(
-				(void*)meshComp->Material->DiffuseTexture->GetTextureView(), 
-				ImVec2(30, 30)
-			);
-		}
-		else
-		{
-			ImGui::Text("DiffuseTexture: NO");
+
+			ImGui::TableNextColumn();
+			if (meshComp->Material->DiffuseTexture != nullptr)
+			{
+				ImGui::Image(
+					(void*)meshComp->Material->DiffuseTexture->GetTextureView(), 
+					ImVec2(30, 30)
+				);
+			}
+			else
+			{
+				ImGui::Text("NONE");
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			ImGui::Text("NormalMap: ");
+
+			ImGui::TableNextColumn();
+			if (meshComp->Material->NormalMapTexture != nullptr)
+			{
+				ImGui::Image(
+					(void*)meshComp->Material->NormalMapTexture->GetTextureView(),
+					ImVec2(30, 30)
+				);
+			}
+			else
+			{
+				ImGui::Text("NONE");
+			}
+
+			ImGui::EndTable();
 		}
 
 		ImGui::Spacing();

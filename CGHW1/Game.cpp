@@ -10,7 +10,7 @@ bool Game::Initialize()
 	Display = new DisplayWin32(*this, 1200, 700, Name);
 
 
-	MainCamera = new Camera(this, Display->ClientWidth, Display->ClientHeight);
+	MainCamera = new Camera(this);
 	MainCamera->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
 
 	Input = new InputDevice(this);
@@ -47,8 +47,6 @@ bool Game::ResizeWindow(UINT width, UINT height)
 	{
 		return false;
 	}
-
-	MainCamera->SetAspectRatio((float)width / (float)height);
 
 	return true;
 }

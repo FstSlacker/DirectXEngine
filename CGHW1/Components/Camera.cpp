@@ -1,9 +1,14 @@
 #include "Camera.h"
+#include "../Game.h"
 
-Camera::Camera(Game* game, UINT width, UINT height) : GameComponent(game)
+Camera::Camera(Game* game) : GameComponent(game)
 {
-    this->aspectRatio = static_cast<float>(width) / static_cast<float>(height);
     this->Name = "Camera";
+    this->projMode = ProjectionMode::Perspective;
+    this->fovDegrees = 90.0f;
+    this->nearZ = 0.1f;
+    this->farZ = 1000.0f;
+    this->orthographicSize = 10.0f;
 }
 
 void Camera::SetFov(float angleDeg)
@@ -24,10 +29,14 @@ void Camera::SetFar(float farByZ)
     UpdateProjectionMatrix();
 }
 
-void Camera::SetAspectRatio(float aspectRatio)
+void Camera::SetProjectionMode(ProjectionMode mode)
 {
-    this->aspectRatio = aspectRatio;
-    UpdateProjectionMatrix();
+    this->projMode = mode;
+}
+
+void Camera::SetOrthographicSize(float size)
+{
+    this->orthographicSize = size;
 }
 
 float Camera::GetFov() const
@@ -43,6 +52,16 @@ float Camera::GetNear() const
 float Camera::GetFar() const
 {
     return this->farZ;
+}
+
+float Camera::GetOrthographicSize() const
+{
+    return this->orthographicSize;
+}
+
+Camera::ProjectionMode Camera::GetProjectionMode() const
+{
+    return this->projMode;
 }
 
 const XMMATRIX& Camera::GetViewMatrix()
@@ -76,6 +95,19 @@ void Camera::UpdateViewMatrix()
 
 void Camera::UpdateProjectionMatrix()
 {
-    float fovRad = (fovDegrees / 360.0f) * XM_2PI;
-    this->projMatrix = XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
+    float aspectWH = static_cast<float>(game->Display->ClientWidth) / static_cast<float>(game->Display->ClientHeight);
+
+    if (projMode == ProjectionMode::Perspective)
+    {
+        float fovRad = (fovDegrees / 360.0f) * XM_2PI;
+        this->projMatrix = XMMatrixPerspectiveFovLH(fovRad, aspectWH, nearZ, farZ);
+    }
+    else if(projMode == ProjectionMode::Orthographic)
+    {
+        this->projMatrix = XMMatrixOrthographicLH(aspectWH * orthographicSize, 1.0f * orthographicSize, nearZ, farZ);
+    }
+    else
+    {
+        Logs::LogError("Camera projection mode not defined", false);
+    }
 }

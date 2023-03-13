@@ -19,6 +19,7 @@ public:
 	ImGuiGameInfoWindow(Game* game);
 	virtual void Bind() override;
 	virtual bool IsOpened() const override;
+	virtual void Begin() override;
 };
 
 class ImGuiGameCompWindow : public ImGuiBaseWindow

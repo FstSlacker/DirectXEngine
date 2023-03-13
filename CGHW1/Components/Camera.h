@@ -14,25 +14,37 @@ class Camera : public GameComponent
 	friend class Game;
 
 public:
-	Camera(Game* game, UINT width, UINT height);
+	enum class ProjectionMode
+	{
+		Perspective,
+		Orthographic
+	};
+
+	Camera(Game* game);
 	void SetFov(float angleDeg);
 	void SetNear(float nearByZ);
 	void SetFar(float farByZ);
-	void SetAspectRatio(float aspectRatio);
+	void SetProjectionMode(ProjectionMode mode);
+	void SetOrthographicSize(float size);
 
 	float GetFov() const;
 	float GetNear() const;
 	float GetFar() const;
+	float GetOrthographicSize() const;
+
+	ProjectionMode GetProjectionMode() const;
 
 	const XMMATRIX& GetViewMatrix();
 	const XMMATRIX& GetProjectionMatrix();
 	const XMMATRIX GetViewProjectionMatrix();
 
 protected:
-	float fovDegrees = 90.0f;
-	float nearZ = 0.1f;
-	float farZ = 1000.0f;
-	float aspectRatio;
+	float fovDegrees;
+	float nearZ;
+	float farZ;
+	float orthographicSize;
+
+	ProjectionMode projMode;
 
 	XMMATRIX viewMatrix;
 	XMMATRIX projMatrix;
