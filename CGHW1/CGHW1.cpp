@@ -4,36 +4,23 @@
 int main()
 {
 	Game game;
-	game.Name = L"Game framework";
+	game.Name = L"Katamari";
 
-	PixelShader* ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
-	VertexShader* vs = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
-	//Texture* texWall = new Texture("./Textures/brich_wall.jpg");
-	Texture* texGrass = new Texture("./Textures/grass-texture.jpg");
-	Texture* texMoon = new Texture("./Textures/moon.jpg");
+	game.Gfx.AddPixelShader(L"PS_DefaultLit.hlsl");
+	game.Gfx.AddVertexShader(L"VS_Default.hlsl");
 
-	/*SphereComponent* s1 = new SphereComponent(&game);
-	s1->Name = "Sphere1";
-	s1->Collider = new SphereCollider(s1);
+	Texture* texGrass = new Texture(&game, "./Textures/grass-texture.jpg");
+	Texture* texMoon = new Texture(&game, "./Textures/moon.jpg");
+	Texture* texNorm = new Texture(&game, "./Textures/normal_map3.jpg");
 
-	s1->SetShaders(vs, ps);
-	s1->SetTexture(texWall);
-
-	SphereComponent* s2 = new SphereComponent(&game);
-	s2->Name = "Sphere2";
-	s2->Collider = new AABBCollider(s2);
-
-	s2->SetShaders(vs, ps);
-	s2->SetTexture(texWall);
-
-	s2->Transform.SetPosition(Vector3(2.0f, 0.0f, 0.0f));
-
-	s1->Transform.AddChild(s2->Transform);
-*/
-	game.Gfx.AddPixelShader(ps);
-	game.Gfx.AddVertexShader(vs);
-	game.Gfx.AddTexture(texGrass);
-	game.Gfx.AddTexture(texMoon);
+	Material* groundMat = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	groundMat->DiffuseTexture = texGrass;
+	groundMat->NormalMapTexture = texNorm;
+	groundMat->SpecularColor = Color(0.2f, 0.2f, 0.2f);
+	
+	Material* moonMat = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	moonMat->DiffuseTexture = texMoon;
+	moonMat->SpecularColor = Color(0.0f);
 
 	std::string modelsPaths[] = {
 		"D:\\Documents\\3DModels\\Mashroom1.fbx",
@@ -41,7 +28,9 @@ int main()
 		"D:\\Documents\\3DModels\\Mashroom3.fbx",
 		"D:\\Documents\\3DModels\\game-ready-low-poly-old-tv-cartoon-style-model\\source\\TV.fbx"
 	};
-	for(int j = 0; j < 3; j++)
+
+	for (int j = 0; j < 1; j++)
+	{
 		for (int i = 0; i < 4; i++)
 		{
 			ModelComponent* model = new ModelComponent(
@@ -65,17 +54,19 @@ int main()
 			model->Transform.SetPosition(pos);
 			model->Transform.SetRotation(Vector3(0.0f, (float)(rand() % 360), 0.0f));
 		}
+	}
 
 	PlaneComponent* plane = new PlaneComponent(&game);
-	plane->SetShaders(vs, ps);
-	plane->SetTexture(texGrass);
+	plane->Material = groundMat;
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	SphereComponent* sp1 = new SphereComponent(&game);
 	sp1->Transform.SetPosition(Vector3(5.0f, 0.5f, 0.0f));
 	sp1->Collider = new SphereCollider(sp1);
-	sp1->SetShaders(vs, ps);
-	sp1->SetTexture(texMoon);
+	sp1->Material = moonMat;
+
+	DirectionalLightComponent* dirLight = new DirectionalLightComponent(&game);
+	dirLight->Transform.SetRotation(Vector3(50.0f, 0.0f, 0.0f));
 
 	KatamariComponent* katamari = new KatamariComponent(&game);
 

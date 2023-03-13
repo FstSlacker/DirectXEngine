@@ -1,6 +1,6 @@
 #pragma once
-#include "GameComponent.h"
-#include "Collision.h"
+#include "Components/GameComponent.h"
+#include "Components/Collision.h"
 
 class MeshComponent;
 

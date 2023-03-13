@@ -176,6 +176,7 @@
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Input\InputDevice.cpp" />
+    <ClCompile Include="KatamariComponent.cpp" />
     <ClCompile Include="Logs.cpp" />
     <ClCompile Include="StringHelper.cpp" />
   </ItemGroup>
@@ -219,6 +220,7 @@
     <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Input\InputDevice.h" />
     <ClInclude Include="Input\Keys.h" />
+    <ClInclude Include="KatamariComponent.h" />
     <ClInclude Include="Logs.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StringHelper.h" />

@@ -9,7 +9,7 @@ void KatamariComponent::UpdateRotation()
 	prevMousePos = currPos;
 
 	float speed = MoveSpeed * game->DeltaTime;
-	float rotSpeed = (MoveSpeed / currentSize) * 180.0f * game->DeltaTime;
+	float rotSpeed = (MoveSpeed / currentSize) * 90.0f * game->DeltaTime;
 
 	Vector3 moveDir = Vector3::Zero;
 	Vector3 rotDir = Vector3::Zero;
@@ -63,14 +63,6 @@ KatamariComponent::KatamariComponent(Game* game, float startSize)
 	this->targetSize = startSize;
 	this->growSpeed = 1.0f;
 	this->MoveSpeed = 3.0f;
-
-	/*PixelShader* ps = new PixelShader(L"./Shaders/DefaultTexture.hlsl");
-	VertexShader* vs = new VertexShader(L"./Shaders/DefaultTexture.hlsl");
-	Texture* tex = new Texture("./Textures/brich_wall.jpg");
-
-	game->Gfx.AddPixelShader(ps);
-	game->Gfx.AddVertexShader(vs);
-	game->Gfx.AddTexture(tex);*/
 
 	rootComp = new GameComponent(game);
 	this->Transform.AddChild(rootComp->Transform);
