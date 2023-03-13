@@ -20,6 +20,7 @@ public:
     float SpecularPower;
 
     Texture* DiffuseTexture;
+    Texture* NormalMapTexture;
 
     Material(Game* game, VertexShader* vs, PixelShader* ps);
 
@@ -34,8 +35,10 @@ private:
         DirectX::XMFLOAT4 Diffuse; // 16
         DirectX::XMFLOAT4 Specular; // 16
 
-        float SpecularPower; // 4
-        bool UseTexture; // 4
+        float SpecularPower; // 4 (4)
+        bool UseTexture; // 4 (1)
+        float padding; // 4
+        bool UseNormalMap; // 4 (1)
     };
 
     bool Initialize(ID3D11Device* device);

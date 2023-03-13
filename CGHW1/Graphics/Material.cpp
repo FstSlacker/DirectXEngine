@@ -9,7 +9,9 @@ Material::Material(Game* game, VertexShader* vs, PixelShader* ps)
 	this->DiffuseColor = Color(DirectX::Colors::White);
 	this->SpecularColor = Color(DirectX::Colors::White);
 	this->SpecularPower = 16;
+
 	this->DiffuseTexture = nullptr;
+	this->NormalMapTexture = nullptr;
 
 	this->vertexShader = vs;
 	this->pixelShader = ps;
@@ -40,12 +42,24 @@ void Material::Bind(ID3D11DeviceContext* context)
 
 	if (DiffuseTexture != nullptr)
 	{
+		DiffuseTexture->SetSlot(0);
 		materialBuffer.Data.UseTexture = true;
 		DiffuseTexture->Bind(context);
 	}
 	else
 	{
 		materialBuffer.Data.UseTexture = false;
+	}
+
+	if (NormalMapTexture != nullptr)
+	{
+		NormalMapTexture->SetSlot(1);
+		materialBuffer.Data.UseNormalMap = true;
+		NormalMapTexture->Bind(context);
+	}
+	else
+	{
+		materialBuffer.Data.UseNormalMap = false;
 	}
 
 	HRESULT hr = materialBuffer.ApplyChanges(context);

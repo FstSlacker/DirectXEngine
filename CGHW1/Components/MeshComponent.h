@@ -17,18 +17,12 @@ class GameComponent;
 class MeshComponent : public GameComponent
 {
 protected:
-	struct TransformCbuf
-	{
-		DirectX::XMMATRIX WorldViewProjMatrix;
-		DirectX::XMMATRIX WorldMatrix;
-	};
-
 	std::vector<Bindable*> binds;
 
 	VertexBuffer<Vertex> vertexBuffer;
 	IndexBuffer indexBuffer;
 
-	VSConstantBuffer<TransformCbuf> transformMat;
+	TransformConstantBuffer transformMat;
 
 	std::vector<Vertex> vertices;
 	std::vector<int> indices;

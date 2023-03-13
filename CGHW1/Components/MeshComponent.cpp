@@ -84,6 +84,8 @@ void MeshComponent::Initialize() {
 		Logs::LogError(hr, "Failed to initialize transformMat");
 	}
 
+	transformMat.SetSlots(0U, 2U);
+
 	binds.push_back(&vertexBuffer);
 	binds.push_back(&indexBuffer);
 	binds.push_back(&transformMat);

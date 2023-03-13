@@ -6,6 +6,7 @@ Texture::Texture(Game* game)
 {
 	textureData.Type = TextureType::ColorArray;
 	textureData.TextureColor = Color(1.0f, 0.0f, 0.0f);
+	this->slotIndex = 0;
 	game->Gfx.AddTexture(this);
 }
 
@@ -13,6 +14,7 @@ Texture::Texture(Game* game, Color color)
 {
 	textureData.Type = TextureType::ColorArray;
 	textureData.TextureColor = color;
+	this->slotIndex = 0;
 	game->Gfx.AddTexture(this);
 }
 
@@ -20,6 +22,7 @@ Texture::Texture(Game* game, std::string filePath)
 {
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = std::wstring(filePath.begin(), filePath.end());
+	this->slotIndex = 0;
 	game->Gfx.AddTexture(this);
 }
 
@@ -27,6 +30,7 @@ Texture::Texture(Game* game, std::wstring filePath)
 {
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = filePath;
+	this->slotIndex = 0;
 	game->Gfx.AddTexture(this);
 }
 
@@ -63,10 +67,15 @@ ID3D11ShaderResourceView* Texture::GetTextureView() const
 	return this->textureView.Get();
 }
 
+void Texture::SetSlot(UINT slotInd)
+{
+	this->slotIndex = slotInd;
+}
+
 void Texture::Bind(ID3D11DeviceContext* context)
 {
 	sampler.Bind(context);
-	context->PSSetShaderResources(0, 1, textureView.GetAddressOf());
+	context->PSSetShaderResources(slotIndex, 1, textureView.GetAddressOf());
 }
 
 void Texture::DestroyResources()

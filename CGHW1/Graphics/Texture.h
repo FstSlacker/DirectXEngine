@@ -35,6 +35,7 @@ public:
 	Texture(Game* game, std::wstring filePath);
 
 	ID3D11ShaderResourceView* GetTextureView() const;
+	void SetSlot(UINT slotInd);
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;
 
@@ -53,6 +54,7 @@ protected:
 	};
 
 	TextureData textureData;
+	UINT slotIndex;
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureView;
 	Microsoft::WRL::ComPtr<ID3D11Resource> texture;

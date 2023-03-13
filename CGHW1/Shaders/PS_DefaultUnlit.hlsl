@@ -10,7 +10,8 @@ struct MaterialData
     
     float SpecularPower; // 4
     bool UseTexture; // 4
-    //float2 Padding; // 8
+    bool UseNormalMap; // 4
+    //float2 Padding; // 4
 };
 
 cbuffer cMaterialBuf : register(b0)

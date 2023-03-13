@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <DirectXMath.h>
 #include <wrl/client.h>
 #include "Bindable.h"
 #include "../Logs.h"
@@ -102,4 +103,45 @@ public:
 	{
 		context->PSSetConstantBuffers(slotInd, 1, this->buffer.GetAddressOf());
 	}
+};
+
+
+struct TransformCbuf
+{
+	DirectX::XMMATRIX WorldViewProjMatrix;
+	DirectX::XMMATRIX WorldMatrix;
+};
+
+class TransformConstantBuffer : public ConstantBuffer<TransformCbuf>
+{
+private:
+	struct TransformCbuf
+	{
+		DirectX::XMMATRIX WorldViewProjMatrix;
+		DirectX::XMMATRIX WorldMatrix;
+	};
+
+	UINT vsSlotInd;
+	UINT psSlotInd;
+
+public:
+	TransformConstantBuffer()
+	{
+		this->vsSlotInd = 0;
+		this->psSlotInd = 0;
+	}
+
+	void SetSlots(UINT vsSlot, UINT psSlot)
+	{
+		this->vsSlotInd = vsSlot;
+		this->psSlotInd = psSlot;
+	}
+
+	virtual void Bind(ID3D11DeviceContext* context) override
+	{
+		context->VSSetConstantBuffers(vsSlotInd, 1, this->buffer.GetAddressOf());
+		context->PSSetConstantBuffers(psSlotInd, 1, this->buffer.GetAddressOf());
+	}
+
+	virtual void DestroyResources() override {}
 };

@@ -95,11 +95,22 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	meshComp->SetIndices(inds);
 
 	Material* mat = new Material(game, game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
-	mat->EmissiveColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-	mat->AmbientColor = Color(0.0f, 0.0f, 0.0f);
-	mat->DiffuseColor = Color(1.0f, 1.0f, 1.0f);
-	mat->SpecularColor = Color(1.0f, 1.0f, 1.0f);
-	mat->SpecularPower = 32.0f;
+	
+	aiColor3D diffuse = {}, emissive = {}, specular = {}, ambient = {};
+	float shiness = 0, shinessStrength = 0;
+
+	meshMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+	meshMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
+	meshMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+	meshMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+	meshMaterial->Get(AI_MATKEY_SHININESS, shiness);
+	meshMaterial->Get(AI_MATKEY_SHININESS_STRENGTH, shinessStrength);
+	
+	mat->EmissiveColor = Color(emissive.r, ambient.g, ambient.b);
+	mat->AmbientColor = Color(ambient.r, ambient.g, ambient.b);
+	mat->DiffuseColor = Color(diffuse.r, diffuse.g, diffuse.b);
+	mat->SpecularColor = Color(specular.r, specular.g, specular.b) * shinessStrength;
+	mat->SpecularPower = shiness;
 
 	meshComp->Material = mat;
 
@@ -122,8 +133,7 @@ std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, 
 		switch (texType)
 		{
 		case aiTextureType_DIFFUSE:
-			material->Get(AI_MATKEY_COLOR_DIFFUSE, diffColor);
-			textures.push_back(new Texture(game, Color(diffColor.r, diffColor.g, diffColor.b)));
+			textures.push_back(new Texture(game, Color(1.0f, 1.0f, 1.0f)));
 			return textures;
 		}
 	}

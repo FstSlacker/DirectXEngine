@@ -5,6 +5,8 @@
 #define SPOT_LIGHT 2
 
 Texture2D objTexture : register(t0);
+Texture2D objNormalMap : register(t1);
+
 SamplerState objSamplerState : register(s0);
 
 struct MaterialData
@@ -16,7 +18,9 @@ struct MaterialData
     
     float SpecularPower; // 4
     bool UseTexture; // 4
-    //float2 Padding; // 8
+    float _padding; // 4
+    bool UseNormalMap; // 4
+    //float2 Padding; // 4
 };
 
 struct LightData
@@ -58,6 +62,12 @@ cbuffer cLightBuf : register(b1)
     LightData Lights[MAX_LIGHTS];
 };
 
+cbuffer cTransformBuf : register(b2)
+{
+    float4x4 wvpMat;
+    float4x4 worldMat;
+};
+
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
@@ -76,7 +86,6 @@ float4 CalculateDiffuse(LightData light, float3 dirToLight, float3 normal)
 
 float4 CalculateSpecular(LightData light, float3 dirToCamera, float3 dirToLight, float3 normal)
 {
-    // Phong lighting.
     float3 r = normalize(reflect(-dirToLight, normal));
     float rDotV = max(0, dot(r, dirToCamera));
 
@@ -212,6 +221,18 @@ LightingResult ComputeLighting(float3 vertPos, float3 normal)
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
+    if (Material.UseNormalMap)
+    {
+        float3 normSample = objNormalMap.Sample(objSamplerState, input.texCord);
+        
+        input.normal.x = normSample.x * 2.0f - 1.0f;
+        input.normal.y = normSample.y * 2.0f - 1.0f;
+        input.normal.z = -normSample.z * 2.0f + 1.0f;
+        
+        input.normal = mul(float4(input.normal, 0.0f), worldMat);
+
+    }
+    
     LightingResult lit = ComputeLighting(input.worldPos, normalize(input.normal));
 
     float4 emissive = Material.Emissive;
@@ -230,6 +251,6 @@ float4 PSMain( PS_IN input ) : SV_Target
         pointColor = input.color;
     }
 
-    float4 finalColor = (emissive + ambient + diffuse) * pointColor + specular;
+    float4 finalColor = (ambient + diffuse) * pointColor + specular;
     return finalColor;
 }
