@@ -148,6 +148,7 @@
     <ClCompile Include="Components\Camera.cpp" />
     <ClCompile Include="Components\CameraMoveComponent.cpp" />
     <ClCompile Include="Components\Collision.cpp" />
+    <ClCompile Include="Components\CubeComponent.cpp" />
     <ClCompile Include="Components\GameComponent.cpp" />
     <ClCompile Include="Components\Light.cpp" />
     <ClCompile Include="Components\MeshComponent.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Components\Camera.h" />
     <ClInclude Include="Components\CameraMoveComponent.h" />
     <ClInclude Include="Components\Collision.h" />
+    <ClInclude Include="Components\CubeComponent.h" />
     <ClInclude Include="Components\GameComponent.h" />
     <ClInclude Include="Components\Light.h" />
     <ClInclude Include="Components\MeshComponent.h" />

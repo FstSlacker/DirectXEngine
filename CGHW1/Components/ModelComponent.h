@@ -18,7 +18,7 @@ private:
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	void ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
-	std::vector<Texture*> GetMaterialTextures(aiMaterial* material, aiTextureType texType, const aiScene* scene);
+	Texture* GetMaterialTexture(aiMaterial* material, aiTextureType texType, const aiScene* scene);
 	TextureStorageType GetTextureStorageType(aiMaterial* material, UINT ind, aiTextureType texType, const aiScene* scene);
 
 public:

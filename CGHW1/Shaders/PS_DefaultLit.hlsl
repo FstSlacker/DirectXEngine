@@ -4,8 +4,13 @@
 #define POINT_LIGHT 1
 #define SPOT_LIGHT 2
 
+#define USE_DIFFUSE_TEXTURE 1
+#define USE_NORMAL_MAP 2
+#define USE_SPECULAR_MAP 4
+
 Texture2D objTexture : register(t0);
 Texture2D objNormalMap : register(t1);
+Texture2D objSpecularMap : register(t2);
 
 SamplerState objSamplerState : register(s0);
 
@@ -16,11 +21,8 @@ struct MaterialData
     float4 Diffuse; // 16
     float4 Specular; // 16
     
-    float SpecularPower; // 4
-    bool UseTexture; // 4
-    float _padding; // 4
-    bool UseNormalMap; // 4
-    //float2 Padding; // 4
+    int Flags;
+    //float2 Padding; // 8
 };
 
 struct LightData
@@ -75,6 +77,8 @@ struct PS_IN
  	float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLD_POSITION;
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
 };
 
 float4 CalculateDiffuse(LightData light, float3 dirToLight, float3 normal)
@@ -89,7 +93,7 @@ float4 CalculateSpecular(LightData light, float3 dirToCamera, float3 dirToLight,
     float3 r = normalize(reflect(-dirToLight, normal));
     float rDotV = max(0, dot(r, dirToCamera));
 
-    return light.Color * pow(rDotV, Material.SpecularPower) * light.Intensity;
+    return light.Color * pow(rDotV, Material.Specular.a) * light.Intensity;
 }
 
 float CalculateAttenuation(LightData light, float dist)
@@ -221,28 +225,10 @@ LightingResult ComputeLighting(float3 vertPos, float3 normal)
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-    if (Material.UseNormalMap)
-    {
-        float3 normSample = objNormalMap.Sample(objSamplerState, input.texCord);
-        
-        input.normal.x = normSample.x * 2.0f - 1.0f;
-        input.normal.y = normSample.y * 2.0f - 1.0f;
-        input.normal.z = -normSample.z * 2.0f + 1.0f;
-        
-        input.normal = mul(float4(input.normal, 0.0f), worldMat);
-
-    }
-    
-    LightingResult lit = ComputeLighting(input.worldPos, normalize(input.normal));
-
-    float4 emissive = Material.Emissive;
-    float4 ambient = Material.Ambient * float4(AmbientColor * AmbientIntensity, 1.0f);
-    float4 diffuse = Material.Diffuse * lit.Diffuse;
-    float4 specular = Material.Specular * lit.Specular;
-    
     float4 pointColor;
+    float4 specularWeight = float4(1.0f, 1.0f, 1.0f, 1.0f);
     
-    if(Material.UseTexture)
+    if ((Material.Flags & USE_DIFFUSE_TEXTURE) != 0)
     {
         pointColor = objTexture.Sample(objSamplerState, input.texCord);
     }
@@ -250,6 +236,35 @@ float4 PSMain( PS_IN input ) : SV_Target
     {
         pointColor = input.color;
     }
+    
+    if ((Material.Flags & USE_NORMAL_MAP) != 0)
+    {
+        float3 normSample = objNormalMap.Sample(objSamplerState, input.texCord);
+        
+        const float3x3 tangSpaceRotMat = float3x3(
+            input.tangent,
+            input.bitangent,
+            input.normal
+        );
+        
+        input.normal.x = normSample.x * 2.0f - 1.0f;
+        input.normal.y = -normSample.y * 2.0f + 1.0f;
+        input.normal.z = -normSample.z;
+        
+        input.normal = mul(input.normal, tangSpaceRotMat);
+    }
+    
+    if ((Material.Flags & USE_SPECULAR_MAP) != 0)
+    {
+        specularWeight = objSpecularMap.Sample(objSamplerState, input.texCord);
+    }
+    
+    LightingResult lit = ComputeLighting(input.worldPos, normalize(input.normal));
+
+    float4 emissive = Material.Emissive;
+    float4 ambient = Material.Ambient * float4(AmbientColor * AmbientIntensity, 1.0f);
+    float4 diffuse = Material.Diffuse * lit.Diffuse;
+    float4 specular = Material.Specular * lit.Specular * specularWeight;
 
     float4 finalColor = (ambient + diffuse) * pointColor + specular;
     return finalColor;

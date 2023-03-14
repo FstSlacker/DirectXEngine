@@ -1,3 +1,5 @@
+#define USE_DIFFUSE_TEXTURE 1
+
 Texture2D objTexture : register(t0);
 SamplerState objSamplerState : register(s0);
 
@@ -8,10 +10,7 @@ struct MaterialData
     float4 Diffuse; // 16
     float4 Specular; // 16
     
-    float SpecularPower; // 4
-    bool UseTexture; // 4
-    bool UseNormalMap; // 4
-    //float2 Padding; // 4
+    int Flags;
 };
 
 cbuffer cMaterialBuf : register(b0)
@@ -26,13 +25,15 @@ struct PS_IN
  	float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPos : WORLD_POSITION;
+    float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
 };
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
     float4 pointColor;
     
-    if(Material.UseTexture)
+    if (Material.Flags & USE_DIFFUSE_TEXTURE)
     {
         pointColor = objTexture.Sample(objSamplerState, input.texCord);
     }

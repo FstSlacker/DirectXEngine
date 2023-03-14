@@ -37,29 +37,29 @@ void Material::Bind(ID3D11DeviceContext* context)
 	materialBuffer.Data.Emissive = EmissiveColor;
 	materialBuffer.Data.Ambient = AmbientColor;
 	materialBuffer.Data.Diffuse = DiffuseColor;
-	materialBuffer.Data.Specular = SpecularColor;
-	materialBuffer.Data.SpecularPower = SpecularPower;
+	materialBuffer.Data.Specular = XMFLOAT4(SpecularColor.x, SpecularColor.y, SpecularColor.z, SpecularPower);
+
+	materialBuffer.Data.Flags = 0;
 
 	if (DiffuseTexture != nullptr)
 	{
 		DiffuseTexture->SetSlot(0);
-		materialBuffer.Data.UseTexture = true;
+		materialBuffer.Data.Flags |= USE_DIFFUSE_TEXTURE;
 		DiffuseTexture->Bind(context);
-	}
-	else
-	{
-		materialBuffer.Data.UseTexture = false;
 	}
 
 	if (NormalMapTexture != nullptr)
 	{
 		NormalMapTexture->SetSlot(1);
-		materialBuffer.Data.UseNormalMap = true;
+		materialBuffer.Data.Flags |= USE_NORMAL_MAP;
 		NormalMapTexture->Bind(context);
 	}
-	else
+
+	if (SpecularMapTexture != nullptr)
 	{
-		materialBuffer.Data.UseNormalMap = false;
+		SpecularMapTexture->SetSlot(2);
+		materialBuffer.Data.Flags |= USE_SPECULAR_MAP;
+		SpecularMapTexture->Bind(context);
 	}
 
 	HRESULT hr = materialBuffer.ApplyChanges(context);

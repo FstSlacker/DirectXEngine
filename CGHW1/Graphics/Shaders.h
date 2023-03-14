@@ -11,16 +11,8 @@
 class VertexShader : public Bindable
 {
 public:
-	enum class VertexLayoutType : UINT
-	{
-		VertexPositionColor,
-		VertexPositionTexture,
-		VertexPositionColorTexture,
-		VertexPositionTextureNormal,
-		VectrxPositionColorTextureNormal
-	};
 
-	VertexShader(std::wstring shaderPath, VertexLayoutType layoutType = VertexLayoutType::VertexPositionColorTexture);
+	VertexShader(std::wstring shaderPath);
 
 	ID3D11VertexShader* GetShader();
 	ID3DBlob* GetByteCode();
@@ -42,15 +34,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3DBlob> shaderByteCode;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
 	std::wstring shaderPath;
-	VertexLayoutType layoutType;
 
-	static D3D11_INPUT_ELEMENT_DESC vertexPositionColorLayout[2];
-	static D3D11_INPUT_ELEMENT_DESC	vertexPositionTextureLayout[2];
-	static D3D11_INPUT_ELEMENT_DESC	vertexPositionColorTextureLayout[3];
-	static D3D11_INPUT_ELEMENT_DESC	vertexPositionTextureNormalLayout[3];
-	static D3D11_INPUT_ELEMENT_DESC	vertexPositionColorTextureNormalLayout[4];
 
-	static VertexLayoutInfo layouts[5];
+	static D3D11_INPUT_ELEMENT_DESC	layoutDesc[6];
+
+	static VertexLayoutInfo layout;
 };
 
 

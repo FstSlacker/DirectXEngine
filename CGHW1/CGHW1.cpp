@@ -9,53 +9,48 @@ int main()
 	game.Gfx.AddPixelShader(L"PS_DefaultUnlit.hlsl");
 	game.Gfx.AddVertexShader(L"VS_Default.hlsl");
 
-	Texture* texWall = new Texture(&game, "./Textures/brich_wall.jpg");
-	Texture* texGrass = new Texture(&game, "./Textures/obsidiant.jpg");
+	Texture* texGrass = new Texture(&game, "./Textures/grass-texture.jpg");
+
+	Texture* texWall = new Texture(&game, "./Textures/diffusemap_brick.png");
+	Texture* texNormalMapWall = new Texture(&game, "./Textures/normalmap_brick.png");
+	Texture* texSpecularMapWall = new Texture(&game, "./Textures/specularmap_brick.png");
 
 	Material* matLit1 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
 	matLit1->DiffuseTexture = texGrass;
-	Material* matLit2 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
-	matLit2->DiffuseTexture = texWall;
-	Material* matUnlit1 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultUnlit.hlsl"));
-	matUnlit1->DiffuseTexture = texWall;
 
+	Material* matWall = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	matWall->DiffuseTexture = texWall;
+	matWall->NormalMapTexture = texNormalMapWall;
+	matWall->SpecularMapTexture = texSpecularMapWall;
 
-	SphereComponent* s1 = new SphereComponent(&game);
-	s1->Name = "Sphere1";
-	s1->Collider = new SphereCollider(s1);
+	Material* matWall2 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	matWall2->DiffuseTexture = texWall;
 
-	s1->Material = matLit1;
-
-	SphereComponent* s2 = new SphereComponent(&game);
-	s2->Name = "Sphere2";
-	s2->Collider = new AABBCollider(s2);
-
-	s2->Material = matUnlit1;
-
-	s2->Transform.SetPosition(Vector3(2.0f, 0.0f, 0.0f));
-
-	s1->Transform.AddChild(s2->Transform);
+	Material* defaultMat = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
 
 	ModelComponent* model = new ModelComponent(
 		&game,
-		"D:\\Documents\\3DModels\\Mashroom1.fbx"
+		"D:\\Documents\\3DModels\\stones-blocks-asset\\stones-blocks.fbx"
 	);
-	model->Transform.SetPosition(Vector3(3.0f, 0.0f, 0.0f));
+
+	model->Transform.SetPosition(Vector3(10.0f, 0.0f, 0.0f));
 	model->Transform.SetScale(Vector3(0.02f, 0.02f, 0.02f));
 
 	PlaneComponent* plane = new PlaneComponent(&game);
-	plane->Material = matLit2;
+	plane->Material = matLit1;
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	PointLightComponent* light = new PointLightComponent(&game);
-	light->Transform.SetPosition(Vector3(10.0f, 10.0f, 0.0f));
+	light->Transform.SetPosition(Vector3(0.0f, 5.0f, -3.0f));
 	light->Range = 30.0f;
 
 	SpotLightComponent* light2 = new SpotLightComponent(&game);
-	light2->Transform.SetPosition(Vector3(-10.0f, 10.0f, 0.0f));
+	light2->Transform.SetPosition(Vector3(0.0f, 5.0f, 5.0f));
+	light2->SetEnable(false);
 
 	DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
 	light3->Transform.SetPosition(Vector3(0.0f, 10.0f, 10.0f));
+	light3->SetEnable(false);
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

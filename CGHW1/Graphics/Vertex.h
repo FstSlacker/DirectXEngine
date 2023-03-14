@@ -1,6 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <SimpleMath.h>
+#include <DirectXColors.h>
 
 using namespace DirectX::SimpleMath;
 
@@ -54,16 +55,20 @@ struct Vertex
 {
 	Vertex() {}
 
-	Vertex(Vector3 position, Color color, Vector2 uv, Vector3 normal)
+	Vertex(Vector3 position, Color color = DirectX::SimpleMath::Color(DirectX::Colors::White), Vector2 uv = Vector2::Zero, Vector3 normal = Vector3::Zero, Vector3 tangent = Vector3::Zero, Vector3 bitangent = Vector3::Zero)
 	{
 		Position = position;
 		Color = color;
 		UV = uv;
 		Normal = normal;
+		Tangent = tangent;
+		Bitangent = bitangent;
 	}
 
 	Vector3 Position;
 	Color Color;
 	Vector2 UV;
 	Vector3 Normal;
+	Vector3 Tangent;
+	Vector3 Bitangent;
 };

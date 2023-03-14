@@ -385,11 +385,14 @@ void ImGuiMeshCompWindow::Bind()
 
 		ImGui::DragFloat("SpecularPower", &meshComp->Material->SpecularPower);
 
-		if (ImGui::BeginTable("split", 2, ImGuiTableFlags_SizingFixedFit))
+		ImGui::Spacing();
+		ImGui::Text("Textures:");
+
+		if (ImGui::BeginTable("texturesTable", 2, ImGuiTableFlags_SizingFixedFit))
 		{
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
-			ImGui::Text("DiffuseTexture: ");
+			ImGui::Text("Diffuse: ");
 
 			ImGui::TableNextColumn();
 			if (meshComp->Material->DiffuseTexture != nullptr)
@@ -413,6 +416,23 @@ void ImGuiMeshCompWindow::Bind()
 			{
 				ImGui::Image(
 					(void*)meshComp->Material->NormalMapTexture->GetTextureView(),
+					ImVec2(30, 30)
+				);
+			}
+			else
+			{
+				ImGui::Text("NONE");
+			}
+
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			ImGui::Text("SpecularMap: ");
+
+			ImGui::TableNextColumn();
+			if (meshComp->Material->SpecularMapTexture != nullptr)
+			{
+				ImGui::Image(
+					(void*)meshComp->Material->SpecularMapTexture->GetTextureView(),
 					ImVec2(30, 30)
 				);
 			}

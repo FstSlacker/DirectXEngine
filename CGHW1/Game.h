@@ -37,6 +37,7 @@
 #include "Components/Text2DComponent.h"
 #include "Components/CameraMoveComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/CubeComponent.h"
 #include "Components/ModelComponent.h"
 
 

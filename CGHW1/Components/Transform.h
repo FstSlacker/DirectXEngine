@@ -48,6 +48,13 @@ private:
 	int FindChild(Transform3D& child);
 
 public:
+	const static Vector3 Forward;
+	const static Vector3 Right;
+	const static Vector3 Up;
+	const static Vector3 Backward;
+	const static Vector3 Left;
+	const static Vector3 Down;
+
 	Transform3D(GameComponent& comp);
 
 	GameComponent* GetGameComponent() const;

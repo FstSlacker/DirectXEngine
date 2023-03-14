@@ -13,7 +13,12 @@ bool ModelComponent::LoadModel(const std::string& path)
 
 	Assimp::Importer importer;
 
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
+	const aiScene* scene = importer.ReadFile(path, 
+		aiProcess_Triangulate | 
+		aiProcess_ConvertToLeftHanded |
+		aiProcess_GenNormals |
+		aiProcess_CalcTangentSpace
+	);
 
 	if (scene == nullptr)
 		return false;
@@ -65,6 +70,18 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			mesh->mNormals[i].z
 		);
 
+		vert.Tangent = Vector3(
+			mesh->mTangents[i].x,
+			mesh->mTangents[i].y,
+			mesh->mTangents[i].z
+		);
+
+		vert.Bitangent = Vector3(
+			mesh->mBitangents[i].x,
+			mesh->mBitangents[i].y,
+			mesh->mBitangents[i].z
+		);
+
 		verts.push_back(vert);
 	}
 
@@ -80,10 +97,31 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 	aiMaterial* meshMaterial = scene->mMaterials[mesh->mMaterialIndex];
 
-	std::vector<Texture*> textures;
-	std::vector<Texture*> diffTextures = GetMaterialTextures(meshMaterial, aiTextureType::aiTextureType_DIFFUSE, scene);
+	aiColor3D diffuse = {}, emissive = {}, specular = {}, ambient = {};
+	float shiness = 0, shinessStrength = 0;
 
-	textures.insert(textures.end(), diffTextures.begin(), diffTextures.end());
+	meshMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+	meshMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
+	meshMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+	meshMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+	meshMaterial->Get(AI_MATKEY_SHININESS, shiness);
+	meshMaterial->Get(AI_MATKEY_SHININESS_STRENGTH, shinessStrength);
+
+	Texture* diffuseTex = GetMaterialTexture(meshMaterial, aiTextureType::aiTextureType_DIFFUSE, scene);
+	Texture* normalMap = GetMaterialTexture(meshMaterial, aiTextureType::aiTextureType_NORMALS, scene);
+	Texture* specularMap = GetMaterialTexture(meshMaterial, aiTextureType::aiTextureType_SPECULAR, scene);
+
+	Material* mat = new Material(game, game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+
+	mat->EmissiveColor = Color(emissive.r, ambient.g, ambient.b);
+	mat->AmbientColor = Color(ambient.r, ambient.g, ambient.b);
+	mat->DiffuseColor = Color(diffuse.r, diffuse.g, diffuse.b);
+	mat->SpecularColor = Color(specular.r, specular.g, specular.b) * shinessStrength;
+	mat->SpecularPower = shiness;
+
+	mat->DiffuseTexture = diffuseTex;
+	mat->NormalMapTexture = normalMap;
+	mat->SpecularMapTexture = specularMap;
 
 	MeshComponent* meshComp = new MeshComponent(game);
 
@@ -94,36 +132,11 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	meshComp->SetVertices(verts);
 	meshComp->SetIndices(inds);
 
-	Material* mat = new Material(game, game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
-	
-	aiColor3D diffuse = {}, emissive = {}, specular = {}, ambient = {};
-	float shiness = 0, shinessStrength = 0;
-
-	meshMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-	meshMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
-	meshMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-	meshMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-	meshMaterial->Get(AI_MATKEY_SHININESS, shiness);
-	meshMaterial->Get(AI_MATKEY_SHININESS_STRENGTH, shinessStrength);
-	
-	mat->EmissiveColor = Color(emissive.r, ambient.g, ambient.b);
-	mat->AmbientColor = Color(ambient.r, ambient.g, ambient.b);
-	mat->DiffuseColor = Color(diffuse.r, diffuse.g, diffuse.b);
-	mat->SpecularColor = Color(specular.r, specular.g, specular.b) * shinessStrength;
-	mat->SpecularPower = shiness;
-
 	meshComp->Material = mat;
-
-	for (int i = 0; i < textures.size(); i++)
-	{
-		meshComp->Material->DiffuseTexture = textures[i];
-	}
 }
 
-std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, aiTextureType texType, const aiScene* scene)
+Texture* ModelComponent::GetMaterialTexture(aiMaterial* material, aiTextureType texType, const aiScene* scene)
 {
-	std::vector<Texture*> textures;
-
 	UINT textureCount = material->GetTextureCount(texType);
 
 	if (textureCount == 0)
@@ -132,41 +145,52 @@ std::vector<Texture*> ModelComponent::GetMaterialTextures(aiMaterial* material, 
 
 		switch (texType)
 		{
-		case aiTextureType_DIFFUSE:
-			textures.push_back(new Texture(game, Color(1.0f, 1.0f, 1.0f)));
-			return textures;
+			case aiTextureType_DIFFUSE:
+			{
+				return new Texture(game, Color(1.0f, 1.0f, 1.0f));
+			}
+			default:
+			{
+				return nullptr;
+			}
 		}
 	}
 	else
 	{
-		for (UINT i = 0; i < textureCount; i++)
+		aiString path;
+		material->GetTexture(texType, 0, &path);
+
+		std::string name = FilePathHelper::GetFileName(path.C_Str());
+
+		TextureStorageType storeType = GetTextureStorageType(material, 0, texType, scene);
+		switch (storeType)
 		{
-			aiString path;
-			material->GetTexture(texType, i, &path);
-
-			std::string name = FilePathHelper::GetFileName(path.C_Str());
-
-			TextureStorageType storeType = GetTextureStorageType(material, i, texType, scene);
-			switch (storeType)
-			{
 			case TextureStorageType::File:
+			{
 				if (!FilePathHelper::IsFileExist(path.C_Str()))
 				{
 					std::wstring findedFile = FilePathHelper::FindFileInParentDirectories(name, modelDirectory);
-					textures.push_back(new Texture(game, findedFile));
+					return new Texture(game, findedFile);
 				}
 				else
 				{
-					textures.push_back(new Texture(game, path.C_Str()));
+					return new Texture(game, path.C_Str());
 				}
-				break;
+			}
 			default:
-				textures.push_back(new Texture(game, Color(1.0f, 0.0f, 0.0f)));
-				break;
+			{
+				Logs::Log("Failed to load texture: this format is unsupport now");
+
+				if (texType != aiTextureType_DIFFUSE) 
+				{
+					return nullptr;
+				}
+				else
+				{
+					return new Texture(game, Color(1.0f, 0.0f, 0.0f));
+				}
 			}
 		}
-
-		return textures;
 	}
 }
 

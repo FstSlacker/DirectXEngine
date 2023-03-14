@@ -21,6 +21,7 @@ public:
 
     Texture* DiffuseTexture;
     Texture* NormalMapTexture;
+    Texture* SpecularMapTexture;
 
     Material(Game* game, VertexShader* vs, PixelShader* ps);
 
@@ -28,6 +29,13 @@ public:
     virtual void DestroyResources() override;
 
 private:
+    enum
+    {
+        USE_DIFFUSE_TEXTURE   = 1,
+        USE_NORMAL_MAP        = 2,
+        USE_SPECULAR_MAP      = 4
+    };
+
     struct MaterialCbuf
     {
         DirectX::XMFLOAT4 Emissive; // 16
@@ -35,10 +43,7 @@ private:
         DirectX::XMFLOAT4 Diffuse; // 16
         DirectX::XMFLOAT4 Specular; // 16
 
-        float SpecularPower; // 4 (4)
-        bool UseTexture; // 4 (1)
-        float padding; // 4
-        bool UseNormalMap; // 4 (1)
+        int32_t Flags;
     };
 
     bool Initialize(ID3D11Device* device);

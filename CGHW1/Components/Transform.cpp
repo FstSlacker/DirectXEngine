@@ -1,12 +1,19 @@
 #include "Transform.h"
 
+const Vector3 Transform3D::Forward = Vector3::Backward;
+const Vector3 Transform3D::Right = Vector3::Right;
+const Vector3 Transform3D::Up = Vector3::Up;
+const Vector3 Transform3D::Backward = Vector3::Forward;
+const Vector3 Transform3D::Left = Vector3::Left;
+const Vector3 Transform3D::Down = Vector3::Down;
+
 void Transform3D::UpdateDirVectors(Vector3 eulerRadAngles)
 {
 	XMMATRIX rotationMat = XMMatrixRotationRollPitchYaw(eulerRadAngles.x, eulerRadAngles.y, eulerRadAngles.z);
 
-	forward = XMVector3TransformCoord(Vector3(0.0f, 0.0f, 1.0f), rotationMat);
-	right = XMVector3TransformCoord(Vector3::Right, rotationMat);
-	up = XMVector3TransformCoord(Vector3::Up, rotationMat);
+	forward = XMVector3TransformCoord(Transform3D::Forward, rotationMat);
+	right = XMVector3TransformCoord(Transform3D::Right, rotationMat);
+	up = XMVector3TransformCoord(Transform3D::Up, rotationMat);
 	backward = forward * -1.0f;
 	left = right * -1.0f;
 	down = up * -1.0f;

@@ -10,6 +10,7 @@ public:
 
 	static void LogError(std::string msg, bool showMsgBox = true);
 	static void LogError(HRESULT hr, std::string msg, bool showMsgBox = true);
+	static void LogError(HRESULT hr, std::wstring msg);
 
 	static void LogIfError(HRESULT hr, std::string msg, bool showMsgBox = true);
 

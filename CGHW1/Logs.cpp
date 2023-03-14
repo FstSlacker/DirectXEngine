@@ -28,6 +28,14 @@ void Logs::LogError(HRESULT hr, std::string msg, bool showMsgBox)
 		ShowMsgBox(msgText.c_str(), L"Error", MB_ICONERROR);
 }
 
+void Logs::LogError(HRESULT hr, std::wstring msg)
+{
+	_com_error hrInfo(hr);
+	std::wstring msgText = msg + L"\n" + hrInfo.ErrorMessage();
+
+	ShowMsgBox(msgText.c_str(), L"Error", MB_ICONERROR);
+}
+
 void Logs::LogIfError(HRESULT hr, std::string msg, bool showMsgBox)
 {
 	if (FAILED(hr))

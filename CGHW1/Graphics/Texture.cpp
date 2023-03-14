@@ -131,6 +131,9 @@ HRESULT Texture::InitializeFromFile(ID3D11Device* device, std::wstring path)
 
 	if (FAILED(res))
 	{
+		std::wstring msg = L"Failed to load texture on path: " + path;
+
+		Logs::LogError(res, msg);
 		Color* colors = new Color[1]{ Color(1.0f, 0.0f, 0.0f) };
 		res = InitializeFromColor(device, colors, 1, 1);
 		delete[] colors;

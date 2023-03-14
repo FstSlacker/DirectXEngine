@@ -153,6 +153,9 @@
     <ClCompile Include="Components\Transform.cpp">
       <Filter>Исходные файлы\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Components\CubeComponent.cpp">
+      <Filter>Исходные файлы\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -279,6 +282,9 @@
       <Filter>Файлы заголовков\Components</Filter>
     </ClInclude>
     <ClInclude Include="Components\Transform.h">
+      <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\CubeComponent.h">
       <Filter>Файлы заголовков\Components</Filter>
     </ClInclude>
   </ItemGroup>

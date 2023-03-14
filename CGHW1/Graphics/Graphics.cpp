@@ -154,7 +154,7 @@ void Graphics::EndFrame()
 
 void Graphics::AddVertexShader(std::wstring name)
 {
-	vertexShaders[name] = std::make_unique<VertexShader>(kShaderFolder + name, VertexShader::VertexLayoutType::VectrxPositionColorTextureNormal);
+	vertexShaders[name] = std::make_unique<VertexShader>(kShaderFolder + name);
 }
 
 void Graphics::AddPixelShader(std::wstring name)
@@ -281,7 +281,7 @@ bool Graphics::InitializeResources()
 	HRESULT res;
 
 	CD3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.CullMode = D3D11_CULL_NONE;
+	rastDesc.CullMode = D3D11_CULL_BACK;
 	rastDesc.FillMode = D3D11_FILL_SOLID;
 
 	res = device->CreateRasterizerState(&rastDesc, rastState.GetAddressOf());

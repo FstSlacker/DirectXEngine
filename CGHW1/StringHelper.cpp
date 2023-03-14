@@ -70,7 +70,7 @@ std::wstring FilePathHelper::FindFileInParentDirectories(std::string name, std::
     std::wstring wPath = std::wstring(directory.begin(), directory.end());
     std::wstring wName = std::wstring(name.begin(), name.end());
 
-    std::wstring res = FindFileInDirectory(wPath, wName, 2);
+    std::wstring res = FindFileInDirectory(wPath, wName, 3);
 
     return res;
 }
