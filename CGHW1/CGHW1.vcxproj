@@ -160,6 +160,7 @@
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWin32.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Graphics\DepthStencilBuffer.cpp" />
     <ClCompile Include="Graphics\Gizmos\DebugDraw.cpp" />
     <ClCompile Include="Graphics\Gizmos\DebugGizmos.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics\Bindable.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
+    <ClInclude Include="Graphics\DepthStencilBuffer.h" />
     <ClInclude Include="Graphics\Gizmos\DebugDraw.h" />
     <ClInclude Include="Graphics\Gizmos\DebugGizmos.h" />
     <ClInclude Include="Graphics\Graphics.h" />

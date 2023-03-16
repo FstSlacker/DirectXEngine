@@ -156,6 +156,9 @@
     <ClCompile Include="Components\CubeComponent.cpp">
       <Filter>Исходные файлы\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\DepthStencilBuffer.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -286,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="Components\CubeComponent.h">
       <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DepthStencilBuffer.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

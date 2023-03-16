@@ -37,9 +37,8 @@ bool Graphics::Resize(UINT width, UINT height)
 	context->OMSetRenderTargets(0, 0, 0);
 
 	renderView->Release();
-	depthStencilView->Release();
+	depthStencil.DestroyResources();
 	backBuffer->Release();
-	depthStencilBuffer->Release();
 
 	res = swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
@@ -57,24 +56,8 @@ bool Graphics::Resize(UINT width, UINT height)
 		return false;
 	}
 
-	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	depthStencilDesc.Width = displayWidth;
-	depthStencilDesc.Height = displayHeight;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-
-	res = device->CreateTexture2D(&depthStencilDesc, nullptr, depthStencilBuffer.GetAddressOf());
-
-	if (FAILED(res))
+	if (!depthStencil.Initialize(device.Get(), this->displayWidth, this->displayHeight))
 	{
-		Logs::LogError(res, "Failed to create DepthStencilBuffer texture");
 		return false;
 	}
 
@@ -83,14 +66,6 @@ bool Graphics::Resize(UINT width, UINT height)
 	if (FAILED(res))
 	{
 		Logs::LogError(res, "Failed to create RenderTargetView");
-		return false;
-	}
-
-	res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
-
-	if (FAILED(res))
-	{
-		Logs::LogError(res, "Failed to create DepthStencilView");
 		return false;
 	}
 	return true;
@@ -127,6 +102,7 @@ void Graphics::PrepareFrame()
 	context->ClearState();
 
 	context->RSSetState(rastState.Get());
+
 	SetDepthStencilEnable(true);
 
 	D3D11_VIEWPORT viewport = {};
@@ -139,11 +115,11 @@ void Graphics::PrepareFrame()
 
 	context->RSSetViewports(1, &viewport);
 
-	context->OMSetRenderTargets(1, renderView.GetAddressOf(), depthStencilView.Get());
+	context->OMSetRenderTargets(1, renderView.GetAddressOf(), depthStencil.GetView());
 
 	float color[] = { BackgroundColor.x, BackgroundColor.y, BackgroundColor.z, 1.0f };
 	context->ClearRenderTargetView(renderView.Get(), color);
-	context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+	depthStencil.Clear(context.Get());
 }
 
 void Graphics::EndFrame()
@@ -295,34 +271,39 @@ bool Graphics::InitializeResources()
 	context->RSSetState(rastState.Get());
 
 	//Create depth stencil view
-	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	depthStencilDesc.Width = displayWidth;
-	depthStencilDesc.Height = displayHeight;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-
-	res = device->CreateTexture2D(&depthStencilDesc, nullptr, depthStencilBuffer.GetAddressOf());
-
-	if (FAILED(res))
+	if (!depthStencil.Initialize(device.Get(), displayWidth, displayHeight))
 	{
-		Logs::LogError(res, "Failed to create DepthStencilBuffer texture");
 		return false;
 	}
 
-	res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
+	//D3D11_TEXTURE2D_DESC depthStencilDesc = {};
+	//depthStencilDesc.Width = displayWidth;
+	//depthStencilDesc.Height = displayHeight;
+	//depthStencilDesc.MipLevels = 1;
+	//depthStencilDesc.ArraySize = 1;
+	//depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//depthStencilDesc.SampleDesc.Count = 1;
+	//depthStencilDesc.SampleDesc.Quality = 0;
+	//depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	//depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	//depthStencilDesc.CPUAccessFlags = 0;
+	//depthStencilDesc.MiscFlags = 0;
 
-	if (FAILED(res))
-	{
-		Logs::LogError(res, "Failed to create DepthStencilView");
-		return false;
-	}
+	//res = device->CreateTexture2D(&depthStencilDesc, nullptr, depthStencilBuffer.GetAddressOf());
+
+	//if (FAILED(res))
+	//{
+	//	Logs::LogError(res, "Failed to create DepthStencilBuffer texture");
+	//	return false;
+	//}
+
+	//res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
+
+	//if (FAILED(res))
+	//{
+	//	Logs::LogError(res, "Failed to create DepthStencilView");
+	//	return false;
+	//}
 
 	//Create depth stencil states
 	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc = {};

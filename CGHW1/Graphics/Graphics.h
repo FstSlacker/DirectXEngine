@@ -10,6 +10,7 @@
 #include <map>
 
 #include "Material.h"
+#include "DepthStencilBuffer.h"
 
 class Graphics
 {
@@ -58,8 +59,7 @@ private:
 	std::vector<Material*> materials;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;
+	DepthStencilBuffer depthStencil;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rastState;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStateEnabled;

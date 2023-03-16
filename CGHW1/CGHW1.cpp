@@ -59,6 +59,4 @@ int main()
 	game.ImGUI.AddWindow(new ImGuiGameInfoWindow(&game));
 
 	game.Run();
-
-	//system("pause");
 }
