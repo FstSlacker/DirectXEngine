@@ -174,11 +174,15 @@
     <ClCompile Include="Graphics\ImGui\Source\imgui_tables.cpp" />
     <ClCompile Include="Graphics\ImGui\Source\imgui_widgets.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
+    <ClCompile Include="Graphics\RenderPass.cpp" />
+    <ClCompile Include="Graphics\RenderQueue.cpp" />
+    <ClCompile Include="Graphics\RenderTarget.cpp" />
     <ClCompile Include="Graphics\Sampler.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Input\InputDevice.cpp" />
     <ClCompile Include="Logs.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="StringHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +206,7 @@
     <ClInclude Include="Graphics\DepthStencilBuffer.h" />
     <ClInclude Include="Graphics\Gizmos\DebugDraw.h" />
     <ClInclude Include="Graphics\Gizmos\DebugGizmos.h" />
+    <ClInclude Include="Graphics\GraphicResource.h" />
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\ImGui\ImGuiDebugWindows.h" />
     <ClInclude Include="Graphics\ImGui\ImGuiManager.h" />
@@ -216,6 +221,9 @@
     <ClInclude Include="Graphics\ImGui\Source\imstb_truetype.h" />
     <ClInclude Include="Graphics\IndexBuffer.h" />
     <ClInclude Include="Graphics\Material.h" />
+    <ClInclude Include="Graphics\RenderPass.h" />
+    <ClInclude Include="Graphics\RenderQueue.h" />
+    <ClInclude Include="Graphics\RenderTarget.h" />
     <ClInclude Include="Graphics\Sampler.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Graphics\Texture.h" />
@@ -225,6 +233,7 @@
     <ClInclude Include="Input\Keys.h" />
     <ClInclude Include="Logs.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="StringHelper.h" />
   </ItemGroup>
   <ItemGroup>

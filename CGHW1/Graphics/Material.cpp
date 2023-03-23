@@ -2,8 +2,10 @@
 #include <DirectXColors.h>
 #include "../Game.h"
 
-Material::Material(Game* game, VertexShader* vs, PixelShader* ps)
+Material::Material(Game* game, VertexShader* vs, PixelShader* ps, UINT passInd)
 {
+	assert(vs != nullptr && ps != nullptr);
+
 	this->EmissiveColor = Color(DirectX::Colors::Black);
 	this->AmbientColor = Color(DirectX::Colors::White);
 	this->DiffuseColor = Color(DirectX::Colors::White);
@@ -12,11 +14,25 @@ Material::Material(Game* game, VertexShader* vs, PixelShader* ps)
 
 	this->DiffuseTexture = nullptr;
 	this->NormalMapTexture = nullptr;
+	this->SpecularMapTexture = nullptr;
 
 	this->vertexShader = vs;
 	this->pixelShader = ps;
 
-	game->Gfx.AddMaterial(this);
+	this->SetPassIndex(passInd);
+
+	//game->Gfx.AddMaterial(this);
+	game->Resources.AddResource<Material>(this, "Material_" + std::to_string(game->Resources.GetCount<Material>()));
+}
+
+bool Material::AttachToComponent(GameComponent& comp)
+{
+	return this->AddComponent(&comp);
+}
+
+bool Material::RemoveFromComponent(GameComponent& comp)
+{
+	return this->RemoveComponent(&comp);
 }
 
 bool Material::Initialize(ID3D11Device* device)
@@ -73,7 +89,3 @@ void Material::Bind(ID3D11DeviceContext* context)
 	pixelShader->Bind(context);
 }
 
-void Material::DestroyResources()
-{
-	//...
-}

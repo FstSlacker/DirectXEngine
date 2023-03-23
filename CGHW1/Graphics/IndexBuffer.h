@@ -58,6 +58,6 @@ public:
 
 	void DestroyResources() override
 	{
-		//buffer->Release();
+		buffer.Reset();
 	}
 };

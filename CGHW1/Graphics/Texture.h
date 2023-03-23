@@ -5,6 +5,7 @@
 #include <SimpleMath.h>
 
 #include "Bindable.h"
+#include "GraphicResource.h"
 #include "Sampler.h"
 #include "../StringHelper.h"
 
@@ -24,7 +25,7 @@ enum class TextureStorageType
 	File
 };
 
-class Texture : public Bindable
+class Texture : public Bindable, public GraphicResource
 {
 	friend class Graphics;
 
@@ -36,7 +37,9 @@ public:
 
 	ID3D11ShaderResourceView* GetTextureView() const;
 	void SetSlot(UINT slotInd);
+
 	void Bind(ID3D11DeviceContext* context) override;
+	bool Initialize(ID3D11Device* device) override;
 	void DestroyResources() override;
 
 protected:
@@ -60,7 +63,6 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11Resource> texture;
 	Sampler sampler;
 
-	bool Initialize(ID3D11Device* device);
 	HRESULT InitializeFromColor(ID3D11Device* device, const Color* colorData, UINT w, UINT h);
 	HRESULT InitializeFromFile(ID3D11Device* device, std::wstring path);
 

@@ -23,15 +23,6 @@ public:
 	void PrepareFrame();
 	void EndFrame();
 
-	void AddVertexShader(std::wstring name);
-	void AddPixelShader(std::wstring name);
-
-	VertexShader* FindVertexShader(std::wstring name) const;
-	PixelShader* FindPixelShader(std::wstring name) const;
-
-	void AddTexture(Texture* tex);
-	void AddMaterial(Material* mat);
-
 	void SetDepthStencilEnable(bool isEnable);
 
 	ID3D11DeviceContext* GetContext() const;
@@ -51,12 +42,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderView;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-
-	std::map<std::wstring, std::unique_ptr<VertexShader>> vertexShaders;
-	std::map<std::wstring, std::unique_ptr<PixelShader>> pixelShaders;
-
-	std::vector<Texture*> textures;
-	std::vector<Material*> materials;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 	DepthStencilBuffer depthStencil;

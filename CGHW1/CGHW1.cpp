@@ -1,13 +1,20 @@
 ﻿#include "Game.h"
+#include "ResourceManager.h"
 
 int main()
 {
 	Game game;
 	game.Name = L"Game framework";
 
-	game.Gfx.AddPixelShader(L"PS_DefaultLit.hlsl");
-	game.Gfx.AddPixelShader(L"PS_DefaultUnlit.hlsl");
-	game.Gfx.AddVertexShader(L"VS_Default.hlsl");
+	//game.Gfx.AddPixelShader(L"PS_DefaultLit.hlsl");
+	//game.Gfx.AddPixelShader(L"PS_DefaultUnlit.hlsl");
+	//game.Gfx.AddVertexShader(L"VS_Default.hlsl");
+
+	PixelShader* psLit = new PixelShader(L"./Shaders/PS_DefaultLit.hlsl");
+	VertexShader* vsLit = new VertexShader(L"./Shaders/VS_Default.hlsl");
+
+	game.Resources.AddResource<VertexShader>(vsLit, "VS_Default");
+	game.Resources.AddResource<PixelShader>(psLit, "PS_DefaultLit");
 
 	Texture* texGrass = new Texture(&game, "./Textures/grass-texture.jpg");
 
@@ -15,18 +22,18 @@ int main()
 	Texture* texNormalMapWall = new Texture(&game, "./Textures/normalmap_brick.png");
 	Texture* texSpecularMapWall = new Texture(&game, "./Textures/specularmap_brick.png");
 
-	Material* matLit1 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* matLit1 = new Material(&game, vsLit, psLit);
 	matLit1->DiffuseTexture = texGrass;
 
-	Material* matWall = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* matWall = new Material(&game, vsLit, psLit);
 	matWall->DiffuseTexture = texWall;
 	matWall->NormalMapTexture = texNormalMapWall;
 	matWall->SpecularMapTexture = texSpecularMapWall;
 
-	Material* matWall2 = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* matWall2 = new Material(&game, vsLit, psLit);
 	matWall2->DiffuseTexture = texWall;
 
-	Material* defaultMat = new Material(&game, game.Gfx.FindVertexShader(L"VS_Default.hlsl"), game.Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* defaultMat = new Material(&game, vsLit, psLit);
 
 	ModelComponent* model = new ModelComponent(
 		&game,
@@ -37,7 +44,7 @@ int main()
 	model->Transform.SetScale(Vector3(0.02f, 0.02f, 0.02f));
 
 	PlaneComponent* plane = new PlaneComponent(&game);
-	plane->Material = matLit1;
+	plane->SetMaterial(matLit1);
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
 	PointLightComponent* light = new PointLightComponent(&game);

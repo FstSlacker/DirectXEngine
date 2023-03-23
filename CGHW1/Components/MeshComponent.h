@@ -19,24 +19,28 @@ class MeshComponent : public GameComponent
 protected:
 	std::vector<Bindable*> binds;
 
-	VertexBuffer<Vertex> vertexBuffer;
-	IndexBuffer indexBuffer;
+	std::shared_ptr<VertexBuffer<Vertex>> vertexBuffer;
+	std::shared_ptr<IndexBuffer> indexBuffer;
 
 	TransformConstantBuffer transformMat;
 
 	std::vector<Vertex> vertices;
 	std::vector<int> indices;
 
+	Material* material;
+
 public:
-	Material* Material;
 
 	MeshComponent(Game* game);
-	void DestroyResources() override;
-	void Draw() override;
+
 	void Initialize() override;
-	void Update() override;
-	void FixedUpdate() override;
+	void Bind() override;
+	void Draw() override;
+	void DestroyResources() override;
 
 	void SetVertices(std::vector<Vertex> verts);
 	void SetIndices(std::vector<int> inds);
+
+	void SetMaterial(Material* mat);
+	Material* GetMaterial() const;
 };

@@ -38,7 +38,7 @@ bool Light::Initialize()
 	return true;
 }
 
-void Light::Bind()
+void Light::Bind(ID3D11DeviceContext* context)
 {
 	lightsBuffer.Data.AmbientColor = Light::AmbientColor.ToVector3(); // 12
 	lightsBuffer.Data.AmbientIntensity = Light::AmbientIntensity; // 4
@@ -86,23 +86,29 @@ void Light::Bind()
 		}
 
 		lightsBuffer.Data.Lights[i] = lightData;
-			
 	}
 
-	HRESULT hr = lightsBuffer.ApplyChanges(game->Gfx.GetContext());
+	HRESULT hr = lightsBuffer.ApplyChanges(context);
 	
 	if (FAILED(hr))
 	{
 		Logs::LogError(hr, "Failed to apply lightsBuffer");
 	}
 
-	lightsBuffer.Bind(game->Gfx.GetContext());
+	lightsBuffer.Bind(context);
 }
 
-LightComponent::LightComponent(Game* game) : GameComponent(game)
+void Light::DestroyResources()
+{
+	lightsBuffer.DestroyResources();
+}
+
+LightComponent::LightComponent(Game* game) : GameComponent(game), lightCamera(game)
 {
 	this->LightColor = Color(DirectX::Colors::White);
 	this->Intensity = 1.0f;
+	this->Transform.AddChild(lightCamera.Transform);
+	this->lightCamera.Transform.SetLocalPosition(Vector3::Zero);
 }
 
 void LightComponent::DrawGizmos()

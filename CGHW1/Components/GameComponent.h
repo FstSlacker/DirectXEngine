@@ -24,9 +24,17 @@ protected:
 
 public:
 	GameComponent(Game* game);
-	virtual void DestroyResources();
+
+	//Graphics
 	virtual void Draw();
+	virtual void Bind();
 	virtual void Initialize();
+	virtual void DestroyResources();
+
+	virtual void DrawGizmos();
+	virtual void DrawGizmosIcon(Vector3 forward, Vector3 up, float scale);
+
+	//Game logic
 	virtual void Reaload();
 	virtual void Update();
 	virtual void FixedUpdate();
@@ -34,7 +42,5 @@ public:
 	bool IsEnabled() const;
 	void SetEnable(bool isEnable);
 
-	virtual void DrawGizmos();
-	virtual void DrawGizmosIcon(Vector3 forward, Vector3 up, float scale);
 };
 

@@ -74,9 +74,9 @@ bool VertexShader::Initialize(ID3D11Device* device)
 
 void VertexShader::DestroyResources()
 {
-	//shader->Release();
-	//shaderByteCode->Release();
-	//inputLayout->Release();
+	shader.Reset();
+	shaderByteCode.Reset();
+	inputLayout.Reset();
 }
 
 ID3D11VertexShader* VertexShader::GetShader()
@@ -100,9 +100,6 @@ void VertexShader::Bind(ID3D11DeviceContext* context)
 	context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->VSSetShader(shader.Get(), nullptr, 0);
 }
-
-
-
 
 PixelShader::PixelShader(std::wstring shaderPath)
 {
@@ -162,8 +159,8 @@ void PixelShader::Bind(ID3D11DeviceContext* context)
 
 void PixelShader::DestroyResources()
 {
-	//shader->Release();
-	//shaderByteCode->Release();
+	shader.Reset();
+	shaderByteCode.Reset();
 }
 
 ID3D11PixelShader* PixelShader::GetShader()
@@ -174,4 +171,14 @@ ID3D11PixelShader* PixelShader::GetShader()
 ID3DBlob* PixelShader::GetByteCode()
 {
 	return shaderByteCode.Get();
+}
+
+void NullPixelShader::Bind(ID3D11DeviceContext* context)
+{
+	context->PSSetShader(nullptr, nullptr, 0);
+}
+
+void NullPixelShader::DestroyResources()
+{
+	//...
 }

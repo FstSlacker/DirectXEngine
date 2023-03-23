@@ -111,7 +111,7 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	Texture* normalMap = GetMaterialTexture(meshMaterial, aiTextureType::aiTextureType_NORMALS, scene);
 	Texture* specularMap = GetMaterialTexture(meshMaterial, aiTextureType::aiTextureType_SPECULAR, scene);
 
-	Material* mat = new Material(game, game->Gfx.FindVertexShader(L"VS_Default.hlsl"), game->Gfx.FindPixelShader(L"PS_DefaultLit.hlsl"));
+	Material* mat = new Material(game, game->Resources.GetResource<VertexShader>("VS_Default"), game->Resources.GetResource<PixelShader>("PS_DefaultLit"));
 
 	mat->EmissiveColor = Color(emissive.r, ambient.g, ambient.b);
 	mat->AmbientColor = Color(ambient.r, ambient.g, ambient.b);
@@ -131,8 +131,7 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	meshComp->Name = mesh->mName.C_Str();
 	meshComp->SetVertices(verts);
 	meshComp->SetIndices(inds);
-
-	meshComp->Material = mat;
+	meshComp->SetMaterial(mat);
 }
 
 Texture* ModelComponent::GetMaterialTexture(aiMaterial* material, aiTextureType texType, const aiScene* scene)

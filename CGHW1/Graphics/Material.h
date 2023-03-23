@@ -1,14 +1,15 @@
 #pragma once
 #include <DirectXMath.h>
+#include "GraphicResource.h"
 #include "ConstantBuffer.h"
-#include "Bindable.h"
+#include "RenderPass.h"
 #include "Shaders.h"
 #include "Texture.h"
 
 class Game;
 class Graphics;
 
-class Material : public Bindable
+class Material : public RenderPass, public GraphicResource
 {
     friend class Graphics;
 
@@ -23,10 +24,13 @@ public:
     Texture* NormalMapTexture;
     Texture* SpecularMapTexture;
 
-    Material(Game* game, VertexShader* vs, PixelShader* ps);
+    Material(Game* game, VertexShader* vs, PixelShader* ps, UINT passInd = 1000);
+    bool AttachToComponent(GameComponent& comp);
+    bool RemoveFromComponent(GameComponent& comp);
+    bool Initialize(ID3D11Device* device) override;
 
-    virtual void Bind(ID3D11DeviceContext* context) override;
-    virtual void DestroyResources() override;
+protected:
+    void Bind(ID3D11DeviceContext* context) override;
 
 private:
     enum
@@ -46,7 +50,6 @@ private:
         int32_t Flags;
     };
 
-    bool Initialize(ID3D11Device* device);
 
     PixelShader* pixelShader;
     VertexShader* vertexShader;

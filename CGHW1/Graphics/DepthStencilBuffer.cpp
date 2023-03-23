@@ -1,7 +1,43 @@
 #include "DepthStencilBuffer.h"
 #include "../Logs.h"
 
-bool DepthStencilBuffer::Initialize(ID3D11Device* device, UINT width, UINT height)
+DXGI_FORMAT DepthStencilBuffer::GetUsageTypelessFormat(UsageFormat format)
+{
+	switch (format)
+	{
+		case UsageFormat::DepthStencil:
+			return DXGI_FORMAT::DXGI_FORMAT_R24G8_TYPELESS;
+		case UsageFormat::ShadowDepth:
+			return DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
+	}
+	throw std::runtime_error("Undefined format");
+}
+
+DXGI_FORMAT DepthStencilBuffer::GetUsageTypedFormat(UsageFormat format)
+{
+	switch (format)
+	{
+	case UsageFormat::DepthStencil:
+		return DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+	case UsageFormat::ShadowDepth:
+		return DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+	}
+	throw std::runtime_error("Undefined format");
+}
+
+DXGI_FORMAT DepthStencilBuffer::GetUsageColoredFormat(UsageFormat format)
+{
+	switch (format)
+	{
+	case UsageFormat::DepthStencil:
+		return DXGI_FORMAT::DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	case UsageFormat::ShadowDepth:
+		return DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
+	}
+	throw std::runtime_error("Undefined format");
+}
+
+bool DepthStencilBuffer::Initialize(ID3D11Device* device, UINT width, UINT height, UsageFormat format)
 {
 	//Create depth stencil view
 	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
@@ -9,7 +45,7 @@ bool DepthStencilBuffer::Initialize(ID3D11Device* device, UINT width, UINT heigh
 	depthStencilDesc.Height = height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Format = GetUsageTypelessFormat(format);// DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilDesc.SampleDesc.Count = 1;
 	depthStencilDesc.SampleDesc.Quality = 0;
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -27,7 +63,13 @@ bool DepthStencilBuffer::Initialize(ID3D11Device* device, UINT width, UINT heigh
 		return false;
 	}
 
-	res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
+	CD3D11_DEPTH_STENCIL_VIEW_DESC viewDesc = {};
+	viewDesc.Format = GetUsageTypedFormat(format);
+	viewDesc.Flags = 0;
+	viewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	viewDesc.Texture2D.MipSlice = 0;
+
+	res = device->CreateDepthStencilView(depthStencilBuffer.Get(), &viewDesc, depthStencilView.GetAddressOf());
 
 	if (FAILED(res))
 	{

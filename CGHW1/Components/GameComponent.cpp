@@ -20,6 +20,11 @@ void GameComponent::Draw()
 	//...
 }
 
+void GameComponent::Bind()
+{
+	//...
+}
+
 void GameComponent::Initialize() 
 {
 	//...

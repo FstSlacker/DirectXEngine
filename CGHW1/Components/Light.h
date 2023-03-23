@@ -4,6 +4,7 @@
 #include <DirectXColors.h>
 #include <SimpleMath.h>
 #include "GameComponent.h"
+#include "Camera.h"
 
 #define MAX_LIGHTS 8
 
@@ -13,7 +14,7 @@ class PointLightComponent;
 class DirectionalLightComponent;
 class SpotLightComponent;
 
-class Light
+class Light : public Bindable
 {
 private:
 	enum class LightType : int
@@ -65,12 +66,15 @@ public:
 	LightComponent* GetLightComponent(int ind) const;
 	int GetLightSourcesCount() const;
 	bool Initialize();
-	void Bind();
+	void Bind(ID3D11DeviceContext* context) override;
+	void DestroyResources() override;
 };
 
 class LightComponent : public GameComponent
 {
 protected:
+	Camera lightCamera;
+
 	LightComponent(Game* game);
 
 public:

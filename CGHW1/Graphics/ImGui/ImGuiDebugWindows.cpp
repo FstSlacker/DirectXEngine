@@ -69,6 +69,13 @@ void ImGuiGameInfoWindow::Bind()
 	}
 	ImGui::Spacing();
 
+	if (ImGui::Button("Resources"))
+	{
+		game->ImGUI.AddWindow(new ImGuiResourcesWindow(game->Resources));
+	}
+
+	ImGui::Spacing();
+
 	if (ImGui::CollapsingHeader("Gizmos", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text("Objects");
@@ -267,6 +274,7 @@ void ImGuiCameraWindow::Bind()
 		{
 			comp->SetFar(farZ);
 		}
+
 		ImGui::Spacing();
 	}
 }
@@ -350,40 +358,45 @@ void ImGuiMeshCompWindow::Bind()
 	ImGuiGameCompWindow::Bind();
 	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		float color[3] = { meshComp->Material->AmbientColor.x, meshComp->Material->AmbientColor.y, meshComp->Material->AmbientColor.z };
+		Material* mat = meshComp->GetMaterial();
+
+		std::string renderQueueText = "Render queue: " + std::to_string(mat->GetPassIndex());
+		ImGui::Text(renderQueueText.c_str());
+
+		float color[3] = { mat->AmbientColor.x, mat->AmbientColor.y, mat->AmbientColor.z };
 		if (ImGui::ColorEdit3("AmbientColor", color))
 		{
-			meshComp->Material->AmbientColor = Color(color[0], color[1], color[2]);
+			mat->AmbientColor = Color(color[0], color[1], color[2]);
 		}
 
-		color[0] = meshComp->Material->EmissiveColor.x; 
-		color[1] = meshComp->Material->EmissiveColor.y;
-		color[2] = meshComp->Material->EmissiveColor.z;
+		color[0] = mat->EmissiveColor.x;
+		color[1] = mat->EmissiveColor.y;
+		color[2] = mat->EmissiveColor.z;
 
 		if (ImGui::ColorEdit3("EmissiveColor", color))
 		{
-			meshComp->Material->EmissiveColor = Color(color[0], color[1], color[2]);
+			mat->EmissiveColor = Color(color[0], color[1], color[2]);
 		}
 
-		color[0] = meshComp->Material->DiffuseColor.x;
-		color[1] = meshComp->Material->DiffuseColor.y;
-		color[2] = meshComp->Material->DiffuseColor.z;
+		color[0] = mat->DiffuseColor.x;
+		color[1] = mat->DiffuseColor.y;
+		color[2] = mat->DiffuseColor.z;
 
 		if (ImGui::ColorEdit3("DiffuseColor", color))
 		{
-			meshComp->Material->DiffuseColor = Color(color[0], color[1], color[2]);
+			mat->DiffuseColor = Color(color[0], color[1], color[2]);
 		}
 
-		color[0] = meshComp->Material->SpecularColor.x;
-		color[1] = meshComp->Material->SpecularColor.y;
-		color[2] = meshComp->Material->SpecularColor.z;
+		color[0] = mat->SpecularColor.x;
+		color[1] = mat->SpecularColor.y;
+		color[2] = mat->SpecularColor.z;
 
 		if (ImGui::ColorEdit3("SpecularColor", color))
 		{
-			meshComp->Material->SpecularColor = Color(color[0], color[1], color[2]);
+			mat->SpecularColor = Color(color[0], color[1], color[2]);
 		}
 
-		ImGui::DragFloat("SpecularPower", &meshComp->Material->SpecularPower);
+		ImGui::DragFloat("SpecularPower", &mat->SpecularPower);
 
 		ImGui::Spacing();
 		ImGui::Text("Textures:");
@@ -395,10 +408,10 @@ void ImGuiMeshCompWindow::Bind()
 			ImGui::Text("Diffuse: ");
 
 			ImGui::TableNextColumn();
-			if (meshComp->Material->DiffuseTexture != nullptr)
+			if (mat->DiffuseTexture != nullptr)
 			{
 				ImGui::Image(
-					(void*)meshComp->Material->DiffuseTexture->GetTextureView(), 
+					(void*)mat->DiffuseTexture->GetTextureView(),
 					ImVec2(30, 30)
 				);
 			}
@@ -412,10 +425,10 @@ void ImGuiMeshCompWindow::Bind()
 			ImGui::Text("NormalMap: ");
 
 			ImGui::TableNextColumn();
-			if (meshComp->Material->NormalMapTexture != nullptr)
+			if (mat->NormalMapTexture != nullptr)
 			{
 				ImGui::Image(
-					(void*)meshComp->Material->NormalMapTexture->GetTextureView(),
+					(void*)mat->NormalMapTexture->GetTextureView(),
 					ImVec2(30, 30)
 				);
 			}
@@ -429,10 +442,10 @@ void ImGuiMeshCompWindow::Bind()
 			ImGui::Text("SpecularMap: ");
 
 			ImGui::TableNextColumn();
-			if (meshComp->Material->SpecularMapTexture != nullptr)
+			if (mat->SpecularMapTexture != nullptr)
 			{
 				ImGui::Image(
-					(void*)meshComp->Material->SpecularMapTexture->GetTextureView(),
+					(void*)mat->SpecularMapTexture->GetTextureView(),
 					ImVec2(30, 30)
 				);
 			}
@@ -445,5 +458,59 @@ void ImGuiMeshCompWindow::Bind()
 		}
 
 		ImGui::Spacing();
+	}
+}
+
+ImGuiResourcesWindow::ImGuiResourcesWindow(ResourceManager& resManager) : ImGuiBaseWindow("Resources")
+{
+	this->resourceManager = &resManager;
+}
+
+void ImGuiResourcesWindow::Bind()
+{
+	if (ImGui::TreeNode("Shaders"))
+	{
+		UINT vsCount = resourceManager->GetCount<VertexShader>();
+
+		for (int i = 0; i < vsCount; i++)
+		{
+			const std::string& text = resourceManager->GetResourceName<VertexShader>(i);
+			ImGui::Text(text.c_str());
+		}
+
+		UINT psCount = resourceManager->GetCount<PixelShader>();
+
+		for (int i = 0; i < psCount; i++)
+		{
+			const std::string& text = resourceManager->GetResourceName<PixelShader>(i);
+			ImGui::Text(text.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Materials"))
+	{
+		UINT matCount = resourceManager->GetCount<Material>();
+
+		for (int i = 0; i < matCount; i++)
+		{
+			const std::string& text = resourceManager->GetResourceName<Material>(i);
+			ImGui::Text(text.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Textures"))
+	{
+		UINT texCount = resourceManager->GetCount<Texture>();
+
+		for (int i = 0; i < texCount; i++)
+		{
+			const std::string& text = resourceManager->GetResourceName<Texture>(i);
+			ImGui::Text(text.c_str());
+		}
+
+		ImGui::TreePop();
 	}
 }

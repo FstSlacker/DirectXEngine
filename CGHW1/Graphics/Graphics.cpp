@@ -1,8 +1,6 @@
 #include "Graphics.h"
 #include "../Logs.h"
 
-std::wstring Graphics::kShaderFolder = L"./Shaders/";
-
 bool Graphics::Initialize(HWND hWnd, UINT width, UINT height)
 {
 	this->displayWidth = width;
@@ -73,28 +71,11 @@ bool Graphics::Resize(UINT width, UINT height)
 
 void Graphics::DestroyResources()
 {
-	//std::map<std::wstring, std::unique_ptr<VertexShader>>::iterator itVs;
-	//for (itVs = vertexShaders.begin(); itVs != vertexShaders.end(); itVs++)
-	//{
-	//	itVs->second->DestroyResources();
-	//}
-
-	//std::map<std::wstring, std::unique_ptr<PixelShader>>::iterator itPs;
-	//for (itPs = pixelShaders.begin(); itPs != pixelShaders.end(); itPs++)
-	//{
-	//	itPs->second->DestroyResources();
-	//}
-
-	for (int i = 0; i < textures.size(); i++)
-	{
-		delete textures[i];
-	}
-
-	//swapChain->Release();
-	//device->Release();
-	//context->Release();
-	//backBuffer->Release();
-	//renderView->Release();
+	swapChain.Reset();
+	device.Reset();
+	context.Reset();
+	backBuffer.Reset();
+	renderView.Reset();
 }
 
 void Graphics::PrepareFrame()
@@ -126,46 +107,6 @@ void Graphics::EndFrame()
 {
 	context->OMSetRenderTargets(0, nullptr, nullptr);
 	swapChain->Present(1, 0);
-}
-
-void Graphics::AddVertexShader(std::wstring name)
-{
-	vertexShaders[name] = std::make_unique<VertexShader>(kShaderFolder + name);
-}
-
-void Graphics::AddPixelShader(std::wstring name)
-{
-	pixelShaders[name] = std::make_unique<PixelShader>(kShaderFolder + name);
-}
-
-VertexShader* Graphics::FindVertexShader(std::wstring name) const
-{
-	if (vertexShaders.count(name))
-	{
-		return vertexShaders.at(name).get();
-	}
-
-	return nullptr;
-}
-
-PixelShader* Graphics::FindPixelShader(std::wstring name) const
-{
-	if (pixelShaders.count(name))
-	{
-		return pixelShaders.at(name).get();
-	}
-
-	return nullptr;
-}
-
-void Graphics::AddTexture(Texture* tex)
-{
-	textures.push_back(tex);
-}
-
-void Graphics::AddMaterial(Material* mat)
-{
-	this->materials.push_back(mat);
 }
 
 void Graphics::SetDepthStencilEnable(bool isEnable)
@@ -276,35 +217,6 @@ bool Graphics::InitializeResources()
 		return false;
 	}
 
-	//D3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	//depthStencilDesc.Width = displayWidth;
-	//depthStencilDesc.Height = displayHeight;
-	//depthStencilDesc.MipLevels = 1;
-	//depthStencilDesc.ArraySize = 1;
-	//depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	//depthStencilDesc.SampleDesc.Count = 1;
-	//depthStencilDesc.SampleDesc.Quality = 0;
-	//depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	//depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	//depthStencilDesc.CPUAccessFlags = 0;
-	//depthStencilDesc.MiscFlags = 0;
-
-	//res = device->CreateTexture2D(&depthStencilDesc, nullptr, depthStencilBuffer.GetAddressOf());
-
-	//if (FAILED(res))
-	//{
-	//	Logs::LogError(res, "Failed to create DepthStencilBuffer texture");
-	//	return false;
-	//}
-
-	//res = device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr, depthStencilView.GetAddressOf());
-
-	//if (FAILED(res))
-	//{
-	//	Logs::LogError(res, "Failed to create DepthStencilView");
-	//	return false;
-	//}
-
 	//Create depth stencil states
 	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc = {};
 	depthStencilStateDesc.DepthEnable = true;
@@ -327,44 +239,6 @@ bool Graphics::InitializeResources()
 	{
 		Logs::LogError(res, "Failed to create DepthStencilStateDisabled");
 		return false;
-	}
-
-	//Init shaders
-
-	std::map<std::wstring, std::unique_ptr<VertexShader>>::iterator itVs;
-	for (itVs = vertexShaders.begin(); itVs != vertexShaders.end(); itVs++)
-	{
-		if (!itVs->second->Initialize(device.Get()))
-		{
-			return false;
-		}
-	}
-
-	std::map<std::wstring, std::unique_ptr<PixelShader>>::iterator itPs;
-	for (itPs = pixelShaders.begin(); itPs != pixelShaders.end(); itPs++)
-	{
-		if (!itPs->second->Initialize(device.Get()))
-		{
-			return false;
-		}
-	}
-
-	//Init textures
-	for (int i = 0; i < textures.size(); i++)
-	{
-		if (!textures[i]->Initialize(device.Get()))
-		{
-			return false;
-		}
-	}
-
-	//Init materials
-	for (int i = 0; i < materials.size(); i++)
-	{
-		if (!materials[i]->Initialize(device.Get()))
-		{
-			return false;
-		}
 	}
 
 	return true;

@@ -21,8 +21,10 @@
 #include "Logs.h"
 #include "DisplayWin32.h"
 #include "Input/InputDevice.h"
+#include "ResourceManager.h"
 
 #include "Graphics/Graphics.h"
+#include "Graphics/RenderQueue.h"
 #include "Graphics/ImGui/ImGuiManager.h"
 #include "Graphics/ImGui/ImGuiDebugWindows.h"
 #include "Graphics/Gizmos/DebugGizmos.h"
@@ -52,6 +54,8 @@ public:
 	DisplayWin32* Display;
 	InputDevice* Input;
 
+	ResourceManager Resources;
+
 	ImGuiManager ImGUI;
 	DebugGizmos Gizmos;
 
@@ -71,16 +75,17 @@ public:
 
 private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
+	RenderQueue renderQueue;
 
 	bool isExitRequested = false;
 	bool isPauseRequested = false;
 	bool isInitialized = false;
 
-	void DestroyResources();
-	void Draw();
 	bool Initialize();
 	void MessageHandler();
 	void Update();
 	void UpdateInternal();
+	void Draw();
+	void DestroyResources();
 };
 

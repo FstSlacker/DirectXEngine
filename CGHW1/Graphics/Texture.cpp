@@ -7,7 +7,8 @@ Texture::Texture(Game* game)
 	textureData.Type = TextureType::ColorArray;
 	textureData.TextureColor = Color(1.0f, 0.0f, 0.0f);
 	this->slotIndex = 0;
-	game->Gfx.AddTexture(this);
+	//game->Gfx.AddTexture(this);
+	game->Resources.AddResource<Texture>(this, "Texture_" + std::to_string(game->Resources.GetCount<Texture>()));
 }
 
 Texture::Texture(Game* game, Color color)
@@ -15,7 +16,8 @@ Texture::Texture(Game* game, Color color)
 	textureData.Type = TextureType::ColorArray;
 	textureData.TextureColor = color;
 	this->slotIndex = 0;
-	game->Gfx.AddTexture(this);
+	//game->Gfx.AddTexture(this);
+	game->Resources.AddResource<Texture>(this, "Texture_" + std::to_string(game->Resources.GetCount<Texture>()));
 }
 
 Texture::Texture(Game* game, std::string filePath)
@@ -23,7 +25,8 @@ Texture::Texture(Game* game, std::string filePath)
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = std::wstring(filePath.begin(), filePath.end());
 	this->slotIndex = 0;
-	game->Gfx.AddTexture(this);
+	//game->Gfx.AddTexture(this);
+	game->Resources.AddResource<Texture>(this, "Texture_" + std::to_string(game->Resources.GetCount<Texture>()));
 }
 
 Texture::Texture(Game* game, std::wstring filePath)
@@ -31,7 +34,8 @@ Texture::Texture(Game* game, std::wstring filePath)
 	textureData.Type = TextureType::FilePath;
 	textureData.TexturePath = filePath;
 	this->slotIndex = 0;
-	game->Gfx.AddTexture(this);
+	//game->Gfx.AddTexture(this);
+	game->Resources.AddResource<Texture>(this, "Texture_" + std::to_string(game->Resources.GetCount<Texture>()));
 }
 
 bool Texture::Initialize(ID3D11Device* device)

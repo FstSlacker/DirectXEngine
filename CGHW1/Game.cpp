@@ -20,6 +20,11 @@ bool Game::Initialize()
 		return false;
 	}
 
+	if (!Resources.InitializeResources(Gfx.GetDevice()))
+	{
+		return false;
+	}
+
 	if (!Light.Initialize())
 	{
 		return false;
@@ -67,16 +72,16 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
-	Light.Bind();
+	Light.Bind(Gfx.GetContext());
+
+	UINT materialsCount = Resources.GetCount<Material>();
+	for (int i = 0; i < materialsCount; i++)
+	{
+		renderQueue.AddPass(Resources.GetResource<Material>(i));
+	}
 
 	//Draw components
-	for (int i = 0; i < Components.size(); i++) 
-	{
-		if (!Components[i]->IsEnabled())
-			continue;
-
-		Components[i]->Draw();
-	}
+	renderQueue.Execute(Gfx.GetContext());
 
 	//Draw debug
 	Gizmos.Draw();
@@ -85,6 +90,8 @@ void Game::Draw()
 	ImGUI.Draw();
 
 	Gfx.EndFrame();
+
+	renderQueue.Clear();
 }
 
 void Game::Exit()

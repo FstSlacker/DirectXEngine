@@ -4,6 +4,7 @@
 #include "../../Components/MeshComponent.h"
 #include "../../Components/Camera.h"
 #include "../../Components/Light.h"
+#include "../../ResourceManager.h"
 
 class Game;
 
@@ -75,5 +76,15 @@ protected:
 
 public:
 	ImGuiMeshCompWindow(MeshComponent* comp);
+	virtual void Bind() override;
+};
+
+class ImGuiResourcesWindow : public ImGuiBaseWindow
+{
+protected:
+	ResourceManager* resourceManager;
+
+public:
+	ImGuiResourcesWindow(ResourceManager& resManager);
 	virtual void Bind() override;
 };

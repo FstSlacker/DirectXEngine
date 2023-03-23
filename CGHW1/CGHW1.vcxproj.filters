@@ -159,6 +159,18 @@
     <ClCompile Include="Graphics\DepthStencilBuffer.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\RenderTarget.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\RenderPass.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\RenderQueue.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -291,6 +303,21 @@
       <Filter>Файлы заголовков\Components</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DepthStencilBuffer.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\RenderTarget.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\RenderPass.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\RenderQueue.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GraphicResource.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

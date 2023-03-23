@@ -3,12 +3,13 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 #include "Bindable.h"
+#include "GraphicResource.h"
 #include <d3dcompiler.h>
 #include <string>
 #include <wrl.h>
 
 
-class VertexShader : public Bindable
+class VertexShader : public Bindable, public GraphicResource
 {
 public:
 
@@ -18,7 +19,7 @@ public:
 	ID3DBlob* GetByteCode();
 	ID3D11InputLayout* GetInputLayout();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device) override;
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;
 
@@ -42,7 +43,7 @@ private:
 };
 
 
-class PixelShader : public Bindable
+class PixelShader : public Bindable, public GraphicResource
 {
 public:
 	PixelShader() {}
@@ -51,7 +52,7 @@ public:
 	ID3D11PixelShader* GetShader();
 	ID3DBlob* GetByteCode();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device) override;
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;
 
@@ -60,4 +61,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> shader;
 	Microsoft::WRL::ComPtr<ID3DBlob> shaderByteCode;
 	std::wstring shaderPath;
+};
+
+class NullPixelShader : public Bindable
+{
+public:
+	void Bind(ID3D11DeviceContext* context) override;
+	void DestroyResources() override;
 };

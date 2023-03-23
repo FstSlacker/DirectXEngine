@@ -73,8 +73,8 @@ public:
 
 	void DestroyResources() override
 	{
-		//buffer->Release();
-		//stride.release();
+		buffer.Reset();
+		stride.release();
 	}
 
 };
