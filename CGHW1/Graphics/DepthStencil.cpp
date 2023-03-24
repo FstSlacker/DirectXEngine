@@ -1,7 +1,7 @@
-#include "DepthStencilBuffer.h"
+#include "DepthStencil.h"
 #include "../Logs.h"
 
-DXGI_FORMAT DepthStencilBuffer::GetUsageTypelessFormat(UsageFormat format)
+DXGI_FORMAT DepthStencil::GetUsageTypelessFormat(UsageFormat format)
 {
 	switch (format)
 	{
@@ -13,7 +13,7 @@ DXGI_FORMAT DepthStencilBuffer::GetUsageTypelessFormat(UsageFormat format)
 	throw std::runtime_error("Undefined format");
 }
 
-DXGI_FORMAT DepthStencilBuffer::GetUsageTypedFormat(UsageFormat format)
+DXGI_FORMAT DepthStencil::GetUsageTypedFormat(UsageFormat format)
 {
 	switch (format)
 	{
@@ -25,7 +25,7 @@ DXGI_FORMAT DepthStencilBuffer::GetUsageTypedFormat(UsageFormat format)
 	throw std::runtime_error("Undefined format");
 }
 
-DXGI_FORMAT DepthStencilBuffer::GetUsageColoredFormat(UsageFormat format)
+DXGI_FORMAT DepthStencil::GetUsageColoredFormat(UsageFormat format)
 {
 	switch (format)
 	{
@@ -37,7 +37,7 @@ DXGI_FORMAT DepthStencilBuffer::GetUsageColoredFormat(UsageFormat format)
 	throw std::runtime_error("Undefined format");
 }
 
-bool DepthStencilBuffer::Initialize(ID3D11Device* device, UINT width, UINT height, UsageFormat format)
+bool DepthStencil::Initialize(ID3D11Device* device, UINT width, UINT height, UsageFormat format)
 {
 	//Create depth stencil view
 	D3D11_TEXTURE2D_DESC depthStencilDesc = {};
@@ -80,28 +80,28 @@ bool DepthStencilBuffer::Initialize(ID3D11Device* device, UINT width, UINT heigh
 	return true;
 }
 
-void DepthStencilBuffer::Bind(ID3D11DeviceContext* context)
+void DepthStencil::BindAsDepthStencil(ID3D11DeviceContext* context)
 {
-
+	context->OMSetRenderTargets(0, nullptr, this->depthStencilView.Get());
 }
 
-void DepthStencilBuffer::Clear(ID3D11DeviceContext* context)
+void DepthStencil::Clear(ID3D11DeviceContext* context)
 {
 	context->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 }
 
-void DepthStencilBuffer::DestroyResources()
+void DepthStencil::DestroyResources()
 {
 	depthStencilBuffer.Reset();
 	depthStencilView.Reset();
 }
 
-ID3D11Texture2D* DepthStencilBuffer::GetBuffer() const
+ID3D11Texture2D* DepthStencil::GetBuffer() const
 {
 	return this->depthStencilBuffer.Get();
 }
 
-ID3D11DepthStencilView* DepthStencilBuffer::GetView() const
+ID3D11DepthStencilView* DepthStencil::GetView() const
 {
 	return this->depthStencilView.Get();
 }

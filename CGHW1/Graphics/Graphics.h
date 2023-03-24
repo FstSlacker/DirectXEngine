@@ -10,7 +10,7 @@
 #include <map>
 
 #include "Material.h"
-#include "DepthStencilBuffer.h"
+#include "DepthStencil.h"
 
 class Graphics
 {
@@ -44,7 +44,7 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-	DepthStencilBuffer depthStencil;
+	DepthStencil depthStencil;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rastState;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStateEnabled;

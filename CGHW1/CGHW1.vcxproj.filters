@@ -156,7 +156,7 @@
     <ClCompile Include="Components\CubeComponent.cpp">
       <Filter>Исходные файлы\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\DepthStencilBuffer.cpp">
+    <ClCompile Include="Graphics\DepthStencil.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\RenderTarget.cpp">
@@ -302,7 +302,7 @@
     <ClInclude Include="Components\CubeComponent.h">
       <Filter>Файлы заголовков\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DepthStencilBuffer.h">
+    <ClInclude Include="Graphics\DepthStencil.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\RenderTarget.h">
