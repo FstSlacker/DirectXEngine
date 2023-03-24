@@ -160,6 +160,7 @@
     <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="DisplayWin32.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Graphics\BindingPass.cpp" />
     <ClCompile Include="Graphics\DepthStencil.cpp" />
     <ClCompile Include="Graphics\Gizmos\DebugDraw.cpp" />
     <ClCompile Include="Graphics\Gizmos\DebugGizmos.cpp" />
@@ -174,11 +175,13 @@
     <ClCompile Include="Graphics\ImGui\Source\imgui_tables.cpp" />
     <ClCompile Include="Graphics\ImGui\Source\imgui_widgets.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
-    <ClCompile Include="Graphics\RenderPass.cpp" />
-    <ClCompile Include="Graphics\RenderQueue.cpp" />
+    <ClCompile Include="Graphics\Pass.cpp" />
+    <ClCompile Include="Graphics\RenderJob.cpp" />
+    <ClCompile Include="Graphics\RenderQueuePass.cpp" />
     <ClCompile Include="Graphics\RenderTarget.cpp" />
     <ClCompile Include="Graphics\Sampler.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
+    <ClCompile Include="Graphics\ShadowMapPass.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Input\InputDevice.cpp" />
     <ClCompile Include="Logs.cpp" />
@@ -202,6 +205,7 @@
     <ClInclude Include="DisplayWin32.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics\Bindable.h" />
+    <ClInclude Include="Graphics\BindingPass.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
     <ClInclude Include="Graphics\DepthStencil.h" />
     <ClInclude Include="Graphics\Gizmos\DebugDraw.h" />
@@ -221,11 +225,13 @@
     <ClInclude Include="Graphics\ImGui\Source\imstb_truetype.h" />
     <ClInclude Include="Graphics\IndexBuffer.h" />
     <ClInclude Include="Graphics\Material.h" />
-    <ClInclude Include="Graphics\RenderPass.h" />
-    <ClInclude Include="Graphics\RenderQueue.h" />
+    <ClInclude Include="Graphics\Pass.h" />
+    <ClInclude Include="Graphics\RenderJob.h" />
+    <ClInclude Include="Graphics\RenderQueuePass.h" />
     <ClInclude Include="Graphics\RenderTarget.h" />
     <ClInclude Include="Graphics\Sampler.h" />
     <ClInclude Include="Graphics\Shaders.h" />
+    <ClInclude Include="Graphics\ShadowMapPass.h" />
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Graphics\VertexBuffer.h" />

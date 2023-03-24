@@ -19,7 +19,7 @@ Material::Material(Game* game, VertexShader* vs, PixelShader* ps, UINT passInd)
 	this->vertexShader = vs;
 	this->pixelShader = ps;
 
-	this->SetPassIndex(passInd);
+	this->SetQueueIndex(passInd);
 
 	//game->Gfx.AddMaterial(this);
 	game->Resources.AddResource<Material>(this, "Material_" + std::to_string(game->Resources.GetCount<Material>()));

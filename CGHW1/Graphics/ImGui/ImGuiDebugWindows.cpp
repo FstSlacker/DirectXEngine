@@ -242,6 +242,14 @@ void ImGuiCameraWindow::Bind()
 
 	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (Camera::Main != comp)
+		{
+			if (ImGui::Button("SetAsMain"))
+			{
+				Camera::Main = comp;
+			}
+		}
+
 		int currentItem = static_cast<int>(comp->GetProjectionMode());
 		const char* items[] = { "Perspective", "Orthographic" };
 
@@ -360,7 +368,7 @@ void ImGuiMeshCompWindow::Bind()
 	{
 		Material* mat = meshComp->GetMaterial();
 
-		std::string renderQueueText = "Render queue: " + std::to_string(mat->GetPassIndex());
+		std::string renderQueueText = "Render queue: " + std::to_string(mat->GetQueueIndex());
 		ImGui::Text(renderQueueText.c_str());
 
 		float color[3] = { mat->AmbientColor.x, mat->AmbientColor.y, mat->AmbientColor.z };

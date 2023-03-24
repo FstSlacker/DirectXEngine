@@ -103,9 +103,19 @@ void Graphics::PrepareFrame()
 	depthStencil.Clear(context.Get());
 }
 
+void Graphics::BindRenderTarget(ID3D11DepthStencilView* depthStencilView)
+{
+	context->OMSetRenderTargets(1, renderView.GetAddressOf(), depthStencilView);
+}
+
+void Graphics::BindRenderTarget()
+{
+	context->OMSetRenderTargets(1, renderView.GetAddressOf(), depthStencil.GetView());
+}
+
 void Graphics::EndFrame()
 {
-	context->OMSetRenderTargets(0, nullptr, nullptr);
+	//context->OMSetRenderTargets(0, nullptr, nullptr);
 	swapChain->Present(1, 0);
 }
 

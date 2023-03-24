@@ -162,14 +162,23 @@
     <ClCompile Include="Graphics\RenderTarget.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\RenderPass.cpp">
+    <ClCompile Include="Graphics\RenderJob.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\RenderQueue.cpp">
+    <ClCompile Include="Graphics\RenderQueuePass.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Pass.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\BindingPass.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\ShadowMapPass.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,16 +317,25 @@
     <ClInclude Include="Graphics\RenderTarget.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\RenderPass.h">
+    <ClInclude Include="Graphics\RenderJob.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\RenderQueue.h">
+    <ClInclude Include="Graphics\RenderQueuePass.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\GraphicResource.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Pass.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\BindingPass.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\ShadowMapPass.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

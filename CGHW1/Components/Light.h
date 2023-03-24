@@ -1,8 +1,13 @@
 #pragma once
 #include "../Graphics/ConstantBuffer.h"
+#include "../Graphics/DepthStencil.h"
+#include "../Graphics/RenderTarget.h"
+#include "../Graphics/Sampler.h"
+
 #include <DirectXMath.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>
+
 #include "GameComponent.h"
 #include "Camera.h"
 
@@ -75,11 +80,24 @@ class LightComponent : public GameComponent
 protected:
 	Camera lightCamera;
 
+	VSConstantBuffer<DirectX::XMMATRIX> lightWVPMat;
+	ShadowSampler sampler;
+
+	RenderTarget renderTarget;
+	DepthStencil depthBuffer;
+
 	LightComponent(Game* game);
 
 public:
 	Color LightColor;
 	float Intensity;
+
+	void Initialize() override;
+	void BindShadows();
+	Camera& GetLightCamera();
+
+	RenderTarget* GetRenderTarget();
+	DepthStencil* GetDepthStencil();
 
 	virtual void DrawGizmos() override;
 	virtual void DrawGizmosIcon(Vector3 right, Vector3 up, float scale) override;

@@ -24,7 +24,8 @@
 #include "ResourceManager.h"
 
 #include "Graphics/Graphics.h"
-#include "Graphics/RenderQueue.h"
+#include "Graphics/RenderQueuePass.h"
+#include "Graphics/ShadowMapPass.h"
 #include "Graphics/ImGui/ImGuiManager.h"
 #include "Graphics/ImGui/ImGuiDebugWindows.h"
 #include "Graphics/Gizmos/DebugGizmos.h"
@@ -59,8 +60,6 @@ public:
 	ImGuiManager ImGUI;
 	DebugGizmos Gizmos;
 
-	Camera* MainCamera;
-
 	LPCWSTR Name;
 	Game* Instance;
 	float TotalTime;
@@ -75,7 +74,10 @@ public:
 
 private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
-	RenderQueue renderQueue;
+
+	RenderQueuePass renderQueuePass;
+	ShadowMapPass shadowMapPass;
+
 
 	bool isExitRequested = false;
 	bool isPauseRequested = false;

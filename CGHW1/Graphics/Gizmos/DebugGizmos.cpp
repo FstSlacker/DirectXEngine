@@ -4,7 +4,7 @@
 void DebugGizmos::DrawAxis(GameComponent* comp)
 {
 	Transform3D& t = comp->Transform;
-	float axesSize = Vector3::Distance(t.GetPosition(), game->MainCamera->Transform.GetPosition()) * 0.1f;
+	float axesSize = Vector3::Distance(t.GetPosition(), Camera::Main->Transform.GetPosition()) * 0.1f;
 
 	DebugDraw::DrawRay(
 		primitiveBatch.get(),
@@ -50,11 +50,25 @@ void DebugGizmos::DrawSphere(Vector3 origin, float radius, Color color)
 	DebugDraw::Draw(primitiveBatch.get(), sphere, color);
 }
 
+void DebugGizmos::DrawFrustrum(Vector3 origin, Quaternion orientation, XMMATRIX projection, Color color)
+{
+	DirectX::BoundingFrustum frustrum = BoundingFrustum(projection);
+	frustrum.Origin = origin;
+	frustrum.Orientation = orientation;
+	DebugDraw::Draw(primitiveBatch.get(), frustrum, color);
+}
+
+void DebugGizmos::DrawOrientedBox(Vector3 center, Vector3 extents, Quaternion orientation, Color color)
+{
+	BoundingOrientedBox box = BoundingOrientedBox(center, extents, orientation);
+	DebugDraw::Draw(primitiveBatch.get(), box, color);
+}
+
 void DebugGizmos::DrawGrid()
 {
 	size_t xDivs = 20;
 	size_t yDivs = 20;
-	float gridSize = game->MainCamera->Transform.GetPosition().Length() + 10.0f;
+	float gridSize = Camera::Main->Transform.GetPosition().Length() + 10.0f;
 
 	if(ShowGridXZ)
 		DebugDraw::DrawGrid(primitiveBatch.get(), Vector3::Right * gridSize, Vector3::Forward * gridSize, Vector3::Zero, xDivs, yDivs, GridColor);
@@ -109,8 +123,8 @@ void DebugGizmos::DrawCollider(GameComponent* comp)
 
 void DebugGizmos::Draw()
 {
-	basicEffect->SetProjection(game->MainCamera->GetProjectionMatrix());
-	basicEffect->SetView(game->MainCamera->GetViewMatrix());
+	basicEffect->SetProjection(Camera::Main->GetProjectionMatrix());
+	basicEffect->SetView(Camera::Main->GetViewMatrix());
 	basicEffect->Apply(game->Gfx.GetContext());
 	game->Gfx.GetContext()->IASetInputLayout(inputLayout.Get());
 
@@ -128,9 +142,9 @@ void DebugGizmos::Draw()
 		}
 		if (ShowObjectsIcons)
 		{
-			Vector3 right = game->MainCamera->Transform.GetRight();
-			Vector3 up = game->MainCamera->Transform.GetUp();
-			float iconScale = (game->MainCamera->Transform.GetPosition() - game->Components[i]->Transform.GetPosition()).Length() * 0.03f;
+			Vector3 right = Camera::Main->Transform.GetRight();
+			Vector3 up = Camera::Main->Transform.GetUp();
+			float iconScale = (Camera::Main->Transform.GetPosition() - game->Components[i]->Transform.GetPosition()).Length() * 0.03f;
 			
 			game->Gfx.SetDepthStencilEnable(false);
 			game->Components[i]->DrawGizmosIcon(right, up, iconScale);

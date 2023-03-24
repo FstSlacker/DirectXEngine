@@ -1,6 +1,8 @@
 #include "Camera.h"
 #include "../Game.h"
 
+Camera* Camera::Main = nullptr;
+
 Camera::Camera(Game* game) : GameComponent(game)
 {
     this->Name = "Camera";
@@ -37,6 +39,35 @@ void Camera::SetProjectionMode(ProjectionMode mode)
 void Camera::SetOrthographicSize(float size)
 {
     this->orthographicSize = size;
+}
+
+void Camera::DrawGizmos()
+{
+    if (Camera::Main != this) 
+    {
+        GameComponent::DrawGizmos();
+
+        Quaternion orientation = Quaternion::CreateFromRotationMatrix(Transform.GetWorldRotationMatrix());
+        Color color = Color(DirectX::Colors::Purple);
+
+        if (this->projMode == ProjectionMode::Perspective)
+        {
+            game->Gizmos.DrawFrustrum(
+                Transform.GetPosition(),
+                orientation,
+                GetProjectionMatrix(),
+                color
+            );
+        }
+        else
+        {
+            Vector3 center = Transform.GetForward() * ((farZ - nearZ) * 0.5f + nearZ) + Transform.GetPosition();
+            float aspectWH = static_cast<float>(game->Display->ClientWidth) / static_cast<float>(game->Display->ClientHeight);
+            Vector3 extends = Vector3(aspectWH * orthographicSize, orthographicSize, farZ - nearZ) * 0.5f;
+
+            game->Gizmos.DrawOrientedBox(center, extends, orientation, color);
+        }
+    }
 }
 
 float Camera::GetFov() const

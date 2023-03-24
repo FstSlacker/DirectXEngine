@@ -27,6 +27,8 @@ public:
 	void SetProjectionMode(ProjectionMode mode);
 	void SetOrthographicSize(float size);
 
+	void DrawGizmos() override;
+
 	float GetFov() const;
 	float GetNear() const;
 	float GetFar() const;
@@ -37,6 +39,8 @@ public:
 	const XMMATRIX& GetViewMatrix();
 	const XMMATRIX& GetProjectionMatrix();
 	const XMMATRIX GetViewProjectionMatrix();
+
+	static Camera* Main;
 
 protected:
 	float fovDegrees;

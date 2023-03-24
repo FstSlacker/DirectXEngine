@@ -18,7 +18,7 @@ void MeshComponent::DestroyResources()
 void MeshComponent::Bind()
 {
 	GameComponent::Bind();
-	transformMat.Data.WorldViewProjMatrix = DirectX::XMMatrixTranspose(Transform.GetTransformMatrix() * game->MainCamera->GetViewProjectionMatrix());
+	transformMat.Data.WorldViewProjMatrix = DirectX::XMMatrixTranspose(Transform.GetTransformMatrix() * Camera::Main->GetViewProjectionMatrix());
 	transformMat.Data.WorldMatrix = DirectX::XMMatrixTranspose(Transform.GetTransformMatrix());
 
 	transformMat.ApplyChanges(game->Gfx.GetContext());

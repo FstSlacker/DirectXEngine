@@ -1,16 +1,16 @@
-#include "RenderPass.h"
+#include "RenderJob.h"
 #include <algorithm>
 
-void RenderPass::Execute(ID3D11DeviceContext* context)
+void RenderJob::Execute(ID3D11DeviceContext* context)
 {
 	this->Bind(context);
 	this->Draw();
 }
 
-bool RenderPass::AddBindable(Bindable* bind)
+bool RenderJob::AddBindable(Bindable* bind)
 {
 	auto it = std::find(bindables.begin(), bindables.end(), bind);
-	if (it != bindables.end())
+	if (it == bindables.end())
 	{
 		bindables.push_back(bind);
 		return true;
@@ -18,7 +18,7 @@ bool RenderPass::AddBindable(Bindable* bind)
 	return false;
 }
 
-bool RenderPass::RemoveBindable(Bindable* bind)
+bool RenderJob::RemoveBindable(Bindable* bind)
 {
 	auto it = std::find(bindables.begin(), bindables.end(), bind);
 	if (it != bindables.end())
@@ -29,7 +29,7 @@ bool RenderPass::RemoveBindable(Bindable* bind)
 	return false;
 }
 
-bool RenderPass::AddComponent(GameComponent* comp)
+bool RenderJob::AddComponent(GameComponent* comp)
 {
 	auto it = std::find(components.begin(), components.end(), comp);
 	if (it == components.end())
@@ -40,7 +40,7 @@ bool RenderPass::AddComponent(GameComponent* comp)
 	return false;
 }
 
-bool RenderPass::RemoveComponent(GameComponent* comp)
+bool RenderJob::RemoveComponent(GameComponent* comp)
 {
 	auto it = std::find(components.begin(), components.end(), comp);
 	if (it != components.end())
@@ -51,17 +51,17 @@ bool RenderPass::RemoveComponent(GameComponent* comp)
 	return false;
 }
 
-void RenderPass::SetPassIndex(UINT index)
+void RenderJob::SetQueueIndex(UINT index)
 {
-	this->passIndex = index;
+	this->queueIndex = index;
 }
 
-UINT RenderPass::GetPassIndex() const
+UINT RenderJob::GetQueueIndex() const
 {
-	return this->passIndex;
+	return this->queueIndex;
 }
 
-void RenderPass::Bind(ID3D11DeviceContext* context)
+void RenderJob::Bind(ID3D11DeviceContext* context)
 {
 	for (auto b : bindables)
 	{
@@ -69,7 +69,7 @@ void RenderPass::Bind(ID3D11DeviceContext* context)
 	}
 }
 
-void RenderPass::Draw()
+void RenderJob::Draw()
 {
 	for (auto c : components)
 	{

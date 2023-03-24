@@ -10,6 +10,7 @@
 #include "DebugDraw.h"
 
 using namespace DirectX::SimpleMath;
+using namespace DirectX;
 
 class Game;
 class GameComponent;
@@ -43,6 +44,8 @@ public:
 	void DrawQuad(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4, Color color = Color(DirectX::Colors::White));
 	void DrawRay(Vector3 origin, Vector3 direction, Color color = Color(DirectX::Colors::White));
 	void DrawSphere(Vector3 origin, float radius, Color color = Color(DirectX::Colors::White));
+	void DrawFrustrum(Vector3 origin, Quaternion orientation, XMMATRIX projection, Color color = Color(DirectX::Colors::White));
+	void DrawOrientedBox(Vector3 center, Vector3 extents, Quaternion orientation, Color color = Color(DirectX::Colors::White));
 	void Initialize();
 	void Draw();
 };

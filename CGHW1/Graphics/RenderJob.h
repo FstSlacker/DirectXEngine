@@ -4,7 +4,7 @@
 #include "Bindable.h"
 #include "../Components/GameComponent.h"
 
-class RenderPass
+class RenderJob
 {
 public:
 	void Execute(ID3D11DeviceContext* context);
@@ -14,15 +14,15 @@ public:
 	bool AddComponent(GameComponent* comp);
 	bool RemoveComponent(GameComponent* comp);
 
-	void SetPassIndex(UINT index);
-	UINT GetPassIndex() const;
+	void SetQueueIndex(UINT index);
+	UINT GetQueueIndex() const;
 
 protected:
 	virtual void Bind(ID3D11DeviceContext* context);
 	virtual void Draw();
 
 private:
-	UINT passIndex;
+	UINT queueIndex;
 	std::vector<Bindable*> bindables;
 	std::vector<GameComponent*> components;
 };

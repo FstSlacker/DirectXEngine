@@ -19,9 +19,12 @@ public:
 
 	bool Initialize(HWND hWnd, UINT width, UINT height);
 	bool Resize(UINT width, UINT height);
-	void DestroyResources();
+
 	void PrepareFrame();
+	void BindRenderTarget(ID3D11DepthStencilView* depthStencilView);
+	void BindRenderTarget();
 	void EndFrame();
+	void DestroyResources();
 
 	void SetDepthStencilEnable(bool isEnable);
 

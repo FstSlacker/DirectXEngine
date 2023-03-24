@@ -2,14 +2,14 @@
 #include <DirectXMath.h>
 #include "GraphicResource.h"
 #include "ConstantBuffer.h"
-#include "RenderPass.h"
+#include "RenderJob.h"
 #include "Shaders.h"
 #include "Texture.h"
 
 class Game;
 class Graphics;
 
-class Material : public RenderPass, public GraphicResource
+class Material : public RenderJob, public GraphicResource
 {
     friend class Graphics;
 

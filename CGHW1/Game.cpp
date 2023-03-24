@@ -9,9 +9,8 @@ bool Game::Initialize()
 {
 	Display = new DisplayWin32(*this, 1200, 700, Name);
 
-
-	MainCamera = new Camera(this);
-	MainCamera->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
+	Camera::Main = new Camera(this);
+	Camera::Main->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
 
 	Input = new InputDevice(this);
 
@@ -72,16 +71,30 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
-	Light.Bind(Gfx.GetContext());
+	RenderJob shadowJob;
+	shadowJob.SetQueueIndex(0);
+	shadowJob.AddBindable(Resources.GetResource<VertexShader>("VS_Depth"));
+	shadowJob.AddBindable(Resources.GetResource<PixelShader>("PS_Depth"));
 
+	for (int i = 0; i < Components.size(); i++)
+	{
+		shadowJob.AddComponent(Components[i]);
+	}
+
+	shadowMapPass.AddRenderJob(&shadowJob);
+	shadowMapPass.BindLightSource(*Light.GetLightComponent(0));
+	shadowMapPass.Execute(Gfx);
+
+	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
+
+	Light.Bind(Gfx.GetContext());
 	UINT materialsCount = Resources.GetCount<Material>();
 	for (int i = 0; i < materialsCount; i++)
 	{
-		renderQueue.AddPass(Resources.GetResource<Material>(i));
+		renderQueuePass.AddRenderJob(Resources.GetResource<Material>(i));
 	}
 
-	//Draw components
-	renderQueue.Execute(Gfx.GetContext());
+	renderQueuePass.Execute(Gfx);
 
 	//Draw debug
 	Gizmos.Draw();
@@ -91,7 +104,8 @@ void Game::Draw()
 
 	Gfx.EndFrame();
 
-	renderQueue.Clear();
+	renderQueuePass.Clear();
+	shadowMapPass.Clear();
 }
 
 void Game::Exit()

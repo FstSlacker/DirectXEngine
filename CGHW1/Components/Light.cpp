@@ -42,7 +42,7 @@ void Light::Bind(ID3D11DeviceContext* context)
 {
 	lightsBuffer.Data.AmbientColor = Light::AmbientColor.ToVector3(); // 12
 	lightsBuffer.Data.AmbientIntensity = Light::AmbientIntensity; // 4
-	lightsBuffer.Data.CameraPosition = game->MainCamera->Transform.GetPosition(); // 12
+	lightsBuffer.Data.CameraPosition = Camera::Main->Transform.GetPosition(); // 12
 
 	for (int i = 0; i < MAX_LIGHTS; i++)
 	{
@@ -83,6 +83,8 @@ void Light::Bind(ID3D11DeviceContext* context)
 				lightData.SpotAngle = dynamic_cast<SpotLightComponent*>(light)->ConeAngle * 0.01745329f;
 				lightData.LightType = (int)LightType::Spot;
 			}
+
+			light->BindShadows();
 		}
 
 		lightsBuffer.Data.Lights[i] = lightData;
@@ -109,6 +111,62 @@ LightComponent::LightComponent(Game* game) : GameComponent(game), lightCamera(ga
 	this->Intensity = 1.0f;
 	this->Transform.AddChild(lightCamera.Transform);
 	this->lightCamera.Transform.SetLocalPosition(Vector3::Zero);
+}
+
+void LightComponent::Initialize()
+{
+	if (!renderTarget.Initialize(game->Gfx.GetDevice(), game->Display->ClientWidth, game->Display->ClientHeight))
+	{
+		Logs::LogError("Failed to initialize light renderTarget");
+	}
+
+	if (!depthBuffer.Initialize(game->Gfx.GetDevice(), game->Display->ClientWidth, game->Display->ClientHeight))
+	{
+		Logs::LogError("Failed to initialize light depthStencil");
+	}
+
+	HRESULT hr;
+
+	hr = lightWVPMat.Initialize(game->Gfx.GetDevice());
+
+	if (FAILED(hr))
+	{
+		Logs::LogError(hr, "Failed to initialize lightWVPMat");
+	}
+
+	hr = sampler.Initialize(game->Gfx.GetDevice());
+
+	if (FAILED(hr))
+	{
+		Logs::LogError(hr, "Failed to initialize sampler");
+	}
+	sampler.SetSlot(1);
+	lightWVPMat.SetSlot(1);
+}
+
+void LightComponent::BindShadows()
+{
+	lightWVPMat.Data = DirectX::XMMatrixTranspose(lightCamera.GetViewProjectionMatrix());
+	lightWVPMat.ApplyChanges(game->Gfx.GetContext());
+	lightWVPMat.Bind(game->Gfx.GetContext());
+	renderTarget.BindAsTexture(game->Gfx.GetContext(), 3);
+	sampler.Bind(game->Gfx.GetContext());
+
+}
+
+Camera& LightComponent::GetLightCamera()
+{
+	return this->lightCamera;
+}
+
+RenderTarget* LightComponent::GetRenderTarget() 
+{
+	return &this->renderTarget;
+}
+
+DepthStencil* LightComponent::GetDepthStencil()
+{
+	return &this->depthBuffer;
 }
 
 void LightComponent::DrawGizmos()
@@ -149,13 +207,14 @@ PointLightComponent::PointLightComponent(Game* game) : LightComponent(game)
 void PointLightComponent::DrawGizmos()
 {
 	LightComponent::DrawGizmos();
-
+	this->lightCamera.SetProjectionMode(Camera::ProjectionMode::Perspective);
 	game->Gizmos.DrawSphere(this->Transform.GetPosition(), this->Range, Color(DirectX::Colors::White));
 }
 
 DirectionalLightComponent::DirectionalLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "DirectionalLight_" + std::to_string(game->Light.GetLightSourcesCount());
+	this->lightCamera.SetProjectionMode(Camera::ProjectionMode::Orthographic);
 	game->Light.AddLightComponent(this);
 }
 
@@ -164,7 +223,7 @@ void DirectionalLightComponent::DrawGizmos()
 	LightComponent::DrawGizmos();
 
 	Vector3 center = this->Transform.GetPosition();
-	float pScale = (center - game->MainCamera->Transform.GetPosition()).Length() * 0.04f;
+	float pScale = (center - Camera::Main->Transform.GetPosition()).Length() * 0.04f;
 
 	Vector3 o = this->Transform.GetPosition();
 	Vector3 lf = this->Transform.GetForward();
@@ -187,6 +246,7 @@ SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
 	this->ConstantAttenuation = 0.0f;
 	this->LinearAttenuation = 1.0f;
 	this->QuadricAttenuation = 0.0f;
+	this->lightCamera.SetProjectionMode(Camera::ProjectionMode::Perspective);
 	game->Light.AddLightComponent(this);
 }
 

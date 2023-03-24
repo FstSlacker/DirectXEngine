@@ -14,7 +14,7 @@ void CameraMoveComponent::Initialize()
 
 void CameraMoveComponent::Update()
 {
-	Transform3D* camT = &game->MainCamera->Transform;
+	Transform3D* camT = &Camera::Main->Transform;
 
 	Vector2 currPos = game->Input->MousePosition;
 	Vector2 deltaPos = currPos - prevMousePos;
