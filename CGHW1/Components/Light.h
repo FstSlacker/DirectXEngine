@@ -7,6 +7,7 @@
 #include <DirectXMath.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>
+#include <vector>
 
 #include "GameComponent.h"
 #include "Camera.h"
@@ -28,6 +29,7 @@ private:
 		Point,
 		Spot
 	};
+
 	struct LightData
 	{
 		DirectX::XMFLOAT4 Position; // 16 
@@ -56,7 +58,18 @@ private:
 		LightData Lights[MAX_LIGHTS];
 	};
 
+	struct LightVPCbuf
+	{
+		DirectX::XMFLOAT4 CascadeDistances[4];
+		DirectX::XMMATRIX DirectionalLightVP[3];
+		DirectX::XMMATRIX LightsVP[MAX_LIGHTS - 1];
+		
+	};
+
 	PSConstantBuffer<LightCbuf> lightsBuffer;
+	PSConstantBuffer<LightVPCbuf> lightsVPBuffer;
+	ShadowSampler shadowSampler;
+
 	std::vector<LightComponent*> lights;
 	Game* game;
 
@@ -78,13 +91,10 @@ public:
 class LightComponent : public GameComponent
 {
 protected:
-	Camera lightCamera;
+	std::vector<Camera*> renderCameras;
 
-	VSConstantBuffer<DirectX::XMMATRIX> lightWVPMat;
-	ShadowSampler sampler;
-
-	RenderTarget renderTarget;
-	DepthStencil depthBuffer;
+	std::vector<std::unique_ptr<RenderTarget>> renderTargets;
+	std::unique_ptr<DepthStencil> depthBuffer;
 
 	LightComponent(Game* game);
 
@@ -93,11 +103,10 @@ public:
 	float Intensity;
 
 	void Initialize() override;
-	void BindShadows();
-	Camera& GetLightCamera();
 
-	RenderTarget* GetRenderTarget();
-	DepthStencil* GetDepthStencil();
+	const std::vector<Camera*>& GetRenderCameras() const;
+	const std::vector< std::unique_ptr<RenderTarget>>& GetRenderTargets() const;
+	DepthStencil* GetDepthBuffer() const;
 
 	virtual void DrawGizmos() override;
 	virtual void DrawGizmosIcon(Vector3 right, Vector3 up, float scale) override;

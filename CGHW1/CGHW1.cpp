@@ -45,6 +45,7 @@ int main()
 	CubeComponent* cube1 = new CubeComponent(&game);
 	cube1->SetMaterial(matWall);
 	cube1->Transform.SetPosition(Vector3(0.0f, 2.0f, 2.0f));
+	cube1->Transform.SetScale(Vector3(10.0f, 10.0f, 1.0f));
 
 	CubeComponent* cube2 = new CubeComponent(&game);
 	cube2->SetMaterial(matWall);
@@ -58,11 +59,14 @@ int main()
 	//light->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 	//light->Range = 30.0f;
 
-	SpotLightComponent* light2 = new SpotLightComponent(&game);
-	light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
+	//SpotLightComponent* light2 = new SpotLightComponent(&game);
+	//light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 
-	//DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
-	//light3->Transform.SetPosition(Vector3(0.0f, 5.0f, 10.0f));
+	DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
+	light3->Transform.SetPosition(Vector3(0.0f, 5.0f, 10.0f));
+
+	Camera* secondCam = new Camera(&game);
+	secondCam->Name = "Camera2";
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

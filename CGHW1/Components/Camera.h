@@ -24,6 +24,7 @@ public:
 	void SetFov(float angleDeg);
 	void SetNear(float nearByZ);
 	void SetFar(float farByZ);
+	void SetAspectRatio(float aspectRatio);
 	void SetProjectionMode(ProjectionMode mode);
 	void SetOrthographicSize(float size);
 
@@ -46,6 +47,7 @@ protected:
 	float fovDegrees;
 	float nearZ;
 	float farZ;
+	float aspectRatio;
 	float orthographicSize;
 
 	ProjectionMode projMode;

@@ -323,6 +323,17 @@ void ImGuiLightCompWindow::Bind()
 		}
 		ImGui::DragFloat("Intensity", &lightComp->Intensity, 0.01f, 0.0f, 10.0f);
 
+		if (typeid(*lightComp) == typeid(DirectionalLightComponent))
+		{
+			for (int i = 0; i < lightComp->GetRenderTargets().size(); i++)
+			{
+				ImGui::Image(
+					(void*)lightComp->GetRenderTargets()[i]->GetTextureView(),
+					ImVec2(100, 100)
+				);
+			}
+		}
+
 		if (typeid(*lightComp) == typeid(PointLightComponent))
 		{
 			PointLightComponent* pLight = dynamic_cast<PointLightComponent*>(lightComp);

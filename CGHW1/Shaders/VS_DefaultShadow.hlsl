@@ -4,10 +4,10 @@ cbuffer cBuf : register(b0)
 	float4x4 worldMat;
 };
 
-cbuffer cLightMatrix : register(b1)
-{
-    float4x4 wvpLightMat;
-}
+//cbuffer cLightMatrix : register(b1)
+//{
+//    float4x4 wvpLightMat;
+//}
 
 struct VS_IN
 {
@@ -25,12 +25,12 @@ struct PS_IN
     float4 color : COLOR;
  	float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
-    float3 worldPos : WORLD_POSITION;
+    float4 worldPos : WORLD_POSITION;
     
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     
-    float4 lightViewPos : TEXCOORD1;
+    float clipSpaceZ : CLIP_SPACE_Z;
 };
 
 PS_IN VSMain( VS_IN input )
@@ -44,9 +44,7 @@ PS_IN VSMain( VS_IN input )
     output.worldPos = mul(float4(input.pos, 1.0f), worldMat);
     output.tangent = mul(input.tangent, (float3x3)worldMat);
     output.bitangent = mul(input.bitangent, (float3x3)worldMat);
-    
-    float4 shadowPos = mul(float4(input.pos, 1.0f), worldMat);
-    output.lightViewPos = mul(shadowPos, wvpLightMat);
+    output.clipSpaceZ = output.pos.z;
 	
 	return output;
 }

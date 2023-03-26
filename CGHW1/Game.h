@@ -26,6 +26,7 @@
 #include "Graphics/Graphics.h"
 #include "Graphics/RenderQueuePass.h"
 #include "Graphics/ShadowMapPass.h"
+#include "Graphics/CascadeShadowMapPass.h"
 #include "Graphics/ImGui/ImGuiManager.h"
 #include "Graphics/ImGui/ImGuiDebugWindows.h"
 #include "Graphics/Gizmos/DebugGizmos.h"
@@ -77,6 +78,7 @@ private:
 
 	RenderQueuePass renderQueuePass;
 	ShadowMapPass shadowMapPass;
+	CascadeShadowMapPass cascadeShadowMapPass;
 
 
 	bool isExitRequested = false;

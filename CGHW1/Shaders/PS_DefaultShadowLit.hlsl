@@ -8,13 +8,25 @@
 #define USE_NORMAL_MAP 2
 #define USE_SPECULAR_MAP 4
 
+//Light material textures data
 Texture2D objTexture : register(t0);
 Texture2D objNormalMap : register(t1);
 Texture2D objSpecularMap : register(t2);
 
-Texture2D shadowMapTex1 : register(t3);
-
 SamplerState objSamplerState : register(s0);
+
+//Shadow textures data
+Texture2D cascadeShadowMapTex1 : register(t3);
+Texture2D cascadeShadowMapTex2 : register(t4);
+Texture2D cascadeShadowMapTex3 : register(t5);
+
+Texture2D shadowMapTex1 : register(t6);
+Texture2D shadowMapTex2 : register(t7);
+Texture2D shadowMapTex3 : register(t8);
+Texture2D shadowMapTex4 : register(t9);
+Texture2D shadowMapTex5 : register(t10);
+Texture2D shadowMapTex6 : register(t11);
+Texture2D shadowMapTex7 : register(t12);
 
 SamplerState objSamplerTypeClamp : register(s1);
 
@@ -74,17 +86,25 @@ cbuffer cTransformBuf : register(b2)
     float4x4 worldMat;
 };
 
+cbuffer cLightTransformBuf : register(b3)
+{
+    float4 cascadeDistances[4];
+    float4x4 vpDirectionalLight[3];
+    float4x4 vpLight[7];
+};
+
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
     float4 color : COLOR;
  	float2 texCord : TEXCOORD;
     float3 normal : NORMAL;
-    float3 worldPos : WORLD_POSITION;
+    float4 worldPos : WORLD_POSITION;
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     
-    float4 lightViewPos : TEXCOORD1;
+    float clipSpaceZ : CLIP_SPACE_Z;
+    //float4 lightViewPos : TEXCOORD1;
 };
 
 float4 CalculateDiffuse(LightData light, float3 dirToLight, float3 normal)
@@ -183,13 +203,38 @@ LightingResult DoSpotLight(LightData light, float3 dirToCamera, float4 vertPos, 
     return res;
 }
 
-bool IsShaded(float4 lightViewPosition)
+bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
 {
     float bias;
     float2 projectTexCoord;
-    float depthValue;
+    float depthValue = 100.0f;
     float lightDepthValue;
-
+    
+    float distance;
+    float4 lightViewPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
+    int ind = -1;
+    
+    if (lightInd == 0)
+    {
+        distance = clipSpaceZ;
+        
+        for (int i = 0; i < 3; i++)
+        {
+            if (distance < cascadeDistances[i].z)
+            {
+                lightViewPosition = mul(vertWorldPos, vpDirectionalLight[i]);
+                ind = i;
+                break;
+            }
+        }
+        if (ind == -1)
+            return false;
+    }
+    else
+    {
+        return false;
+    }
 
 	// Set the bias value for fixing the floating point precision issues.
     bias = 0.001f;
@@ -202,7 +247,12 @@ bool IsShaded(float4 lightViewPosition)
     if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
     {
 		// Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
-        depthValue = shadowMapTex1.Sample(objSamplerTypeClamp, projectTexCoord).r;
+        if (ind == 0)
+            depthValue = cascadeShadowMapTex1.Sample(objSamplerTypeClamp, projectTexCoord).r;
+        else if (ind == 1)
+            depthValue = cascadeShadowMapTex2.Sample(objSamplerTypeClamp, projectTexCoord).r;
+        else if (ind == 2)
+            depthValue = cascadeShadowMapTex3.Sample(objSamplerTypeClamp, projectTexCoord).r;
 
 		// Calculate the depth of the light.
         lightDepthValue = (lightViewPosition.z / lightViewPosition.w);
@@ -222,10 +272,10 @@ bool IsShaded(float4 lightViewPosition)
     return false;
 }
 
-LightingResult ComputeLighting(float3 vertPos, float3 normal, float4 lightViewPos)
+LightingResult ComputeLighting(float4 vertPos, float clipSpaceZ, float3 normal)
 {
     float3 dirToCamera = normalize(CameraPosition - vertPos.xyz);
-    float4 vertPos4 = float4(vertPos, 0.0f);
+    float4 vertPos4 = float4(vertPos.xyz, 0.0f);
 
     LightingResult totalResult = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
     
@@ -237,8 +287,8 @@ LightingResult ComputeLighting(float3 vertPos, float3 normal, float4 lightViewPo
         if (!Lights[i].Enabled)
             continue;
         
-        if (IsShaded(lightViewPos))
-            break;
+        if (IsShaded(vertPos, clipSpaceZ, i))
+            continue;
 
         switch (Lights[i].LightType)
         {
@@ -307,7 +357,7 @@ float4 PSMain( PS_IN input ) : SV_Target
         specularWeight = objSpecularMap.Sample(objSamplerState, input.texCord);
     }
     
-    LightingResult lit = ComputeLighting(input.worldPos, normalize(input.normal), input.lightViewPos);
+    LightingResult lit = ComputeLighting(input.worldPos, input.clipSpaceZ, normalize(input.normal));
 
     float4 emissive = Material.Emissive;
     float4 ambient = Material.Ambient * float4(AmbientColor * AmbientIntensity, 1.0f);

@@ -10,6 +10,7 @@ Camera::Camera(Game* game) : GameComponent(game)
     this->fovDegrees = 90.0f;
     this->nearZ = 0.1f;
     this->farZ = 1000.0f;
+    this->aspectRatio = 1.0f;
     this->orthographicSize = 10.0f;
 }
 
@@ -28,6 +29,12 @@ void Camera::SetNear(float nearByZ)
 void Camera::SetFar(float farByZ)
 {
     this->farZ = farByZ;
+    UpdateProjectionMatrix();
+}
+
+void Camera::SetAspectRatio(float aspectRatio)
+{
+    this->aspectRatio = aspectRatio;
     UpdateProjectionMatrix();
 }
 

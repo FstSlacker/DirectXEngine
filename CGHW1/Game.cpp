@@ -81,9 +81,10 @@ void Game::Draw()
 		shadowJob.AddComponent(Components[i]);
 	}
 
-	shadowMapPass.AddRenderJob(&shadowJob);
-	shadowMapPass.BindLightSource(*Light.GetLightComponent(0));
-	shadowMapPass.Execute(Gfx);
+	cascadeShadowMapPass.AddRenderJob(&shadowJob);
+	cascadeShadowMapPass.BindDirectionalLight(*dynamic_cast<DirectionalLightComponent*>(Light.GetLightComponent(0)));
+	cascadeShadowMapPass.BindMainCamera(*Camera::Main);
+	cascadeShadowMapPass.Execute(Gfx);
 
 	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -106,6 +107,7 @@ void Game::Draw()
 
 	renderQueuePass.Clear();
 	shadowMapPass.Clear();
+	cascadeShadowMapPass.Clear();
 }
 
 void Game::Exit()

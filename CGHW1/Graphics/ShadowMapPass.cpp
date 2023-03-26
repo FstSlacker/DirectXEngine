@@ -6,17 +6,16 @@ void ShadowMapPass::BindLightSource(LightComponent& lightComponent)
 {
 	this->lightComp = &lightComponent;
 
-	this->renderTarget = lightComp->GetRenderTarget();
-	this->depthStencil = lightComp->GetDepthStencil();
+	this->renderTarget = lightComp->GetRenderTargets()[0].get();
+	this->depthStencil = lightComp->GetDepthBuffer();
 }
 
 void ShadowMapPass::Execute(Graphics& gfx)
 {
 	Camera* mainCamera = Camera::Main;
-	Camera::Main = &lightComp->GetLightCamera();
+	Camera::Main = lightComp->GetRenderCameras()[0];
 
 	RenderQueuePass::Execute(gfx);
 
 	Camera::Main = mainCamera;
-
 }
