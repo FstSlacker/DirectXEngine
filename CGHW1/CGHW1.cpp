@@ -59,11 +59,12 @@ int main()
 	//light->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 	//light->Range = 30.0f;
 
-	//SpotLightComponent* light2 = new SpotLightComponent(&game);
-	//light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 
 	DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
 	light3->Transform.SetPosition(Vector3(0.0f, 5.0f, 10.0f));
+
+	SpotLightComponent* light2 = new SpotLightComponent(&game);
+	light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 
 	Camera* secondCam = new Camera(&game);
 	secondCam->Name = "Camera2";

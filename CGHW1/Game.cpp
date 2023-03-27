@@ -88,6 +88,12 @@ void Game::Draw()
 
 	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
 
+	shadowMapPass.AddRenderJob(&shadowJob);
+	shadowMapPass.BindLightSource(*Light.GetLightComponent(1));
+	shadowMapPass.Execute(Gfx);
+
+	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
+
 	Light.Bind(Gfx.GetContext());
 	UINT materialsCount = Resources.GetCount<Material>();
 	for (int i = 0; i < materialsCount; i++)

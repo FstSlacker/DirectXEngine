@@ -233,11 +233,12 @@ bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
     }
     else
     {
-        return false;
+        lightViewPosition = mul(vertWorldPos, vpLight[lightInd - 1]);
+        ind = lightInd + 2;
     }
 
 	// Set the bias value for fixing the floating point precision issues.
-    bias = 0.001f;
+    bias = 0.0001f;
 
 	// Calculate the projected texture coordinates.
     projectTexCoord.x = (lightViewPosition.x / lightViewPosition.w) * 0.5f + 0.5f;
@@ -247,12 +248,39 @@ bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
     if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
     {
 		// Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
-        if (ind == 0)
-            depthValue = cascadeShadowMapTex1.Sample(objSamplerTypeClamp, projectTexCoord).r;
-        else if (ind == 1)
-            depthValue = cascadeShadowMapTex2.Sample(objSamplerTypeClamp, projectTexCoord).r;
-        else if (ind == 2)
-            depthValue = cascadeShadowMapTex3.Sample(objSamplerTypeClamp, projectTexCoord).r;
+        switch (ind)
+        {
+            case 0:
+                depthValue = cascadeShadowMapTex1.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 1:
+                depthValue = cascadeShadowMapTex2.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 2:
+                depthValue = cascadeShadowMapTex3.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 3:
+                depthValue = shadowMapTex1.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 4:
+                depthValue = shadowMapTex2.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 5:
+                depthValue = shadowMapTex3.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 6:
+                depthValue = shadowMapTex4.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 7:
+                depthValue = shadowMapTex5.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 8:
+                depthValue = shadowMapTex6.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+            case 9:
+                depthValue = shadowMapTex7.Sample(objSamplerTypeClamp, projectTexCoord).r;
+                break;
+        }
 
 		// Calculate the depth of the light.
         lightDepthValue = (lightViewPosition.z / lightViewPosition.w);
