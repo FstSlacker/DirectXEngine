@@ -97,6 +97,11 @@ float Camera::GetOrthographicSize() const
     return this->orthographicSize;
 }
 
+float Camera::GetAspectRatio() const
+{
+    return this->aspectRatio;
+}
+
 Camera::ProjectionMode Camera::GetProjectionMode() const
 {
     return this->projMode;
@@ -133,7 +138,7 @@ void Camera::UpdateViewMatrix()
 
 void Camera::UpdateProjectionMatrix()
 {
-    float aspectWH = static_cast<float>(game->Display->ClientWidth) / static_cast<float>(game->Display->ClientHeight);
+    float aspectWH = aspectRatio;//static_cast<float>(game->Display->ClientWidth) / static_cast<float>(game->Display->ClientHeight);
 
     if (projMode == ProjectionMode::Perspective)
     {

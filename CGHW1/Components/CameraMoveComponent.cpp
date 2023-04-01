@@ -37,6 +37,14 @@ void CameraMoveComponent::Update()
 	{
 		camT->AddPosition(camT->GetRight() * game->DeltaTime * MoveSpeed);
 	}
+	if (game->Input->IsKeyDown(Keys::Space))
+	{
+		camT->AddPosition(camT->GetUp() * game->DeltaTime * MoveSpeed);
+	}
+	if (game->Input->IsKeyDown(Keys::LeftShift))
+	{
+		camT->AddPosition(camT->GetDown() * game->DeltaTime * MoveSpeed);
+	}
 
 	if (game->Input->IsKeyDown(Keys::RightButton))
 	{

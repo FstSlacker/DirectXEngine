@@ -93,7 +93,8 @@ void Light::Bind(ID3D11DeviceContext* context)
 				lightsBuffer.Data.Lights[0] = lightData;
 
 				//Set shadow data
-				float dists[4] = { 0.0f, 10.0f, 50.0f, 100.0f };
+				float dists[4] = { 0.0f, 25.0f, 90.0f, 200.0f };
+
 				UINT mapsCount = light->GetRenderCameras().size();
 				for (UINT j = 0; j < mapsCount; j++)
 				{

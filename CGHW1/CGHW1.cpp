@@ -63,11 +63,15 @@ int main()
 	DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
 	light3->Transform.SetPosition(Vector3(0.0f, 5.0f, 10.0f));
 
-	SpotLightComponent* light2 = new SpotLightComponent(&game);
-	light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
+	//SpotLightComponent* light2 = new SpotLightComponent(&game);
+	//light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
 
 	Camera* secondCam = new Camera(&game);
 	secondCam->Name = "Camera2";
+	secondCam->SetAspectRatio(1200.0f / 700.0f);
+	secondCam->SetProjectionMode(Camera::ProjectionMode::Orthographic);
+	secondCam->Transform.SetRotation(Vector3(0.0f, 90.0f, 0.0f));
+	secondCam->SetOrthographicSize(50.0f);
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

@@ -203,7 +203,7 @@ LightingResult DoSpotLight(LightData light, float3 dirToCamera, float4 vertPos, 
     return res;
 }
 
-bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
+float4 IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
 {
     float bias;
     float2 projectTexCoord;
@@ -212,6 +212,8 @@ bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
     
     float distance;
     float4 lightViewPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
+    float4 res = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
     int ind = -1;
     
@@ -224,6 +226,12 @@ bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
             if (distance < cascadeDistances[i].z)
             {
                 lightViewPosition = mul(vertWorldPos, vpDirectionalLight[i]);
+                if (i == 0)
+                    res = float4(1.0f, 0.0f, 0.0f, 0.0f);
+                else if(i == 1)
+                    res = float4(0.0f, 1.0f, 0.0f, 0.0f);
+                else if(i == 2)
+                    res = float4(0.0f, 0.0f, 1.0f, 0.0f);
                 ind = i;
                 break;
             }
@@ -236,19 +244,17 @@ bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
         lightViewPosition = mul(vertWorldPos, vpLight[lightInd - 1]);
         ind = lightInd + 2;
     }
+    
+    res *= 0.1f;
 
-	// Set the bias value for fixing the floating point precision issues.
-    bias = 0.0001f;
+    bias = 0.001f;
 
-	// Calculate the projected texture coordinates.
     projectTexCoord.x = (lightViewPosition.x / lightViewPosition.w) * 0.5f + 0.5f;
     projectTexCoord.y = -(lightViewPosition.y / lightViewPosition.w) * 0.5f + 0.5f;
 
-	// Determine if the projected coordinates are in the 0 to 1 range.  If so then this pixel is in the view of the light.
     if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
     {
-		// Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
-        switch (ind)
+		switch (ind)
         {
             case 0:
                 depthValue = cascadeShadowMapTex1.Sample(objSamplerTypeClamp, projectTexCoord).r;
@@ -282,22 +288,19 @@ bool IsShaded(float4 vertWorldPos, float clipSpaceZ, int lightInd)
                 break;
         }
 
-		// Calculate the depth of the light.
         lightDepthValue = (lightViewPosition.z / lightViewPosition.w);
 
-		// Subtract the bias from the lightDepthValue.
         lightDepthValue = lightDepthValue - bias;
 
-		// Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this pixel.
-		// If the light is in front of the object then light the pixel, if not then shadow this pixel since an object (occluder) is casting a shadow on it.
-        if (lightDepthValue < depthValue)
+		if (lightDepthValue < depthValue)
         {
-            return false;
+            return res;
         }
-        return true;
+        res.w = 1.0f;
+        return res;
     }
     
-    return false;
+    return res;
 }
 
 LightingResult ComputeLighting(float4 vertPos, float clipSpaceZ, float3 normal)
@@ -315,8 +318,12 @@ LightingResult ComputeLighting(float4 vertPos, float clipSpaceZ, float3 normal)
         if (!Lights[i].Enabled)
             continue;
         
-        if (IsShaded(vertPos, clipSpaceZ, i))
+        float4 shadowRes = IsShaded(vertPos, clipSpaceZ, i);
+        totalResult.Diffuse += float4(shadowRes.xyz, 1.0f);
+        if (shadowRes.w == 1.0f)
+        {
             continue;
+        }
 
         switch (Lights[i].LightType)
         {

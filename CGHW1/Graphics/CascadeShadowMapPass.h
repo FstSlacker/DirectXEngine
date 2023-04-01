@@ -15,6 +15,7 @@ public:
 
 private:
 	void CalculateOrthoProjections();
+	std::vector<Vector3> GetCorners(const XMMATRIX& view, const XMMATRIX& proj);
 	DirectionalLightComponent* directionalLight;
 	Camera* mainCamera;
 	

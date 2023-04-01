@@ -11,6 +11,7 @@ bool Game::Initialize()
 
 	Camera::Main = new Camera(this);
 	Camera::Main->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
+	Camera::Main->SetAspectRatio(static_cast<float>(Display->ClientWidth) / static_cast<float>(Display->ClientHeight));
 
 	Input = new InputDevice(this);
 
@@ -88,9 +89,9 @@ void Game::Draw()
 
 	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
 
-	shadowMapPass.AddRenderJob(&shadowJob);
-	shadowMapPass.BindLightSource(*Light.GetLightComponent(1));
-	shadowMapPass.Execute(Gfx);
+	//shadowMapPass.AddRenderJob(&shadowJob);
+	//shadowMapPass.BindLightSource(*Light.GetLightComponent(1));
+	//shadowMapPass.Execute(Gfx);
 
 	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
 

@@ -34,6 +34,10 @@ public:
 	float GetNear() const;
 	float GetFar() const;
 	float GetOrthographicSize() const;
+	float GetAspectRatio() const;
+
+	void UpdateViewMatrix();
+	void UpdateProjectionMatrix();
 
 	ProjectionMode GetProjectionMode() const;
 
@@ -58,7 +62,5 @@ protected:
 	const XMVECTOR kDefaultForwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	const XMVECTOR kDefaultUpVector = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	void UpdateViewMatrix();
-	void UpdateProjectionMatrix();
 };
 
