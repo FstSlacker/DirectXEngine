@@ -83,9 +83,14 @@ void RenderTarget::Clear(ID3D11DeviceContext* context, DirectX::SimpleMath::Colo
 	context->ClearRenderTargetView(targetView.Get(), color);
 }
 
-ID3D11ShaderResourceView* RenderTarget::GetTextureView() const
+ID3D11ShaderResourceView* RenderTarget::GetShaderResourceView() const
 {
 	return this->textureView.Get();
+}
+
+ID3D11RenderTargetView* RenderTarget::GetRenderTargetView() const
+{
+	return this->targetView.Get();
 }
 
 void RenderTarget::DestroyResources()

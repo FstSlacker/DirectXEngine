@@ -7,6 +7,11 @@
 
 void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 {
+	mesh = std::make_shared<Mesh>();
+
+	std::vector<Vertex> vertices;
+	std::vector<int> indices;
+
 	float xStep = DirectX::XM_PI / (tslX - 1);
 	float yStep = DirectX::XM_2PI / (tslY - 1);
 
@@ -28,7 +33,7 @@ void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 			Vector3 norm = pos;
 			norm.Normalize();
 			Color color = Color(DirectX::Colors::White);
-			this->vertices.push_back(Vertex(pos, color, uv, norm));
+			vertices.push_back(Vertex(pos, color, uv, norm));
 		}
 	}
 
@@ -36,16 +41,18 @@ void SphereComponent::CreateSphereMesh(size_t tslX, size_t tslY)
 	{
 		for (int y = 0; y < tslY - 1; y++)
 		{
-			this->indices.push_back(x * tslX + y + 1);       // 1
-			this->indices.push_back(x * tslX + y);           // 0
-			this->indices.push_back((x + 1) * tslX + y);     // 4
+			indices.push_back(x * tslX + y + 1);       // 1
+			indices.push_back(x * tslX + y);           // 0
+			indices.push_back((x + 1) * tslX + y);     // 4
 
-			this->indices.push_back(x * tslX + y + 1);       // 1
-			this->indices.push_back((x + 1) * tslX + y);     // 4
-			this->indices.push_back((x + 1) * tslX + y + 1); // 5
+			indices.push_back(x * tslX + y + 1);       // 1
+			indices.push_back((x + 1) * tslX + y);     // 4
+			indices.push_back((x + 1) * tslX + y + 1); // 5
 		}
 	}
 
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
 }
 
 SphereComponent::SphereComponent(Game* game, float radius, size_t tesselation) 

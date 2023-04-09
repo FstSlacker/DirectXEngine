@@ -151,6 +151,7 @@
     <ClCompile Include="Components\CubeComponent.cpp" />
     <ClCompile Include="Components\GameComponent.cpp" />
     <ClCompile Include="Components\Light.cpp" />
+    <ClCompile Include="Components\Mesh.cpp" />
     <ClCompile Include="Components\MeshComponent.cpp" />
     <ClCompile Include="Components\ModelComponent.cpp" />
     <ClCompile Include="Components\PlaneComponent.cpp" />
@@ -163,6 +164,8 @@
     <ClCompile Include="Graphics\BindingPass.cpp" />
     <ClCompile Include="Graphics\CascadeShadowMapPass.cpp" />
     <ClCompile Include="Graphics\DepthStencil.cpp" />
+    <ClCompile Include="Graphics\DepthStencilState.cpp" />
+    <ClCompile Include="Graphics\GBuffer.cpp" />
     <ClCompile Include="Graphics\Gizmos\DebugDraw.cpp" />
     <ClCompile Include="Graphics\Gizmos\DebugGizmos.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
@@ -177,8 +180,10 @@
     <ClCompile Include="Graphics\ImGui\Source\imgui_widgets.cpp" />
     <ClCompile Include="Graphics\Material.cpp" />
     <ClCompile Include="Graphics\Pass.cpp" />
+    <ClCompile Include="Graphics\RasterizerState.cpp" />
     <ClCompile Include="Graphics\RenderJob.cpp" />
     <ClCompile Include="Graphics\RenderQueuePass.cpp" />
+    <ClCompile Include="Graphics\RenderSystem.cpp" />
     <ClCompile Include="Graphics\RenderTarget.cpp" />
     <ClCompile Include="Graphics\Sampler.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
@@ -196,6 +201,7 @@
     <ClInclude Include="Components\CubeComponent.h" />
     <ClInclude Include="Components\GameComponent.h" />
     <ClInclude Include="Components\Light.h" />
+    <ClInclude Include="Components\Mesh.h" />
     <ClInclude Include="Components\MeshComponent.h" />
     <ClInclude Include="Components\ModelComponent.h" />
     <ClInclude Include="Components\PlaneComponent.h" />
@@ -210,6 +216,8 @@
     <ClInclude Include="Graphics\CascadeShadowMapPass.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
     <ClInclude Include="Graphics\DepthStencil.h" />
+    <ClInclude Include="Graphics\DepthStencilState.h" />
+    <ClInclude Include="Graphics\GBuffer.h" />
     <ClInclude Include="Graphics\Gizmos\DebugDraw.h" />
     <ClInclude Include="Graphics\Gizmos\DebugGizmos.h" />
     <ClInclude Include="Graphics\GraphicResource.h" />
@@ -228,8 +236,11 @@
     <ClInclude Include="Graphics\IndexBuffer.h" />
     <ClInclude Include="Graphics\Material.h" />
     <ClInclude Include="Graphics\Pass.h" />
+    <ClInclude Include="Graphics\RasterizerState.h" />
     <ClInclude Include="Graphics\RenderJob.h" />
     <ClInclude Include="Graphics\RenderQueuePass.h" />
+    <ClInclude Include="Graphics\RenderSystem.h" />
+    <ClInclude Include="Graphics\RenderSystemFlags.h" />
     <ClInclude Include="Graphics\RenderTarget.h" />
     <ClInclude Include="Graphics\Sampler.h" />
     <ClInclude Include="Graphics\Shaders.h" />

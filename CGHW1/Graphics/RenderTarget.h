@@ -13,7 +13,10 @@ public:
 	void BindAsTarget(ID3D11DeviceContext* context);
 	void BindAsTarget(ID3D11DeviceContext* context, DepthStencil& depthStencil);
 	void Clear(ID3D11DeviceContext* context, DirectX::SimpleMath::Color c);
-	ID3D11ShaderResourceView* GetTextureView() const;
+
+	ID3D11ShaderResourceView* GetShaderResourceView() const;
+	ID3D11RenderTargetView* GetRenderTargetView() const;
+
 	void DestroyResources();
 
 private:

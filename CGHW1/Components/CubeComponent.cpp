@@ -5,6 +5,11 @@ CubeComponent::CubeComponent(Game* game) : MeshComponent(game)
 {
 	this->Name = "Cube_" + std::to_string(game->Components.size());
 
+	mesh = std::make_shared<Mesh>();
+
+	std::vector<Vertex> vertices;
+	std::vector<int> indices;
+
 	Color color = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	Vector3 dirs[] = { Transform3D::Forward, Transform3D::Right, Transform3D::Up };
 
@@ -37,4 +42,7 @@ CubeComponent::CubeComponent(Game* game) : MeshComponent(game)
 		indices.push_back(vertsCount + 2); indices.push_back(vertsCount + 1); indices.push_back(vertsCount + 0);
 		indices.push_back(vertsCount + 3); indices.push_back(vertsCount + 0); indices.push_back(vertsCount + 1);
 	}
+
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
 }

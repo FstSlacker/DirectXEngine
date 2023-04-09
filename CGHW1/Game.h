@@ -24,12 +24,13 @@
 #include "ResourceManager.h"
 
 #include "Graphics/Graphics.h"
-#include "Graphics/RenderQueuePass.h"
-#include "Graphics/ShadowMapPass.h"
-#include "Graphics/CascadeShadowMapPass.h"
+//#include "Graphics/RenderQueuePass.h"
+//#include "Graphics/ShadowMapPass.h"
+//#include "Graphics/CascadeShadowMapPass.h"
 #include "Graphics/ImGui/ImGuiManager.h"
 #include "Graphics/ImGui/ImGuiDebugWindows.h"
 #include "Graphics/Gizmos/DebugGizmos.h"
+#include "Graphics/RenderSystem.h"
 
 #include "Components/Camera.h"
 #include "Components/Light.h"
@@ -50,13 +51,15 @@ class Game
 
 public:
 	std::vector<GameComponent*> Components;
-	Light Light;
+	//Light Light;
 
 	Graphics Gfx;
 	DisplayWin32* Display;
 	InputDevice* Input;
 
 	ResourceManager Resources;
+
+	RenderSystem RenderSystem;
 
 	ImGuiManager ImGUI;
 	DebugGizmos Gizmos;
@@ -75,11 +78,6 @@ public:
 
 private:
 	std::chrono::time_point<std::chrono::steady_clock> prevTime;
-
-	RenderQueuePass renderQueuePass;
-	ShadowMapPass shadowMapPass;
-	CascadeShadowMapPass cascadeShadowMapPass;
-
 
 	bool isExitRequested = false;
 	bool isPauseRequested = false;

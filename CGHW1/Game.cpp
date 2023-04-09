@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game() : Gizmos(this), Light(this)
+Game::Game() : Gizmos(this), RenderSystem(*this)
 {
 	//...
 }
@@ -10,7 +10,8 @@ bool Game::Initialize()
 	Display = new DisplayWin32(*this, 1200, 700, Name);
 
 	Camera::Main = new Camera(this);
-	Camera::Main->Transform.SetPosition(Vector3(0.0f, 0.0f, -15.0f));
+	Camera::Main->Transform.SetPosition(Vector3(0.0f, 5.0f, -15.0f));
+	Camera::Main->Transform.SetRotation(Vector3(30.0f, 0.0f, 0.0f));
 	Camera::Main->SetAspectRatio(static_cast<float>(Display->ClientWidth) / static_cast<float>(Display->ClientHeight));
 
 	Input = new InputDevice(this);
@@ -25,17 +26,33 @@ bool Game::Initialize()
 		return false;
 	}
 
-	if (!Light.Initialize())
-	{
-		return false;
-	}
-
 	ImGUI.Initialize(Gfx.GetDevice(), Gfx.GetContext(), Display->hWnd);
 	Gizmos.Initialize();
 
 	for (int i = 0; i < Components.size(); i++) 
 	{
 		Components[i]->Initialize();
+	}
+
+	if (!RenderSystem.Initialize())
+	{
+		return false;
+	}
+
+	for (int i = 0; i < Components.size(); i++)
+	{
+		MeshComponent* mesh = dynamic_cast<MeshComponent*>(Components[i]);
+		if (mesh != nullptr)
+		{
+			RenderSystem.RegisterMesh(mesh);
+			continue;
+		}
+		LightComponent* light = dynamic_cast<LightComponent*>(Components[i]);
+		if (light != nullptr)
+		{
+			RenderSystem.RegisterLight(light);
+			continue;
+		}
 	}
 
 	isInitialized = true;
@@ -72,37 +89,8 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
-	RenderJob shadowJob;
-	shadowJob.SetQueueIndex(0);
-	shadowJob.AddBindable(Resources.GetResource<VertexShader>("VS_Depth"));
-	shadowJob.AddBindable(Resources.GetResource<PixelShader>("PS_Depth"));
-
-	for (int i = 0; i < Components.size(); i++)
-	{
-		shadowJob.AddComponent(Components[i]);
-	}
-
-	cascadeShadowMapPass.AddRenderJob(&shadowJob);
-	cascadeShadowMapPass.BindDirectionalLight(*dynamic_cast<DirectionalLightComponent*>(Light.GetLightComponent(0)));
-	cascadeShadowMapPass.BindMainCamera(*Camera::Main);
-	cascadeShadowMapPass.Execute(Gfx);
-
-	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
-
-	//shadowMapPass.AddRenderJob(&shadowJob);
-	//shadowMapPass.BindLightSource(*Light.GetLightComponent(1));
-	//shadowMapPass.Execute(Gfx);
-
-	Gfx.GetContext()->OMSetRenderTargets(0, nullptr, nullptr);
-
-	Light.Bind(Gfx.GetContext());
-	UINT materialsCount = Resources.GetCount<Material>();
-	for (int i = 0; i < materialsCount; i++)
-	{
-		renderQueuePass.AddRenderJob(Resources.GetResource<Material>(i));
-	}
-
-	renderQueuePass.Execute(Gfx);
+	RenderSystem.OpaquePass();
+	RenderSystem.LightPass();
 
 	//Draw debug
 	Gizmos.Draw();
@@ -111,10 +99,6 @@ void Game::Draw()
 	ImGUI.Draw();
 
 	Gfx.EndFrame();
-
-	renderQueuePass.Clear();
-	shadowMapPass.Clear();
-	cascadeShadowMapPass.Clear();
 }
 
 void Game::Exit()

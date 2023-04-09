@@ -1,236 +1,188 @@
 #include "Light.h"
 #include "../Game.h"
 #include "../Graphics/CascadeShadowMapPass.h"
+#include "../Graphics/RenderSystem.h"
 
-DirectX::SimpleMath::Color Light::AmbientColor = DirectX::SimpleMath::Color(DirectX::Colors::White);
-float Light::AmbientIntensity = 0.1f;
-
-void Light::AddLightComponent(LightComponent* lightComp)
-{
-	lights.push_back(lightComp);
-}
-
-LightComponent* Light::GetLightComponent(int ind) const
-{
-	return lights[ind];
-}
-
-Light::Light(Game* game)
-{
-	this->game = game;
-}
-
-int Light::GetLightSourcesCount() const
-{
-	return lights.size();
-}
-
-bool Light::Initialize()
-{
-	HRESULT res;
-
-	res = lightsBuffer.Initialize(game->Gfx.GetDevice());
-
-	if (FAILED(res))
-	{
-		Logs::LogError(res, "Failed to init lightsBuffer");
-		return false;
-	}
-
-	lightsBuffer.SetSlot(1);
-
-	res = lightsVPBuffer.Initialize(game->Gfx.GetDevice());
-
-	if (FAILED(res))
-	{
-		Logs::LogError(res, "Failed to init lightsVPBuffer");
-		return false;
-	}
-
-	lightsVPBuffer.SetSlot(3);
-
-	res = shadowSampler.Initialize(game->Gfx.GetDevice());
-
-	if (FAILED(res))
-	{
-		Logs::LogError(res, "Failed to init shadowSampler");
-		return false;
-	}
-
-	shadowSampler.SetSlot(1);
-
-	return true;
-}
-
-void Light::Bind(ID3D11DeviceContext* context)
-{
-	lightsBuffer.Data.AmbientColor = Light::AmbientColor.ToVector3(); // 12
-	lightsBuffer.Data.AmbientIntensity = Light::AmbientIntensity; // 4
-	lightsBuffer.Data.CameraPosition = Camera::Main->Transform.GetPosition(); // 12
-
-	int lightIndex = 1;
-
-	for (int i = 0; i < MAX_LIGHTS; i++)
-	{
-		LightData lightData = {};
-		lightData.Enabled = false;
-
-		if (i < lights.size() && lights[i]->IsEnabled())
-		{
-			LightComponent* light = lights[i];
-
-			lightData.Position = DirectX::SimpleMath::Vector4(light->Transform.GetPosition()); 
-			lightData.Color = light->LightColor; 
-			lightData.Intensity = light->Intensity;
-			lightData.Enabled = true;
-
-			if (typeid(*light) == typeid(DirectionalLightComponent))
-			{
-				lightData.Direction = Vector4(lights[i]->Transform.GetForward());
-				lightData.LightType = (int)LightType::Directional;
-
-				//Set light data
-				lightsBuffer.Data.Lights[0] = lightData;
-
-				//Set shadow data
-				float dists[4] = { 0.0f, 25.0f, 90.0f, 200.0f };
-
-				UINT mapsCount = light->GetRenderCameras().size();
-				for (UINT j = 0; j < mapsCount; j++)
-				{
-					lightsVPBuffer.Data.DirectionalLightVP[j] = DirectX::XMMatrixTranspose(light->GetRenderCameras()[j]->GetViewProjectionMatrix());
-					lightsVPBuffer.Data.CascadeDistances[j].z = dists[j + 1];
-					light->GetRenderTargets()[j]->BindAsTexture(context, j + 3u);
-				}
-			}
-			else
-			{
-				if (lightIndex >= MAX_LIGHTS)
-					continue;
-
-				if (typeid(*light) == typeid(PointLightComponent))
-				{
-					PointLightComponent* pLight = dynamic_cast<PointLightComponent*>(light);
-					lightData.Range = pLight->Range;
-					lightData.ConstantAtt = pLight->ConstantAttenuation;
-					lightData.LinearAtt = pLight->LinearAttenuation;
-					lightData.QuadraticAtt = pLight->QuadricAttenuation;
-					lightData.LightType = (int)LightType::Point;
-				}
-				else if (typeid(*light) == typeid(SpotLightComponent))
-				{
-					SpotLightComponent* spLight = dynamic_cast<SpotLightComponent*>(light);
-					lightData.Range = spLight->Range;
-					lightData.ConstantAtt = spLight->ConstantAttenuation;
-					lightData.LinearAtt = spLight->LinearAttenuation;
-					lightData.QuadraticAtt = spLight->QuadricAttenuation;
-					lightData.Direction = Vector4(lights[i]->Transform.GetForward());
-					lightData.SpotAngle = dynamic_cast<SpotLightComponent*>(light)->ConeAngle * 0.01745329f;
-					lightData.LightType = (int)LightType::Spot;
-				}
-
-				//Set light data
-				lightsBuffer.Data.Lights[lightIndex] = lightData;
-
-				//Set shadow data
-				lightsVPBuffer.Data.LightsVP[lightIndex - 1] = DirectX::XMMatrixTranspose(light->GetRenderCameras()[0]->GetViewProjectionMatrix());
-				light->GetRenderTargets()[0]->BindAsTexture(context, (lightIndex - 1) + 6u);
-
-				lightIndex++;
-			}
-		}
-		else
-		{
-			lightsBuffer.Data.Lights[lightIndex] = lightData;
-		}
-
-		
-	}
-
-	HRESULT hr;
-
-	hr = lightsBuffer.ApplyChanges(context);
-	
-	if (FAILED(hr))
-	{
-		Logs::LogError(hr, "Failed to apply lightsBuffer");
-	}
-
-	hr = lightsVPBuffer.ApplyChanges(context);
-
-	if (FAILED(hr))
-	{
-		Logs::LogError(hr, "Failed to apply lightsVPBuffer");
-	}
-
-	//Bind light data
-	lightsBuffer.Bind(context);
-
-	//Bind shadow data
-	lightsVPBuffer.Bind(context);
-	shadowSampler.Bind(context);
-}
-
-void Light::DestroyResources()
-{
-	lightsBuffer.DestroyResources();
-	lightsVPBuffer.DestroyResources();
-	shadowSampler.DestroyResources();
-}
+//DirectX::SimpleMath::Color Light::AmbientColor = DirectX::SimpleMath::Color(DirectX::Colors::White);
+//float Light::AmbientIntensity = 0.1f;
+//
+//void Light::AddLightComponent(LightComponent* lightComp)
+//{
+//	lights.push_back(lightComp);
+//}
+//
+//LightComponent* Light::GetLightComponent(int ind) const
+//{
+//	return lights[ind];
+//}
+//
+//Light::Light(Game* game)
+//{
+//	this->game = game;
+//}
+//
+//int Light::GetLightSourcesCount() const
+//{
+//	return lights.size();
+//}
+//
+//bool Light::Initialize()
+//{
+//	HRESULT res;
+//
+//	res = lightsBuffer.Initialize(game->Gfx.GetDevice());
+//
+//	if (FAILED(res))
+//	{
+//		Logs::LogError(res, "Failed to init lightsBuffer");
+//		return false;
+//	}
+//
+//	lightsBuffer.SetSlot(1);
+//
+//	res = lightsVPBuffer.Initialize(game->Gfx.GetDevice());
+//
+//	if (FAILED(res))
+//	{
+//		Logs::LogError(res, "Failed to init lightsVPBuffer");
+//		return false;
+//	}
+//
+//	lightsVPBuffer.SetSlot(3);
+//
+//	res = shadowSampler.Initialize(game->Gfx.GetDevice());
+//
+//	if (FAILED(res))
+//	{
+//		Logs::LogError(res, "Failed to init shadowSampler");
+//		return false;
+//	}
+//
+//	shadowSampler.SetSlot(1);
+//
+//	return true;
+//}
+//
+//void Light::Bind(ID3D11DeviceContext* context)
+//{
+//	lightsBuffer.Data.AmbientColor = Light::AmbientColor.ToVector3(); // 12
+//	lightsBuffer.Data.AmbientIntensity = Light::AmbientIntensity; // 4
+//	lightsBuffer.Data.CameraPosition = Camera::Main->Transform.GetPosition(); // 12
+//
+//	int lightIndex = 1;
+//
+//	for (int i = 0; i < MAX_LIGHTS; i++)
+//	{
+//		LightData lightData = {};
+//		lightData.Enabled = false;
+//
+//		if (i < lights.size() && lights[i]->IsEnabled())
+//		{
+//			LightComponent* light = lights[i];
+//
+//			lightData.Position = DirectX::SimpleMath::Vector4(light->Transform.GetPosition()); 
+//			lightData.Color = light->LightColor; 
+//			lightData.Intensity = light->Intensity;
+//			lightData.Enabled = true;
+//
+//			if (typeid(*light) == typeid(DirectionalLightComponent))
+//			{
+//				lightData.Direction = Vector4(lights[i]->Transform.GetForward());
+//				lightData.LightType = (int)LightType::Directional;
+//
+//				//Set light data
+//				lightsBuffer.Data.Lights[0] = lightData;
+//
+//				//Set shadow data
+//				float dists[4] = { 0.0f, 25.0f, 90.0f, 200.0f };
+//
+//				UINT mapsCount = light->GetRenderCameras().size();
+//				for (UINT j = 0; j < mapsCount; j++)
+//				{
+//					lightsVPBuffer.Data.DirectionalLightVP[j] = DirectX::XMMatrixTranspose(light->GetRenderCameras()[j]->GetViewProjectionMatrix());
+//					lightsVPBuffer.Data.CascadeDistances[j].z = dists[j + 1];
+//					light->GetRenderTargets()[j]->BindAsTexture(context, j + 3u);
+//				}
+//			}
+//			else
+//			{
+//				if (lightIndex >= MAX_LIGHTS)
+//					continue;
+//
+//				if (typeid(*light) == typeid(PointLightComponent))
+//				{
+//					PointLightComponent* pLight = dynamic_cast<PointLightComponent*>(light);
+//					lightData.Range = pLight->Range;
+//					lightData.ConstantAtt = pLight->ConstantAttenuation;
+//					lightData.LinearAtt = pLight->LinearAttenuation;
+//					lightData.QuadraticAtt = pLight->QuadricAttenuation;
+//					lightData.LightType = (int)LightType::Point;
+//				}
+//				else if (typeid(*light) == typeid(SpotLightComponent))
+//				{
+//					SpotLightComponent* spLight = dynamic_cast<SpotLightComponent*>(light);
+//					lightData.Range = spLight->Range;
+//					lightData.ConstantAtt = spLight->ConstantAttenuation;
+//					lightData.LinearAtt = spLight->LinearAttenuation;
+//					lightData.QuadraticAtt = spLight->QuadricAttenuation;
+//					lightData.Direction = Vector4(lights[i]->Transform.GetForward());
+//					lightData.SpotAngle = dynamic_cast<SpotLightComponent*>(light)->ConeAngle * 0.01745329f;
+//					lightData.LightType = (int)LightType::Spot;
+//				}
+//
+//				//Set light data
+//				lightsBuffer.Data.Lights[lightIndex] = lightData;
+//
+//				//Set shadow data
+//				lightsVPBuffer.Data.LightsVP[lightIndex - 1] = DirectX::XMMatrixTranspose(light->GetRenderCameras()[0]->GetViewProjectionMatrix());
+//				light->GetRenderTargets()[0]->BindAsTexture(context, (lightIndex - 1) + 6u);
+//
+//				lightIndex++;
+//			}
+//		}
+//		else
+//		{
+//			lightsBuffer.Data.Lights[lightIndex] = lightData;
+//		}
+//
+//		
+//	}
+//
+//	HRESULT hr;
+//
+//	hr = lightsBuffer.ApplyChanges(context);
+//	
+//	if (FAILED(hr))
+//	{
+//		Logs::LogError(hr, "Failed to apply lightsBuffer");
+//	}
+//
+//	hr = lightsVPBuffer.ApplyChanges(context);
+//
+//	if (FAILED(hr))
+//	{
+//		Logs::LogError(hr, "Failed to apply lightsVPBuffer");
+//	}
+//
+//	//Bind light data
+//	lightsBuffer.Bind(context);
+//
+//	//Bind shadow data
+//	lightsVPBuffer.Bind(context);
+//	shadowSampler.Bind(context);
+//}
+//
+//void Light::DestroyResources()
+//{
+//	lightsBuffer.DestroyResources();
+//	lightsVPBuffer.DestroyResources();
+//	shadowSampler.DestroyResources();
+//}
 
 LightComponent::LightComponent(Game* game) : GameComponent(game)
 {
 	this->LightColor = Color(DirectX::Colors::White);
 	this->Intensity = 1.0f;
-}
-
-void LightComponent::Initialize()
-{
-	for (int i = 0; i < renderTargets.size(); i++)
-	{
-		if (!renderTargets[i]->Initialize(game->Gfx.GetDevice(), game->Display->ClientWidth, game->Display->ClientHeight))
-		{
-			Logs::LogError("Failed to initialize light renderTarget");
-		}
-	}
-
-	if (!depthBuffer->Initialize(game->Gfx.GetDevice(), game->Display->ClientWidth, game->Display->ClientHeight))
-	{
-		Logs::LogError("Failed to initialize light depthStencil");
-	}
-
-	HRESULT hr;
-
-	//hr = lightWVPMat.Initialize(game->Gfx.GetDevice());
-
-	//if (FAILED(hr))
-	//{
-	//	Logs::LogError(hr, "Failed to initialize lightWVPMat");
-	//}
-
-	//hr = sampler.Initialize(game->Gfx.GetDevice());
-
-	//if (FAILED(hr))
-	//{
-	//	Logs::LogError(hr, "Failed to initialize sampler");
-	//}
-	//sampler.SetSlot(1);
-	//lightWVPMat.SetSlot(1);
-}
-
-const std::vector<Camera*>& LightComponent::GetRenderCameras() const
-{
-	return this->renderCameras;
-}
-
-const std::vector<std::unique_ptr<RenderTarget>>& LightComponent::GetRenderTargets() const
-{
-	return this->renderTargets;
-}
-
-DepthStencil* LightComponent::GetDepthBuffer() const
-{
-	return this->depthBuffer.get();
 }
 
 void LightComponent::DrawGizmos()
@@ -260,20 +212,31 @@ void LightComponent::DrawGizmosIcon(Vector3 right, Vector3 up, float scale)
 
 PointLightComponent::PointLightComponent(Game* game) : LightComponent(game)
 {
-	this->Name = "PointLight_" + std::to_string(game->Light.GetLightSourcesCount());
+	this->Name = "PointLight";
 	this->Range = 10.0f;
 	this->ConstantAttenuation = 0.0f;
 	this->LinearAttenuation = 1.0f;
 	this->QuadricAttenuation = 0.0f;
-	game->Light.AddLightComponent(this);
+}
 
-	renderCameras.push_back(new Camera(game));
-	renderCameras[0]->Transform.SetPosition(this->Transform.GetPosition());
-	renderCameras[0]->Transform.SetRotation(this->Transform.GetRotation());
-	this->Transform.AddChild(renderCameras[0]->Transform);
+LightType PointLightComponent::GetLightType() const
+{
+	return LightType::Point;
+}
 
-	renderTargets.push_back(std::make_unique<RenderTarget>());
-	depthBuffer = std::make_unique<DepthStencil>();
+PixelShaderLight PointLightComponent::GetPixelShaderLightType() const
+{
+	return PixelShaderLight::PointLight;
+}
+
+LightData PointLightComponent::GetLightData() const
+{
+	LightData data = {};
+	data.Position = Vector4(Transform.GetPosition());
+	data.Params = Vector4(Range, ConstantAttenuation, LinearAttenuation, QuadricAttenuation);
+	data.Color = Vector4(LightColor.x, LightColor.y, LightColor.z, Intensity);
+
+	return data;
 }
 
 void PointLightComponent::DrawGizmos()
@@ -284,24 +247,28 @@ void PointLightComponent::DrawGizmos()
 
 DirectionalLightComponent::DirectionalLightComponent(Game* game) : LightComponent(game)
 {
-	this->Name = "DirectionalLight_" + std::to_string(game->Light.GetLightSourcesCount());
-	game->Light.AddLightComponent(this);
-
-	for (int i = 0; i < 3; i++)
-	{
-		renderCameras.push_back(new Camera(game));
-		renderCameras[i]->Transform.SetPosition(this->Transform.GetPosition());
-		renderCameras[i]->Transform.SetRotation(this->Transform.GetRotation());
-		renderCameras[i]->SetProjectionMode(Camera::ProjectionMode::Orthographic);
-		this->Transform.AddChild(renderCameras[i]->Transform);
-
-		renderTargets.push_back(std::make_unique<RenderTarget>());
-	}
-
-	depthBuffer = std::make_unique<DepthStencil>();
+	this->Name = "DirectionalLight";
 }
 
-static CascadeShadowMapPass cascadeShadowMapPass;
+LightType DirectionalLightComponent::GetLightType() const
+{
+	return LightType::Directional;
+}
+
+PixelShaderLight DirectionalLightComponent::GetPixelShaderLightType() const
+{
+	return PixelShaderLight::DirectionalLight;
+}
+
+LightData DirectionalLightComponent::GetLightData() const
+{
+	LightData data = {};
+	data.Position = Vector4(Transform.GetPosition());
+	data.Direction = Vector4(Transform.GetForward());
+	data.Color = Vector4(LightColor.x, LightColor.y, LightColor.z, Intensity);
+
+	return data;
+}
 
 void DirectionalLightComponent::DrawGizmos()
 {
@@ -321,29 +288,38 @@ void DirectionalLightComponent::DrawGizmos()
 	game->Gizmos.DrawRay(o + -lr * 0.5f * pScale, lf * pScale * 4.0f, color);
 	game->Gizmos.DrawRay(o + lu * 0.5f * pScale, lf * pScale * 4.0f, color);
 	game->Gizmos.DrawRay(o + -lu * 0.5f * pScale, lf * pScale * 4.0f, color);
-
-	//cascadeShadowMapPass.BindDirectionalLight(*this);
-	//cascadeShadowMapPass.BindMainCamera(*Camera::Main);
-	//cascadeShadowMapPass.CalculateOrthoProjections(game->Gizmos);
 }
 
 SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
 {
-	this->Name = "SpotLight_" + std::to_string(game->Light.GetLightSourcesCount());
+	this->Name = "SpotLight";
 	this->ConeAngle = 30.0f;
 	this->Range = 10.0f;
 	this->ConstantAttenuation = 0.0f;
 	this->LinearAttenuation = 1.0f;
 	this->QuadricAttenuation = 0.0f;
-	game->Light.AddLightComponent(this);
+}
 
-	renderCameras.push_back(new Camera(game));
-	renderCameras[0]->Transform.SetPosition(this->Transform.GetPosition());
-	renderCameras[0]->Transform.SetRotation(this->Transform.GetRotation());
-	this->Transform.AddChild(renderCameras[0]->Transform);
+LightType SpotLightComponent::GetLightType() const
+{
+	return LightType::Spot;
+}
 
-	renderTargets.push_back(std::make_unique<RenderTarget>());
-	depthBuffer = std::make_unique<DepthStencil>();
+PixelShaderLight SpotLightComponent::GetPixelShaderLightType() const
+{
+	return PixelShaderLight::SpotLight;
+}
+
+LightData SpotLightComponent::GetLightData() const
+{
+	LightData data = {};
+	data.Position = Vector4(Transform.GetPosition());
+	data.Direction = Vector4(Transform.GetForward());
+	data.Direction.w = ConeAngle;
+	data.Params = Vector4(Range, ConstantAttenuation, LinearAttenuation, QuadricAttenuation);
+	data.Color = Vector4(LightColor.x, LightColor.y, LightColor.z, Intensity);
+
+	return data;
 }
 
 void SpotLightComponent::DrawGizmos()
@@ -370,4 +346,37 @@ void SpotLightComponent::DrawGizmos()
 	game->Gizmos.DrawRay(sLightPos, p2 - sLightPos, color);
 	game->Gizmos.DrawRay(sLightPos, p3 - sLightPos, color);
 	game->Gizmos.DrawRay(sLightPos, p4 - sLightPos, color);
+}
+
+AmbientLightComponent::AmbientLightComponent(Game* game) : LightComponent(game)
+{
+	this->Name = "AmbientLight";
+}
+
+LightType AmbientLightComponent::GetLightType() const
+{
+	return LightType::Ambient;
+}
+
+PixelShaderLight AmbientLightComponent::GetPixelShaderLightType() const
+{
+	return PixelShaderLight::AmbientLight;
+}
+
+LightData AmbientLightComponent::GetLightData() const
+{
+	LightData data = {};
+	data.Color = Vector4(LightColor.x, LightColor.y, LightColor.z, Intensity);
+
+	return data;
+}
+
+void AmbientLightComponent::DrawGizmos()
+{
+	//...
+}
+
+void AmbientLightComponent::DrawGizmosIcon(Vector3 right, Vector3 up, float scale)
+{
+	//...
 }

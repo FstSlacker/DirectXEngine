@@ -10,8 +10,9 @@ void MeshComponent::DestroyResources()
 {
 	GameComponent::DestroyResources();
 
-	vertexBuffer->DestroyResources();
-	indexBuffer->DestroyResources();
+	//vertexBuffer->DestroyResources();
+	//indexBuffer->DestroyResources();
+	mesh->DestroyResources();
 	transformMat.DestroyResources();
 }
 
@@ -24,25 +25,21 @@ void MeshComponent::Bind()
 	transformMat.ApplyChanges(game->Gfx.GetContext());
 
 	transformMat.Bind(game->Gfx.GetContext());
-	vertexBuffer->Bind(game->Gfx.GetContext());
-	indexBuffer->Bind(game->Gfx.GetContext());
+	//vertexBuffer->Bind(game->Gfx.GetContext());
+	//indexBuffer->Bind(game->Gfx.GetContext());
 }
 
 void MeshComponent::Draw()
 {
 	GameComponent::Draw();
 
-	game->Gfx.GetContext()->DrawIndexed(indexBuffer->BufferSize(), 0, 0);
+	mesh->Draw(game->Gfx.GetContext());
+	//game->Gfx.GetContext()->DrawIndexed(indexBuffer->BufferSize(), 0, 0);
 }
 
-void MeshComponent::SetVertices(std::vector<Vertex> verts)
+void MeshComponent::SetMesh(std::shared_ptr<Mesh> mesh)
 {
-	vertices = verts;
-}
-
-void MeshComponent::SetIndices(std::vector<int> inds)
-{
-	indices = inds;
+	this->mesh = mesh;
 }
 
 void MeshComponent::SetMaterial(Material* mat)
@@ -67,20 +64,7 @@ void MeshComponent::Initialize() {
 
 	HRESULT hr;
 
-	vertexBuffer = std::make_shared<VertexBuffer<Vertex>>();
-	indexBuffer = std::make_shared<IndexBuffer>();
-
-	hr = vertexBuffer->Initialize(game->Gfx.GetDevice(), vertices.data(), vertices.size());
-	if (FAILED(hr))
-	{
-		Logs::LogError(hr, "Failed to initialize vertexBuffer");
-	}
-
-	hr = indexBuffer->Initialize(game->Gfx.GetDevice(), indices.data(), indices.size());
-	if (FAILED(hr))
-	{
-		Logs::LogError(hr, "Failed to initialize indexBuffer");
-	}
+	mesh->Initialize(game->Gfx.GetDevice());
 
 	hr = transformMat.Initialize(game->Gfx.GetDevice());
 	if (FAILED(hr))

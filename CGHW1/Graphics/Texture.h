@@ -35,9 +35,10 @@ public:
 	Texture(Game* game, std::string filePath);
 	Texture(Game* game, std::wstring filePath);
 
-	ID3D11ShaderResourceView* GetTextureView() const;
+	ID3D11ShaderResourceView* GetShaderResourceView() const;
 	void SetSlot(UINT slotInd);
 
+	void Bind(ID3D11DeviceContext* context, UINT slot);
 	void Bind(ID3D11DeviceContext* context) override;
 	bool Initialize(ID3D11Device* device) override;
 	void DestroyResources() override;
@@ -61,7 +62,6 @@ protected:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureView;
 	Microsoft::WRL::ComPtr<ID3D11Resource> texture;
-	Sampler sampler;
 
 	HRESULT InitializeFromColor(ID3D11Device* device, const Color* colorData, UINT w, UINT h);
 	HRESULT InitializeFromFile(ID3D11Device* device, std::wstring path);

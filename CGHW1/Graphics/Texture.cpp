@@ -40,13 +40,8 @@ Texture::Texture(Game* game, std::wstring filePath)
 
 bool Texture::Initialize(ID3D11Device* device)
 {
-	HRESULT res = sampler.Initialize(device);
+	HRESULT res;
 
-	if (FAILED(res))
-	{
-		Logs::LogError(res, "Failed to initialize TextureSampler");
-		return false;
-	}
 	if (textureData.Type == TextureType::FilePath)
 	{
 		res = InitializeFromFile(device, textureData.TexturePath);
@@ -57,6 +52,7 @@ bool Texture::Initialize(ID3D11Device* device)
 		res = InitializeFromColor(device, colorData, 1, 1);
 		delete[] colorData;
 	}
+
 	if (FAILED(res))
 	{
 		Logs::LogError(res, "Failed to Initialize Texture");
@@ -66,7 +62,7 @@ bool Texture::Initialize(ID3D11Device* device)
 	return true;
 }
 
-ID3D11ShaderResourceView* Texture::GetTextureView() const
+ID3D11ShaderResourceView* Texture::GetShaderResourceView() const
 {
 	return this->textureView.Get();
 }
@@ -76,9 +72,13 @@ void Texture::SetSlot(UINT slotInd)
 	this->slotIndex = slotInd;
 }
 
+void Texture::Bind(ID3D11DeviceContext* context, UINT slot)
+{
+	context->PSSetShaderResources(slot, 1, textureView.GetAddressOf());
+}
+
 void Texture::Bind(ID3D11DeviceContext* context)
 {
-	sampler.Bind(context);
 	context->PSSetShaderResources(slotIndex, 1, textureView.GetAddressOf());
 }
 

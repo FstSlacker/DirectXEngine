@@ -129,8 +129,13 @@ void ModelComponent::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	this->Transform.AddChild(meshComp->Transform);
 
 	meshComp->Name = mesh->mName.C_Str();
-	meshComp->SetVertices(verts);
-	meshComp->SetIndices(inds);
+
+	std::shared_ptr<Mesh> compMesh = std::make_shared<Mesh>();
+
+	compMesh->SetVertices(verts);
+	compMesh->SetIndices(inds);
+
+	meshComp->SetMesh(compMesh);
 	meshComp->SetMaterial(mat);
 }
 

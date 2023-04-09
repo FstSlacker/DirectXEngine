@@ -103,6 +103,47 @@ void ImGuiGameInfoWindow::Bind()
 		}
 		ImGui::Spacing();
 	}
+
+	float texSize = 100.0f;
+
+	ImGui::Text("Diffuse");
+	ImGui::Image(
+		(void*)game->RenderSystem.GetGBuffer()->rtDiffuse.GetShaderResourceView(),
+		ImVec2(texSize, texSize),
+		ImVec2(0, 0),
+		ImVec2(1, 1),
+		ImVec4(1, 1, 1, 1),
+		ImVec4(1, 0, 0, 1)
+	);
+	ImGui::Text("Emissive");
+	ImGui::Image(
+		(void*)game->RenderSystem.GetGBuffer()->rtEmissive.GetShaderResourceView(),
+		ImVec2(texSize, texSize),
+		ImVec2(0, 0),
+		ImVec2(1, 1),
+		ImVec4(1, 1, 1, 1),
+		ImVec4(1, 0, 0, 1)
+	);
+	ImGui::Text("Normals");
+	ImGui::Image(
+		(void*)game->RenderSystem.GetGBuffer()->rtNormals.GetShaderResourceView(),
+		ImVec2(texSize, texSize),
+		ImVec2(0,0),
+		ImVec2(1,1),
+		ImVec4(1,1,1,1),
+		ImVec4(1,0,0,1)
+
+	);
+	ImGui::Text("WorldPos");
+	ImGui::Image(
+		(void*)game->RenderSystem.GetGBuffer()->rtWorldPos.GetShaderResourceView(),
+		ImVec2(texSize, texSize),
+		ImVec2(0, 0),
+		ImVec2(1, 1),
+		ImVec4(1, 1, 1, 1),
+		ImVec4(1, 0, 0, 1)
+	);
+
 }
 
 bool ImGuiGameInfoWindow::IsOpened() const
@@ -295,16 +336,6 @@ ImGuiLightCompWindow::ImGuiLightCompWindow(LightComponent* comp) : ImGuiGameComp
 void ImGuiLightCompWindow::Bind()
 {
 	ImGuiGameCompWindow::Bind();
-	if (ImGui::CollapsingHeader("Global Light", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		float lightColor[3] = { Light::AmbientColor.x, Light::AmbientColor.y, Light::AmbientColor.z };
-		if (ImGui::ColorEdit3("Ambient color", lightColor))
-		{
-			Light::AmbientColor = Color(lightColor[0], lightColor[1], lightColor[2]);
-		}
-		ImGui::DragFloat("Ambient intensity", &Light::AmbientIntensity, 0.01f, 0.0f, 10.0f);
-		ImGui::Spacing();
-	}
 
 	std::string lightName = "<error name>";
 	if (typeid(*lightComp) == typeid(PointLightComponent))
@@ -313,6 +344,8 @@ void ImGuiLightCompWindow::Bind()
 		lightName = "Directional Light";
 	else if (typeid(*lightComp) == typeid(SpotLightComponent))
 		lightName = "Spot Light";
+	else if(typeid(*lightComp) == typeid(AmbientLightComponent))
+		lightName = "Ambient Light";
 
 	if (ImGui::CollapsingHeader(lightName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -349,14 +382,6 @@ void ImGuiLightCompWindow::Bind()
 			ImGui::DragFloat("Constant", &pLight->ConstantAttenuation);
 			ImGui::DragFloat("Linear", &pLight->LinearAttenuation);
 			ImGui::DragFloat("Quadric", &pLight->QuadricAttenuation);
-		}
-
-		for (int i = 0; i < lightComp->GetRenderTargets().size(); i++)
-		{
-			ImGui::Image(
-				(void*)lightComp->GetRenderTargets()[i]->GetTextureView(),
-				ImVec2(100, 100)
-			);
 		}
 
 		ImGui::Spacing();
@@ -427,7 +452,7 @@ void ImGuiMeshCompWindow::Bind()
 			if (mat->DiffuseTexture != nullptr)
 			{
 				ImGui::Image(
-					(void*)mat->DiffuseTexture->GetTextureView(),
+					(void*)mat->DiffuseTexture->GetShaderResourceView(),
 					ImVec2(30, 30)
 				);
 			}
@@ -444,7 +469,7 @@ void ImGuiMeshCompWindow::Bind()
 			if (mat->NormalMapTexture != nullptr)
 			{
 				ImGui::Image(
-					(void*)mat->NormalMapTexture->GetTextureView(),
+					(void*)mat->NormalMapTexture->GetShaderResourceView(),
 					ImVec2(30, 30)
 				);
 			}
@@ -461,7 +486,7 @@ void ImGuiMeshCompWindow::Bind()
 			if (mat->SpecularMapTexture != nullptr)
 			{
 				ImGui::Image(
-					(void*)mat->SpecularMapTexture->GetTextureView(),
+					(void*)mat->SpecularMapTexture->GetShaderResourceView(),
 					ImVec2(30, 30)
 				);
 			}

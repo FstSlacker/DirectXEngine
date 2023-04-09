@@ -37,9 +37,17 @@ bool VertexShader::Initialize(ID3D11Device* device)
 		shaderByteCode.GetAddressOf(),
 		&errorCode);
 
-	if (FAILED(res)) 
+	if (FAILED(res))
 	{
-		Logs::LogError(res, "Failed to compile VertexShader");
+		if (errorCode)
+		{
+			char* errors = (char*)(errorCode->GetBufferPointer());
+			Logs::LogError(res, errors);
+		}
+		else
+		{
+			Logs::LogError(res, "Failed to compile VertexShader");
+		}
 		return false;
 	}
 

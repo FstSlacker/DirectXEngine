@@ -25,7 +25,7 @@ void CascadeShadowMapPass::BindMainCamera(Camera& cam)
 
 void CascadeShadowMapPass::CalculateOrthoProjections()
 {
-	const std::vector<Camera*> renderCameras = directionalLight->GetRenderCameras();
+	/*const std::vector<Camera*> renderCameras = directionalLight->GetRenderCameras();
 
 	UINT count = renderCameras.size();
 
@@ -116,7 +116,7 @@ void CascadeShadowMapPass::CalculateOrthoProjections()
 
 		renderCameras[i]->UpdateViewMatrix();
 		renderCameras[i]->UpdateProjectionMatrix();
-	}
+	}*/
 }
 
 std::vector<Vector3> CascadeShadowMapPass::GetCorners(const XMMATRIX& view, const XMMATRIX& proj)
@@ -153,22 +153,22 @@ std::vector<Vector3> CascadeShadowMapPass::GetCorners(const XMMATRIX& view, cons
 
 void CascadeShadowMapPass::Execute(Graphics& gfx)
 {
-	Camera* mainCamera = Camera::Main;
+	//Camera* mainCamera = Camera::Main;
 
-	int cascadeMapsCount = directionalLight->GetRenderCameras().size();
+	//int cascadeMapsCount = directionalLight->GetRenderCameras().size();
 
-	CalculateOrthoProjections();
+	//CalculateOrthoProjections();
 
-	for (int i = 0; i < cascadeMapsCount; i++)
-	{
-		Camera::Main = directionalLight->GetRenderCameras()[i];
+	//for (int i = 0; i < cascadeMapsCount; i++)
+	//{
+	//	Camera::Main = directionalLight->GetRenderCameras()[i];
 
-		this->renderTarget = directionalLight->GetRenderTargets()[i].get();
-		this->depthStencil = directionalLight->GetDepthBuffer();
+	//	this->renderTarget = directionalLight->GetRenderTargets()[i].get();
+	//	this->depthStencil = directionalLight->GetDepthBuffer();
 
-		RenderQueuePass::Execute(gfx);
+	//	RenderQueuePass::Execute(gfx);
 
-	}
+	//}
 
-	Camera::Main = mainCamera;
+	//Camera::Main = mainCamera;
 }
