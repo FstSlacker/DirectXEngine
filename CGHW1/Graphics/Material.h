@@ -9,6 +9,16 @@
 class Game;
 class Graphics;
 
+struct MaterialCBuf
+{
+    DirectX::XMFLOAT4 Emissive; // 16
+    DirectX::XMFLOAT4 Ambient; // 16
+    DirectX::XMFLOAT4 Diffuse; // 16
+    DirectX::XMFLOAT4 Specular; // 16
+
+    int32_t Flags;
+};
+
 class Material : public RenderJob, public GraphicResource
 {
     friend class Graphics;
@@ -27,10 +37,12 @@ public:
     Material(Game* game, VertexShader* vs, PixelShader* ps, UINT passInd = 1000);
     bool AttachToComponent(GameComponent& comp);
     bool RemoveFromComponent(GameComponent& comp);
-    bool Initialize(ID3D11Device* device) override;
+    bool Initialize(ID3D11Device* device) override { return true; };
+
+    MaterialCBuf GetMaterialData() const;
 
 protected:
-    void Bind(ID3D11DeviceContext* context) override;
+    void Bind(ID3D11DeviceContext* context) override {};
 
 private:
     enum
@@ -40,20 +52,7 @@ private:
         USE_SPECULAR_MAP      = 4
     };
 
-    struct MaterialCbuf
-    {
-        DirectX::XMFLOAT4 Emissive; // 16
-        DirectX::XMFLOAT4 Ambient; // 16
-        DirectX::XMFLOAT4 Diffuse; // 16
-        DirectX::XMFLOAT4 Specular; // 16
-
-        int32_t Flags;
-    };
-
-
     PixelShader* pixelShader;
     VertexShader* vertexShader;
-    MaterialCbuf parameters;
-    PSConstantBuffer<MaterialCbuf> materialBuffer;
 };
 

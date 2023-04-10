@@ -43,29 +43,35 @@ int main()
 	//model->Transform.SetPosition(Vector3(10.0f, 0.0f, 0.0f));
 	//model->Transform.SetScale(Vector3(0.02f, 0.02f, 0.02f));
 	CubeComponent* cube1 = new CubeComponent(&game);
-	cube1->SetMaterial(matWall);
-	cube1->Transform.SetPosition(Vector3(0.0f, 2.0f, 2.0f));
-	cube1->Transform.SetScale(Vector3(10.0f, 10.0f, 1.0f));
+	cube1->SetMaterial(matLit1);
+	cube1->Transform.SetPosition(Vector3(-5.0f, 2.0f, 0.0f));
+	cube1->Transform.SetScale(Vector3(3.0f, 3.0f, 3.0f));
 
-	CubeComponent* cube2 = new CubeComponent(&game);
-	cube2->SetMaterial(matWall);
-	cube2->Transform.SetPosition(Vector3(0.0f, 2.0f, 5.0f));
+	SphereComponent* sphere1 = new SphereComponent(&game);
+	sphere1->SetMaterial(matWall);
+	sphere1->Transform.SetPosition(Vector3(5.0f, 2.0f, 0.0f));
+	sphere1->Transform.SetScale(Vector3(2.0f, 2.0f, 2.0f));
 
 	PlaneComponent* plane = new PlaneComponent(&game);
 	plane->SetMaterial(matLit1);
 	plane->Transform.SetScale(Vector3(50.0f, 50.0f, 50.0f));
 
+	AmbientLightComponent* ambientLight = new AmbientLightComponent(&game);
+	DirectionalLightComponent* directionalLight = new DirectionalLightComponent(&game);
+
 	//PointLightComponent* light = new PointLightComponent(&game);
 	//light->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
-	//light->Range = 30.0f;
-
-
-	//DirectionalLightComponent* light3 = new DirectionalLightComponent(&game);
-	//light3->Transform.SetPosition(Vector3(0.0f, 5.0f, 10.0f));
-	AmbientLightComponent* ambientLight = new AmbientLightComponent(&game);
+	//light->Range = 10.0f;
 
 	//SpotLightComponent* light2 = new SpotLightComponent(&game);
 	//light2->Transform.SetPosition(Vector3(0.0f, 2.0f, 0.0f));
+
+	MeshComponent* cone = new MeshComponent(&game);
+	cone->SetMesh(Mesh::CreateSimpleConeMesh(16U, 5.0f, 10.0f));
+	cone->Transform.SetPosition(Vector3(0.0f, 10.0f, -5.0f));
+	cone->Transform.SetRotation(Vector3(90.0f, 0.0f, 0.0f));
+	cone->SetMaterial(matLit1);
+
 
 	CameraMoveComponent* moveComp = new CameraMoveComponent(&game);
 

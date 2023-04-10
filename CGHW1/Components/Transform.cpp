@@ -320,6 +320,11 @@ const Vector3& Transform3D::GetDown() const
 	return this->down;
 }
 
+const DirectX::XMMATRIX& Transform3D::GetWorldTranslationMatrix() const
+{
+	return XMMatrixTranslation(this->position.x, this->position.y, this->position.z);
+}
+
 const DirectX::XMMATRIX& Transform3D::GetWorldRotationMatrix() const
 {
 	Vector3 rotRad = this->rotation * kDeg2Rad;

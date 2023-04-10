@@ -16,15 +16,13 @@ class MeshComponent : public GameComponent
 {
 protected:
 	std::shared_ptr<Mesh> mesh;
-	TransformConstantBuffer transformMat;
 	Material* material;
 
 public:
 
 	MeshComponent(Game* game);
 
-	void Initialize() override;
-	void Bind() override;
+	bool Initialize() override;
 	void Draw() override;
 	void DestroyResources() override;
 

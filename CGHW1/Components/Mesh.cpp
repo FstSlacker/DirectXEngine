@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Transform.h"
 #include "../Logs.h"
 
 Mesh::Mesh()
@@ -50,4 +51,255 @@ void Mesh::DestroyResources()
 {
     this->vertexBuffer.reset();
     this->indexBuffer.reset();
+}
+
+std::shared_ptr<Mesh> Mesh::CreateSphereMesh(UINT tslX, UINT tslY, float radius)
+{
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+
+	std::vector<Vertex> vertices;
+	std::vector<int> indices;
+
+	float xStep = DirectX::XM_PI / (tslX - 1);
+	float yStep = DirectX::XM_2PI / (tslY - 1);
+
+	for (int x = 0; x < tslX; x++)
+	{
+		for (int y = 0; y < tslY; y++)
+		{
+			float t = (float)x / (float)tslX;
+
+			Vector3 pos = Vector3(
+				cos(y * yStep) * sin(x * xStep),
+				cos(x * xStep),
+				sin(y * yStep) * sin(x * xStep)
+			);
+			Vector2 uv = Vector2(
+				(float)y / (float)(tslY - 1),
+				(float)x / (float)(tslX - 1)
+			);
+			Vector3 norm = pos;
+			norm.Normalize();
+			Color color = Color(DirectX::Colors::White);
+			vertices.push_back(Vertex(pos, color, uv, norm));
+		}
+	}
+
+	for (int x = 0; x < tslX - 1; x++)
+	{
+		for (int y = 0; y < tslY - 1; y++)
+		{
+			indices.push_back((x + 1) * tslX + y);     // 4
+			indices.push_back(x * tslX + y);           // 0
+			indices.push_back(x * tslX + y + 1);       // 1
+
+			indices.push_back((x + 1) * tslX + y + 1); // 5
+			indices.push_back((x + 1) * tslX + y);     // 4
+			indices.push_back(x * tslX + y + 1);       // 1
+		}
+	}
+
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
+	return mesh;
+}
+
+std::shared_ptr<Mesh> Mesh::CreateCubeMesh(float size)
+{
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+
+	std::vector<Vertex> vertices;
+	std::vector<int> indices;
+
+	Color color = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	Vector3 dirs[] = { Transform3D::Forward, Transform3D::Right, Transform3D::Up };
+
+	for (int dir = 0; dir < 3; dir++)
+	{
+		Vector3 direction = dirs[dir];
+		Vector3 forward = direction * 0.5f * size;
+		Vector3 right = dirs[(dir + 1) % 3] * 0.5f * size;
+		Vector3 up = dirs[(dir + 2) % 3] * 0.5f * size;
+
+		int vertsCount;
+
+		vertsCount = vertices.size();
+
+		vertices.push_back(Vertex(forward + right + up, color, Vector2(1.0f, 1.0f), direction));
+		vertices.push_back(Vertex(forward - right - up, color, Vector2(0.0f, 0.0f), direction));
+		vertices.push_back(Vertex(forward + right - up, color, Vector2(1.0f, 0.0f), direction));
+		vertices.push_back(Vertex(forward - right + up, color, Vector2(0.0f, 1.0f), direction));
+
+		indices.push_back(vertsCount + 0); indices.push_back(vertsCount + 1); indices.push_back(vertsCount + 2);
+		indices.push_back(vertsCount + 1); indices.push_back(vertsCount + 0); indices.push_back(vertsCount + 3);
+
+		vertsCount = vertices.size();
+
+		vertices.push_back(Vertex(-forward + right + up, color, Vector2(1.0f, 1.0f), -direction));
+		vertices.push_back(Vertex(-forward - right - up, color, Vector2(0.0f, 0.0f), -direction));
+		vertices.push_back(Vertex(-forward + right - up, color, Vector2(1.0f, 0.0f), -direction));
+		vertices.push_back(Vertex(-forward - right + up, color, Vector2(0.0f, 1.0f), -direction));
+
+		indices.push_back(vertsCount + 2); indices.push_back(vertsCount + 1); indices.push_back(vertsCount + 0);
+		indices.push_back(vertsCount + 3); indices.push_back(vertsCount + 0); indices.push_back(vertsCount + 1);
+	}
+
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
+
+	return mesh;
+}
+
+std::shared_ptr<Mesh> Mesh::CreatePlaneMesh(float size)
+{
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+
+	Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+
+	std::vector<Vertex> vertices = {
+		Vertex(Vector3(0.5f, 0.0f, 0.5f) * size, color, Vector2(1.0f, 1.0f), Vector3::Up),
+		Vertex(Vector3(-0.5f, 0.0f, -0.5f) * size, color, Vector2(0.0f, 0.0f), Vector3::Up),
+		Vertex(Vector3(0.5f, 0.0f, -0.5f) * size, color, Vector2(1.0f, 0.0f), Vector3::Up),
+		Vertex(Vector3(-0.5f, 0.0f, 0.5f) * size, color, Vector2(0.0f, 1.0f), Vector3::Up)
+	};
+
+	std::vector<int> indices = { 2,1,0, 3,0,1 };
+
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
+
+	return mesh;
+}
+
+std::shared_ptr<Mesh> Mesh::CreateConeMesh(UINT tsl, float radius, float height)
+{
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+
+	UINT tesselation = tsl;
+
+	Color color = Color(DirectX::Colors::White);
+
+	std::vector<Vertex> vertices;
+	std::vector<int> indices;
+
+	float side = std::sqrt(radius * radius + height * height);
+	float sideRatio = radius / side;
+
+	for (size_t i = 0; i < tesselation; i++) {
+		float ratio = static_cast<float>(i) / (tesselation);
+		float r = ratio * (XM_PI * 2.0f);
+
+		float x = std::cos(r);
+		float y = std::sin(r);
+
+		Vector3 pos = Vector3(x * radius, y * radius, -height);
+		Vector3 norm = Vector3(x * (1.0f - sideRatio), y * (1.0f - sideRatio), sideRatio);
+		Vector2 uv = Vector2(ratio, 0.0f);
+
+		Vertex v;
+		v.Position = pos;
+		v.Normal = norm;
+		v.Color = color;
+		v.UV = uv;
+
+		vertices.push_back(v);
+	}
+
+	// generate triangular faces
+	for (UINT i = 0; i < tesselation; i++) {
+
+		UINT i1 = i;
+		UINT i2 = (i + 1) % tesselation;
+		UINT i3 = vertices.size();
+
+		Vertex vUp;
+		vUp.Position = Vector3::Zero;
+		vUp.Normal = (vertices[i1].Normal + vertices[i2].Normal) * 0.5f;
+		vUp.Color = color;
+		vUp.UV = Vector2((vertices[i1].UV.x + vertices[i2].UV.x) * 0.5f, 1.0f);
+
+		vertices.push_back(vUp);
+
+		indices.push_back(i3);
+		indices.push_back(i1);
+		indices.push_back(i2);
+	}
+
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
+
+	return mesh;
+}
+
+std::shared_ptr<Mesh> Mesh::CreateSimpleConeMesh(UINT tsl, float radius, float height)
+{
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+
+	UINT tesselation = tsl;
+
+	Color color = Color(DirectX::Colors::White);
+
+	std::vector<Vertex> vertices;
+	std::vector<int> indices;
+
+	float side = std::sqrt(radius * radius + height * height);
+	float sideRatio = radius / side;
+
+	for (size_t i = 0; i < tesselation; i++) {
+		float ratio = static_cast<float>(i) / (tesselation);
+		float r = ratio * (XM_PI * 2.0f);
+
+		float x = std::cos(r);
+		float y = std::sin(r);
+
+		Vector3 pos = Vector3(x * radius, y * radius, -height);
+		Vector3 norm = Vector3(x * (1.0f - sideRatio), y * (1.0f - sideRatio), sideRatio);
+		Vector2 uv = Vector2(ratio, 0.0f);
+
+		Vertex v;
+		v.Position = pos;
+		v.Normal = norm;
+		v.Color = color;
+		v.UV = uv;
+
+		vertices.push_back(v);
+	}
+
+	Vertex vUp;
+	vUp.Position = Vector3(0.0f, 0.0f, 0.0f);
+	vUp.Color = color;
+	vUp.Normal = Vector3(0.0f, 0.0f, 1.0f);
+	vUp.UV = Vector2(0.0f, 1.0f);
+
+	vertices.push_back(vUp);
+
+	Vertex vDown;
+	vDown.Position = Vector3(0.0f, 0.0f, -height);
+	vDown.Color = color;
+	vDown.Normal = Vector3(0.0f, 0.0f, -1.0f);
+	vDown.UV = Vector2(0.0f, 1.0f);
+
+	vertices.push_back(vDown);
+
+	// generate triangular faces
+	for (UINT i = 0; i < tesselation; i++) {
+
+		UINT i1 = i;
+		UINT i2 = (i + 1) % tesselation;
+		UINT i3 = vertices.size() - 2;
+		UINT i4 = vertices.size() - 1;
+
+		indices.push_back(i3);
+		indices.push_back(i1);
+		indices.push_back(i2);
+
+		indices.push_back(i2);
+		indices.push_back(i1);
+		indices.push_back(i4);
+	}
+
+	mesh->SetVertices(vertices);
+	mesh->SetIndices(indices);
+
+	return mesh;
 }

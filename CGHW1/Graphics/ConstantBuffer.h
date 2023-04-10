@@ -29,7 +29,7 @@ public:
 		return buffer.GetAddressOf();
 	}
 
-	HRESULT Initialize(ID3D11Device* device)
+	bool Initialize(ID3D11Device* device)
 	{
 		D3D11_BUFFER_DESC bufDesc = {};
 		bufDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -40,11 +40,16 @@ public:
 		bufDesc.ByteWidth = static_cast<UINT>(sizeof(T) + (16 - (sizeof(T) % 16)));
 
 		HRESULT res = device->CreateBuffer(&bufDesc, 0, buffer.GetAddressOf());
+		if (FAILED(res))
+		{
+			Logs::LogError(res, "Failed to initialize ConstantBuffer");
+			return false;
+		}
 
-		return res;
+		return true;
 	}
 
-	HRESULT ApplyChanges(ID3D11DeviceContext* context)
+	bool ApplyChanges(ID3D11DeviceContext* context)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT res = context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -52,14 +57,16 @@ public:
 		if (FAILED(res)) 
 		{
 			Logs::LogError(res, "Failed to apply ConstantBuffer", false);
-			return res;
+			return false;
 		}
 
 		CopyMemory(mappedResource.pData, &Data, sizeof(T));
 		context->Unmap(buffer.Get(), 0);
-		return res;
+
+		return true;
 	}
 
+	virtual void Bind(ID3D11DeviceContext* context, UINT slot) = 0;
 	virtual void Bind(ID3D11DeviceContext* context) override {}
 	virtual void DestroyResources() override {}
 
@@ -77,6 +84,11 @@ public:
 	void SetSlot(UINT slot)
 	{
 		this->slotInd = slot;
+	}
+
+	virtual void Bind(ID3D11DeviceContext* context, UINT slot) override
+	{
+		context->VSSetConstantBuffers(slot, 1, this->buffer.GetAddressOf());
 	}
 
 	virtual void Bind(ID3D11DeviceContext* context) override
@@ -99,6 +111,11 @@ public:
 		this->slotInd = slot;
 	}
 
+	virtual void Bind(ID3D11DeviceContext* context, UINT slot) override
+	{
+		context->PSSetConstantBuffers(slot, 1, this->buffer.GetAddressOf());
+	}
+
 	virtual void Bind(ID3D11DeviceContext* context) override
 	{
 		context->PSSetConstantBuffers(slotInd, 1, this->buffer.GetAddressOf());
@@ -110,17 +127,12 @@ struct TransformCbuf
 {
 	DirectX::XMMATRIX WorldViewProjMatrix;
 	DirectX::XMMATRIX WorldMatrix;
+	DirectX::XMFLOAT4 ViewPosition;
 };
 
 class TransformConstantBuffer : public ConstantBuffer<TransformCbuf>
 {
 private:
-	struct TransformCbuf
-	{
-		DirectX::XMMATRIX WorldViewProjMatrix;
-		DirectX::XMMATRIX WorldMatrix;
-	};
-
 	UINT vsSlotInd;
 	UINT psSlotInd;
 

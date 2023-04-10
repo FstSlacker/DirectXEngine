@@ -4,7 +4,9 @@
 #include "RasterizerState.h"
 #include "DepthStencilState.h"
 #include "ConstantBuffer.h"
+#include "BlendState.h"
 #include "Sampler.h"
+#include "Material.h"
 #include <vector>
 #include <map>
 
@@ -28,11 +30,18 @@ private:
 	RasterizerState rStateCullBack;
 	RasterizerState rStateCullFront;
 
-	DepthStencilState dsStateLessEqual;
-	DepthStencilState dsStateGreater;
+
+	DepthStencilState dsStateOpaque;
+	DepthStencilState dsStateLightLessEqual;
+	DepthStencilState dsStateLightGreater;
 	DepthStencilState dsStateOff;
 
-	PSConstantBuffer<LightData> lightCBuf;
+	BlendState bsLight;
+
+	VSConstantBuffer<TransformCbuf> vsTransformCBuf;
+	PSConstantBuffer<TransformCbuf> psTransformCBuf;
+	PSConstantBuffer<LightData> psLightCBuf;
+	PSConstantBuffer<MaterialCBuf> psMaterialCBuf;
 
 	std::map<VertexShaderOpaque, std::shared_ptr<VertexShader>> opaqueVSs;
 	std::map<PixelShaderOpaque, std::shared_ptr<PixelShader>> opaquePSs;

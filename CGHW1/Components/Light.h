@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "GameComponent.h"
+#include "Mesh.h"
 
 class Game;
 class LightComponent;
@@ -36,15 +37,20 @@ struct LightData
 class LightComponent : public GameComponent
 {
 protected:
+	std::shared_ptr<Mesh> mesh = nullptr;
+
 	LightComponent(Game* game);
 
 public:
 	Color LightColor;
 	float Intensity;
 
+	bool Initialize() override;
+
 	virtual LightType GetLightType() const = 0;
 	virtual PixelShaderLight GetPixelShaderLightType() const = 0;
 	virtual LightData GetLightData() const = 0;
+	Mesh* GetMesh() const;
 
 	virtual void DrawGizmos() override;
 	virtual void DrawGizmosIcon(Vector3 right, Vector3 up, float scale) override;

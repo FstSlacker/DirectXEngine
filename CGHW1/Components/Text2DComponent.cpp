@@ -6,11 +6,15 @@ Text2DComponent::Text2DComponent(Game* game) : GameComponent(game)
 	this->Name = "Text2D_" + std::to_string(game->Components.size());
 }
 
-void Text2DComponent::Initialize()
+bool Text2DComponent::Initialize()
 {
-	GameComponent::Initialize();
+	if (!GameComponent::Initialize())
+		return false;
+
 	spriteBatch = std::make_unique<DirectX::SpriteBatch>(game->Gfx.GetContext());
 	spriteFont = std::make_unique<DirectX::SpriteFont>(game->Gfx.GetDevice(), L"./Fonts/comic_sans_ms.spritefont");
+
+	return true;
 }
 
 void Text2DComponent::Draw()

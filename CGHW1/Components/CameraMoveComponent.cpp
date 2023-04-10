@@ -7,9 +7,14 @@ CameraMoveComponent::CameraMoveComponent(Game* game) : GameComponent(game)
 	this->MoveSpeed = 5.0f;
 }
 
-void CameraMoveComponent::Initialize()
+bool CameraMoveComponent::Initialize()
 {
+	if (!GameComponent::Initialize())
+		return false;
+
 	prevMousePos = game->Input->MousePosition;
+
+	return true;
 }
 
 void CameraMoveComponent::Update()

@@ -23,5 +23,11 @@ public:
 	virtual bool Initialize(ID3D11Device* device);
 	virtual void Draw(ID3D11DeviceContext* context);
 	virtual void DestroyResources();
+
+	static std::shared_ptr<Mesh> CreateSphereMesh(UINT tslX = 16U, UINT tslY = 16U, float radius = 1.0f);
+	static std::shared_ptr<Mesh> CreateCubeMesh(float size = 1.0f);
+	static std::shared_ptr<Mesh> CreatePlaneMesh(float size = 1.0f);
+	static std::shared_ptr<Mesh> CreateConeMesh(UINT tsl = 16U, float radius = 1.0f, float height = 2.0f);
+	static std::shared_ptr<Mesh> CreateSimpleConeMesh(UINT tsl = 16U, float radius = 1.0f, float height = 2.0f);
 };
 

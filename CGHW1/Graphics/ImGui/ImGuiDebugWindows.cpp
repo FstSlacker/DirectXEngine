@@ -134,6 +134,16 @@ void ImGuiGameInfoWindow::Bind()
 		ImVec4(1,0,0,1)
 
 	);
+	ImGui::Text("Specular");
+	ImGui::Image(
+		(void*)game->RenderSystem.GetGBuffer()->rtSpecular.GetShaderResourceView(),
+		ImVec2(texSize, texSize),
+		ImVec2(0, 0),
+		ImVec2(1, 1),
+		ImVec4(1, 1, 1, 1),
+		ImVec4(1, 0, 0, 1)
+
+	);
 	ImGui::Text("WorldPos");
 	ImGui::Image(
 		(void*)game->RenderSystem.GetGBuffer()->rtWorldPos.GetShaderResourceView(),

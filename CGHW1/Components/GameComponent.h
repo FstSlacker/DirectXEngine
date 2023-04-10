@@ -28,7 +28,7 @@ public:
 	//Graphics
 	virtual void Draw();
 	virtual void Bind();
-	virtual void Initialize();
+	virtual bool Initialize();
 	virtual void DestroyResources();
 
 	virtual void DrawGizmos();

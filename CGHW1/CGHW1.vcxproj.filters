@@ -198,6 +198,9 @@
     <ClCompile Include="Graphics\DepthStencilState.cpp">
       <Filter>Исходные файлы\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\BlendState.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -375,6 +378,9 @@
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DepthStencilState.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\BlendState.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

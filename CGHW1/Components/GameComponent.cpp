@@ -25,9 +25,10 @@ void GameComponent::Bind()
 	//...
 }
 
-void GameComponent::Initialize() 
+bool GameComponent::Initialize() 
 {
 	//...
+	return true;
 }
 
 void GameComponent::Reaload() 

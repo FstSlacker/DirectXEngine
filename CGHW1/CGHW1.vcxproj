@@ -162,6 +162,7 @@
     <ClCompile Include="DisplayWin32.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Graphics\BindingPass.cpp" />
+    <ClCompile Include="Graphics\BlendState.cpp" />
     <ClCompile Include="Graphics\CascadeShadowMapPass.cpp" />
     <ClCompile Include="Graphics\DepthStencil.cpp" />
     <ClCompile Include="Graphics\DepthStencilState.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics\Bindable.h" />
     <ClInclude Include="Graphics\BindingPass.h" />
+    <ClInclude Include="Graphics\BlendState.h" />
     <ClInclude Include="Graphics\CascadeShadowMapPass.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
     <ClInclude Include="Graphics\DepthStencil.h" />

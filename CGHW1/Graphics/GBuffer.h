@@ -8,6 +8,7 @@ public:
 	RenderTarget rtDiffuse;
 	RenderTarget rtEmissive;
 	RenderTarget rtNormals;
+	RenderTarget rtSpecular;
 	RenderTarget rtWorldPos;
 
 	bool Initialize(ID3D11Device* device, UINT width, UINT height)
@@ -17,6 +18,8 @@ public:
 		if (!rtEmissive.Initialize(device, width, height))
 			return false;
 		if (!rtNormals.Initialize(device, width, height))
+			return false;
+		if (!rtSpecular.Initialize(device, width, height))
 			return false;
 		if (!rtWorldPos.Initialize(device, width, height))
 			return false;

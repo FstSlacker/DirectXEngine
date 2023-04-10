@@ -99,6 +99,7 @@ public:
 	const Vector3& GetLeft() const;
 	const Vector3& GetDown() const;
 
+	const DirectX::XMMATRIX& GetWorldTranslationMatrix() const;
 	const DirectX::XMMATRIX& GetWorldRotationMatrix() const;
 	const DirectX::XMMATRIX& GetTransformMatrix() const;
 	const DirectX::XMMATRIX& GetTransposedTransformMatrix() const;

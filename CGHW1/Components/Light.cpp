@@ -3,186 +3,27 @@
 #include "../Graphics/CascadeShadowMapPass.h"
 #include "../Graphics/RenderSystem.h"
 
-//DirectX::SimpleMath::Color Light::AmbientColor = DirectX::SimpleMath::Color(DirectX::Colors::White);
-//float Light::AmbientIntensity = 0.1f;
-//
-//void Light::AddLightComponent(LightComponent* lightComp)
-//{
-//	lights.push_back(lightComp);
-//}
-//
-//LightComponent* Light::GetLightComponent(int ind) const
-//{
-//	return lights[ind];
-//}
-//
-//Light::Light(Game* game)
-//{
-//	this->game = game;
-//}
-//
-//int Light::GetLightSourcesCount() const
-//{
-//	return lights.size();
-//}
-//
-//bool Light::Initialize()
-//{
-//	HRESULT res;
-//
-//	res = lightsBuffer.Initialize(game->Gfx.GetDevice());
-//
-//	if (FAILED(res))
-//	{
-//		Logs::LogError(res, "Failed to init lightsBuffer");
-//		return false;
-//	}
-//
-//	lightsBuffer.SetSlot(1);
-//
-//	res = lightsVPBuffer.Initialize(game->Gfx.GetDevice());
-//
-//	if (FAILED(res))
-//	{
-//		Logs::LogError(res, "Failed to init lightsVPBuffer");
-//		return false;
-//	}
-//
-//	lightsVPBuffer.SetSlot(3);
-//
-//	res = shadowSampler.Initialize(game->Gfx.GetDevice());
-//
-//	if (FAILED(res))
-//	{
-//		Logs::LogError(res, "Failed to init shadowSampler");
-//		return false;
-//	}
-//
-//	shadowSampler.SetSlot(1);
-//
-//	return true;
-//}
-//
-//void Light::Bind(ID3D11DeviceContext* context)
-//{
-//	lightsBuffer.Data.AmbientColor = Light::AmbientColor.ToVector3(); // 12
-//	lightsBuffer.Data.AmbientIntensity = Light::AmbientIntensity; // 4
-//	lightsBuffer.Data.CameraPosition = Camera::Main->Transform.GetPosition(); // 12
-//
-//	int lightIndex = 1;
-//
-//	for (int i = 0; i < MAX_LIGHTS; i++)
-//	{
-//		LightData lightData = {};
-//		lightData.Enabled = false;
-//
-//		if (i < lights.size() && lights[i]->IsEnabled())
-//		{
-//			LightComponent* light = lights[i];
-//
-//			lightData.Position = DirectX::SimpleMath::Vector4(light->Transform.GetPosition()); 
-//			lightData.Color = light->LightColor; 
-//			lightData.Intensity = light->Intensity;
-//			lightData.Enabled = true;
-//
-//			if (typeid(*light) == typeid(DirectionalLightComponent))
-//			{
-//				lightData.Direction = Vector4(lights[i]->Transform.GetForward());
-//				lightData.LightType = (int)LightType::Directional;
-//
-//				//Set light data
-//				lightsBuffer.Data.Lights[0] = lightData;
-//
-//				//Set shadow data
-//				float dists[4] = { 0.0f, 25.0f, 90.0f, 200.0f };
-//
-//				UINT mapsCount = light->GetRenderCameras().size();
-//				for (UINT j = 0; j < mapsCount; j++)
-//				{
-//					lightsVPBuffer.Data.DirectionalLightVP[j] = DirectX::XMMatrixTranspose(light->GetRenderCameras()[j]->GetViewProjectionMatrix());
-//					lightsVPBuffer.Data.CascadeDistances[j].z = dists[j + 1];
-//					light->GetRenderTargets()[j]->BindAsTexture(context, j + 3u);
-//				}
-//			}
-//			else
-//			{
-//				if (lightIndex >= MAX_LIGHTS)
-//					continue;
-//
-//				if (typeid(*light) == typeid(PointLightComponent))
-//				{
-//					PointLightComponent* pLight = dynamic_cast<PointLightComponent*>(light);
-//					lightData.Range = pLight->Range;
-//					lightData.ConstantAtt = pLight->ConstantAttenuation;
-//					lightData.LinearAtt = pLight->LinearAttenuation;
-//					lightData.QuadraticAtt = pLight->QuadricAttenuation;
-//					lightData.LightType = (int)LightType::Point;
-//				}
-//				else if (typeid(*light) == typeid(SpotLightComponent))
-//				{
-//					SpotLightComponent* spLight = dynamic_cast<SpotLightComponent*>(light);
-//					lightData.Range = spLight->Range;
-//					lightData.ConstantAtt = spLight->ConstantAttenuation;
-//					lightData.LinearAtt = spLight->LinearAttenuation;
-//					lightData.QuadraticAtt = spLight->QuadricAttenuation;
-//					lightData.Direction = Vector4(lights[i]->Transform.GetForward());
-//					lightData.SpotAngle = dynamic_cast<SpotLightComponent*>(light)->ConeAngle * 0.01745329f;
-//					lightData.LightType = (int)LightType::Spot;
-//				}
-//
-//				//Set light data
-//				lightsBuffer.Data.Lights[lightIndex] = lightData;
-//
-//				//Set shadow data
-//				lightsVPBuffer.Data.LightsVP[lightIndex - 1] = DirectX::XMMatrixTranspose(light->GetRenderCameras()[0]->GetViewProjectionMatrix());
-//				light->GetRenderTargets()[0]->BindAsTexture(context, (lightIndex - 1) + 6u);
-//
-//				lightIndex++;
-//			}
-//		}
-//		else
-//		{
-//			lightsBuffer.Data.Lights[lightIndex] = lightData;
-//		}
-//
-//		
-//	}
-//
-//	HRESULT hr;
-//
-//	hr = lightsBuffer.ApplyChanges(context);
-//	
-//	if (FAILED(hr))
-//	{
-//		Logs::LogError(hr, "Failed to apply lightsBuffer");
-//	}
-//
-//	hr = lightsVPBuffer.ApplyChanges(context);
-//
-//	if (FAILED(hr))
-//	{
-//		Logs::LogError(hr, "Failed to apply lightsVPBuffer");
-//	}
-//
-//	//Bind light data
-//	lightsBuffer.Bind(context);
-//
-//	//Bind shadow data
-//	lightsVPBuffer.Bind(context);
-//	shadowSampler.Bind(context);
-//}
-//
-//void Light::DestroyResources()
-//{
-//	lightsBuffer.DestroyResources();
-//	lightsVPBuffer.DestroyResources();
-//	shadowSampler.DestroyResources();
-//}
-
 LightComponent::LightComponent(Game* game) : GameComponent(game)
 {
 	this->LightColor = Color(DirectX::Colors::White);
 	this->Intensity = 1.0f;
+}
+
+bool LightComponent::Initialize()
+{
+	if (!GameComponent::Initialize())
+		return false;
+
+	if (mesh != nullptr)
+	{
+		if (!mesh->Initialize(game->Gfx.GetDevice()))
+			return false;
+	}
+}
+
+Mesh* LightComponent::GetMesh() const
+{
+	return this->mesh.get();
 }
 
 void LightComponent::DrawGizmos()
@@ -217,6 +58,8 @@ PointLightComponent::PointLightComponent(Game* game) : LightComponent(game)
 	this->ConstantAttenuation = 0.0f;
 	this->LinearAttenuation = 1.0f;
 	this->QuadricAttenuation = 0.0f;
+
+	this->mesh = Mesh::CreateSphereMesh(32U, 32U);
 }
 
 LightType PointLightComponent::GetLightType() const
@@ -298,6 +141,8 @@ SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
 	this->ConstantAttenuation = 0.0f;
 	this->LinearAttenuation = 1.0f;
 	this->QuadricAttenuation = 0.0f;
+
+	this->mesh = Mesh::CreateSimpleConeMesh(16U, 1.0f, 1.0f);
 }
 
 LightType SpotLightComponent::GetLightType() const
@@ -315,7 +160,7 @@ LightData SpotLightComponent::GetLightData() const
 	LightData data = {};
 	data.Position = Vector4(Transform.GetPosition());
 	data.Direction = Vector4(Transform.GetForward());
-	data.Direction.w = ConeAngle;
+	data.Direction.w = ConeAngle * kDeg2Rad;
 	data.Params = Vector4(Range, ConstantAttenuation, LinearAttenuation, QuadricAttenuation);
 	data.Color = Vector4(LightColor.x, LightColor.y, LightColor.z, Intensity);
 
@@ -351,6 +196,7 @@ void SpotLightComponent::DrawGizmos()
 AmbientLightComponent::AmbientLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "AmbientLight";
+	this->Intensity = 0.2f;
 }
 
 LightType AmbientLightComponent::GetLightType() const

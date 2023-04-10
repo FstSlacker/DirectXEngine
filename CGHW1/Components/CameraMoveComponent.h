@@ -11,7 +11,7 @@ public:
 	float MoveSpeed;
 
 	CameraMoveComponent(Game* game);
-	void Initialize() override;
+	bool Initialize() override;
 	void Update() override;
 };
 

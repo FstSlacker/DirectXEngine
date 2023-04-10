@@ -11,7 +11,7 @@ public:
 	std::wstring Text;
 
 	Text2DComponent(Game* game);
-	void Initialize() override;
+	bool Initialize() override;
 	void Draw() override;
 
 private:
