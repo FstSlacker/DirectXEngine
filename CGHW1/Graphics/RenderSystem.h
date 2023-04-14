@@ -20,6 +20,7 @@ class RenderSystem
 private:
 	Game* game;
 	GBuffer gBuffer;
+
 	DepthStencil depthStencil;
 
 	std::vector<MeshComponent*> meshes;
@@ -29,7 +30,6 @@ private:
 
 	RasterizerState rStateCullBack;
 	RasterizerState rStateCullFront;
-
 
 	DepthStencilState dsStateOpaque;
 	DepthStencilState dsStateLightLessEqual;

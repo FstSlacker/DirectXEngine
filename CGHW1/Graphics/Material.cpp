@@ -4,7 +4,7 @@
 
 Material::Material(Game* game, VertexShader* vs, PixelShader* ps, UINT passInd)
 {
-	assert(vs != nullptr && ps != nullptr);
+	//assert(vs != nullptr && ps != nullptr);
 
 	this->EmissiveColor = Color(DirectX::Colors::Black);
 	this->AmbientColor = Color(DirectX::Colors::White);
@@ -42,7 +42,7 @@ MaterialCBuf Material::GetMaterialData() const
 	data.Emissive = EmissiveColor;
 	data.Ambient = AmbientColor;
 	data.Diffuse = DiffuseColor;
-	data.Specular = XMFLOAT4(SpecularColor.x, SpecularColor.y, SpecularColor.z, SpecularPower);
+	data.Specular = XMFLOAT4(SpecularColor.x, SpecularColor.y, SpecularColor.z, SpecularPower <= 0 ? 1.0f : SpecularPower);
 
 	data.Flags = 0;
 
