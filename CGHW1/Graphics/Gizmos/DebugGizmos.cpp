@@ -123,6 +123,10 @@ void DebugGizmos::DrawCollider(GameComponent* comp)
 
 void DebugGizmos::Draw()
 {
+	game->Gfx.GetContext()->GSSetShader(nullptr, nullptr, 0);
+	game->Gfx.GetContext()->PSSetShader(nullptr, nullptr, 0);
+	game->Gfx.GetContext()->VSSetShader(nullptr, nullptr, 0);
+
 	basicEffect->SetProjection(Camera::Main->GetProjectionMatrix());
 	basicEffect->SetView(Camera::Main->GetViewMatrix());
 	basicEffect->Apply(game->Gfx.GetContext());

@@ -154,6 +154,7 @@
     <ClCompile Include="Components\Mesh.cpp" />
     <ClCompile Include="Components\MeshComponent.cpp" />
     <ClCompile Include="Components\ModelComponent.cpp" />
+    <ClCompile Include="Components\ParticleSystem.cpp" />
     <ClCompile Include="Components\PlaneComponent.cpp" />
     <ClCompile Include="Components\SphereComponent.cpp" />
     <ClCompile Include="Components\Text2DComponent.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Components\Mesh.h" />
     <ClInclude Include="Components\MeshComponent.h" />
     <ClInclude Include="Components\ModelComponent.h" />
+    <ClInclude Include="Components\ParticleSystem.h" />
     <ClInclude Include="Components\PlaneComponent.h" />
     <ClInclude Include="Components\SphereComponent.h" />
     <ClInclude Include="Components\Text2DComponent.h" />
@@ -247,6 +249,7 @@
     <ClInclude Include="Graphics\Sampler.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Graphics\ShadowMapPass.h" />
+    <ClInclude Include="Graphics\StructuredBuffer.h" />
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Graphics\VertexBuffer.h" />

@@ -69,3 +69,41 @@ public:
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;
 };
+
+class GeometryShader : public Bindable, public GraphicResource
+{
+public:
+	GeometryShader(std::wstring shaderPath);
+
+	ID3D11GeometryShader* GetShader();
+	ID3DBlob* GetByteCode();
+
+	bool Initialize(ID3D11Device* device) override;
+	void Bind(ID3D11DeviceContext* context) override;
+	void DestroyResources() override;
+
+private:
+
+	Microsoft::WRL::ComPtr<ID3D11GeometryShader> shader;
+	Microsoft::WRL::ComPtr<ID3DBlob> shaderByteCode;
+	std::wstring shaderPath;
+};
+
+class ComputeShader : public Bindable, public GraphicResource
+{
+public:
+	ComputeShader(std::wstring shaderPath);
+
+	ID3D11ComputeShader* GetShader();
+	ID3DBlob* GetByteCode();
+
+	bool Initialize(ID3D11Device* device) override;
+	void Bind(ID3D11DeviceContext* context) override;
+	void DestroyResources() override;
+
+private:
+
+	Microsoft::WRL::ComPtr<ID3D11ComputeShader> shader;
+	Microsoft::WRL::ComPtr<ID3DBlob> shaderByteCode;
+	std::wstring shaderPath;
+};

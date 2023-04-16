@@ -104,7 +104,8 @@ void ImGuiGameInfoWindow::Bind()
 		ImGui::Spacing();
 	}
 
-	float texSize = 100.0f;
+
+	/*float texSize = 100.0f;
 
 	ImGui::Text("Diffuse");
 	ImGui::Image(
@@ -152,7 +153,7 @@ void ImGuiGameInfoWindow::Bind()
 		ImVec2(1, 1),
 		ImVec4(1, 1, 1, 1),
 		ImVec4(1, 0, 0, 1)
-	);
+	);*/
 
 }
 

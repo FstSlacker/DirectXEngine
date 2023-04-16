@@ -6,7 +6,7 @@
 #include "../Logs.h"
 
 template<typename T>
-class ConstantBuffer : public Bindable
+class ConstantBuffer
 {
 private:
 	ConstantBuffer(const ConstantBuffer<T>& rhs);
@@ -49,7 +49,10 @@ public:
 		return true;
 	}
 
-	bool ApplyChanges(ID3D11DeviceContext* context)
+	virtual void Bind(ID3D11DeviceContext* context, UINT slot) {}
+	virtual void Bind(ID3D11DeviceContext* context) {}
+
+	bool Apply(ID3D11DeviceContext* context)
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT res = context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -66,9 +69,10 @@ public:
 		return true;
 	}
 
-	virtual void Bind(ID3D11DeviceContext* context, UINT slot) = 0;
-	virtual void Bind(ID3D11DeviceContext* context) override {}
-	virtual void DestroyResources() override {}
+	virtual void DestroyResources() 
+	{
+		this->buffer.Reset();
+	}
 
 };
 
@@ -128,32 +132,34 @@ struct TransformCbuf
 	DirectX::XMMATRIX WorldViewProjMatrix;
 	DirectX::XMMATRIX WorldMatrix;
 	DirectX::XMFLOAT4 ViewPosition;
+	DirectX::XMMATRIX ViewMatrix;
+	DirectX::XMMATRIX ProjMatrix;
 };
 
-class TransformConstantBuffer : public ConstantBuffer<TransformCbuf>
-{
-private:
-	UINT vsSlotInd;
-	UINT psSlotInd;
-
-public:
-	TransformConstantBuffer()
-	{
-		this->vsSlotInd = 0;
-		this->psSlotInd = 0;
-	}
-
-	void SetSlots(UINT vsSlot, UINT psSlot)
-	{
-		this->vsSlotInd = vsSlot;
-		this->psSlotInd = psSlot;
-	}
-
-	virtual void Bind(ID3D11DeviceContext* context) override
-	{
-		context->VSSetConstantBuffers(vsSlotInd, 1, this->buffer.GetAddressOf());
-		context->PSSetConstantBuffers(psSlotInd, 1, this->buffer.GetAddressOf());
-	}
-
-	virtual void DestroyResources() override {}
-};
+//class TransformConstantBuffer : public ConstantBuffer<TransformCbuf>
+//{
+//private:
+//	UINT vsSlotInd;
+//	UINT psSlotInd;
+//
+//public:
+//	TransformConstantBuffer()
+//	{
+//		this->vsSlotInd = 0;
+//		this->psSlotInd = 0;
+//	}
+//
+//	void SetSlots(UINT vsSlot, UINT psSlot)
+//	{
+//		this->vsSlotInd = vsSlot;
+//		this->psSlotInd = psSlot;
+//	}
+//
+//	virtual void Bind(ID3D11DeviceContext* context) override
+//	{
+//		context->VSSetConstantBuffers(vsSlotInd, 1, this->buffer.GetAddressOf());
+//		context->PSSetConstantBuffers(psSlotInd, 1, this->buffer.GetAddressOf());
+//	}
+//
+//	virtual void DestroyResources() override {}
+//};

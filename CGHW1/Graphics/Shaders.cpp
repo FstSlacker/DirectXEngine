@@ -190,3 +190,147 @@ void NullPixelShader::DestroyResources()
 {
 	//...
 }
+
+GeometryShader::GeometryShader(std::wstring shaderPath)
+{
+	this->shaderPath = shaderPath;
+}
+
+ID3D11GeometryShader* GeometryShader::GetShader()
+{
+	return this->shader.Get();
+}
+
+ID3DBlob* GeometryShader::GetByteCode()
+{
+	return this->shaderByteCode.Get();
+}
+
+bool GeometryShader::Initialize(ID3D11Device* device)
+{
+	ID3DBlob* errorCode;
+	HRESULT res;
+
+	res = D3DCompileFromFile(
+		shaderPath.c_str(),
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"GSMain",
+		"gs_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		shaderByteCode.GetAddressOf(),
+		&errorCode);
+
+	if (FAILED(res))
+	{
+		if (errorCode)
+		{
+			char* errors = (char*)(errorCode->GetBufferPointer());
+			Logs::LogError(res, errors);
+		}
+		else
+		{
+			Logs::LogError(res, "Failed to compile GeometryShader");
+		}
+		return false;
+	}
+
+	res = device->CreateGeometryShader(
+		shaderByteCode->GetBufferPointer(),
+		shaderByteCode->GetBufferSize(),
+		nullptr,
+		shader.GetAddressOf()
+	);
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to create GeometryShader");
+		return false;
+	}
+
+	return true;
+}
+
+void GeometryShader::Bind(ID3D11DeviceContext* context)
+{
+	context->GSSetShader(shader.Get(), nullptr, 0);
+}
+
+void GeometryShader::DestroyResources()
+{
+	this->shader.Reset();
+	this->shaderByteCode.Reset();
+}
+
+ComputeShader::ComputeShader(std::wstring shaderPath)
+{
+	this->shaderPath = shaderPath;
+}
+
+ID3D11ComputeShader* ComputeShader::GetShader()
+{
+	return this->shader.Get();
+}
+
+ID3DBlob* ComputeShader::GetByteCode()
+{
+	return this->shaderByteCode.Get();
+}
+
+bool ComputeShader::Initialize(ID3D11Device* device)
+{
+	ID3DBlob* errorCode;
+	HRESULT res;
+
+	res = D3DCompileFromFile(
+		shaderPath.c_str(),
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"CSMain",
+		"cs_5_0",
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0,
+		shaderByteCode.GetAddressOf(),
+		&errorCode);
+
+	if (FAILED(res))
+	{
+		if (errorCode)
+		{
+			char* errors = (char*)(errorCode->GetBufferPointer());
+			Logs::LogError(res, errors);
+		}
+		else
+		{
+			Logs::LogError(res, "Failed to compile ComputeShader");
+		}
+		return false;
+	}
+
+	res = device->CreateComputeShader(
+		shaderByteCode->GetBufferPointer(),
+		shaderByteCode->GetBufferSize(),
+		nullptr,
+		shader.GetAddressOf()
+	);
+
+	if (FAILED(res))
+	{
+		Logs::LogError(res, "Failed to create ComputeShader");
+		return false;
+	}
+
+	return true;
+}
+
+void ComputeShader::Bind(ID3D11DeviceContext* context)
+{
+	context->CSSetShader(shader.Get(), nullptr, 0);
+}
+
+void ComputeShader::DestroyResources()
+{
+	this->shader.Reset();
+	this->shaderByteCode.Reset();
+}

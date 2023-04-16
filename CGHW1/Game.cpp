@@ -89,8 +89,18 @@ void Game::Draw()
 {
 	Gfx.PrepareFrame();
 
-	RenderSystem.OpaquePass();
-	RenderSystem.LightPass();
+	//RenderSystem.OpaquePass();
+	//RenderSystem.LightPass();
+
+	for (int i = 0; i < Components.size(); i++)
+	{
+		ParticleSystem* ps = dynamic_cast<ParticleSystem*>(Components[i]);
+		if (ps != nullptr)
+		{
+			ps->Bind();
+			ps->Draw();
+		}
+	}
 
 	//Draw debug
 	Gizmos.Draw();
@@ -175,6 +185,9 @@ void Game::Run()
 		UpdateInternal();
 		Update();
 		Draw();
+
+		//int a;
+		//std::cin >> a;
 
 		if (isPauseRequested) 
 		{

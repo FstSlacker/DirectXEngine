@@ -193,7 +193,7 @@ void RenderSystem::OpaquePass()
 
         //Bind ps resources
         psMaterialCBuf.Data = m->GetMaterial()->GetMaterialData();
-        psMaterialCBuf.ApplyChanges(context);
+        psMaterialCBuf.Apply(context);
         psMaterialCBuf.Bind(context, 1);
 
         if (m->GetMaterial()->DiffuseTexture != nullptr) m->GetMaterial()->DiffuseTexture->Bind(context, 0);
@@ -203,7 +203,7 @@ void RenderSystem::OpaquePass()
         //Set vs constant buffer
         vsTransformCBuf.Data.WorldMatrix = DirectX::XMMatrixTranspose(m->Transform.GetTransformMatrix());
         vsTransformCBuf.Data.WorldViewProjMatrix = DirectX::XMMatrixTranspose(m->Transform.GetTransformMatrix() * Camera::Main->GetViewProjectionMatrix());
-        vsTransformCBuf.ApplyChanges(context);
+        vsTransformCBuf.Apply(context);
         vsTransformCBuf.Bind(context, 0);
 
         //Draw mesh
@@ -277,16 +277,16 @@ void RenderSystem::LightPass()
 
         //Set vs constant buffers
         vsTransformCBuf.Data = tBuf;
-        vsTransformCBuf.ApplyChanges(context);
+        vsTransformCBuf.Apply(context);
         vsTransformCBuf.Bind(context, 0);
 
         //Set ps constant buffers
         psTransformCBuf.Data = tBuf;
-        psTransformCBuf.ApplyChanges(context);
+        psTransformCBuf.Apply(context);
         psTransformCBuf.Bind(context, 0);
 
         psLightCBuf.Data = lightData;
-        psLightCBuf.ApplyChanges(context);
+        psLightCBuf.Apply(context);
         psLightCBuf.Bind(context, 1);
         
         bsLight.Bind(context);

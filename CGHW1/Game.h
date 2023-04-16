@@ -44,6 +44,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/CubeComponent.h"
 #include "Components/ModelComponent.h"
+#include "Components/ParticleSystem.h"
 
 
 class Game
