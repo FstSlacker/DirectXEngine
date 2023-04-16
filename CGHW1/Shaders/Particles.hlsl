@@ -11,7 +11,9 @@ struct Particle // описание структуры на GPU
 {
     float3 Position;
     float3 Velocity;
+    float4 Color;
     float Size;
+    float LifeTime;
 };
 
 StructuredBuffer<Particle> Particles : register(t0); // буфер частиц
@@ -20,6 +22,7 @@ StructuredBuffer<Particle> Particles : register(t0); // буфер частиц
 struct PS_IN // описывает вертекс на выходе из Vertex Shader
 {
     float4 Position : SV_POSITION;
+    float4 Color : PARTICLE_COLOR;
 };
 
 struct PS_OUT // цвет результирующего пикселя
@@ -59,6 +62,7 @@ void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
     float4 worldPosition = float4(p.Position, 1);
     
     pointOut.Position = mul(worldPosition, View);
+    pointOut.Color = p.Color;
     
     const float size = p.Size; // размер конченого квадрата
     
@@ -76,7 +80,7 @@ float4 PSMain(PS_IN input) : SV_Target0
 {
     float4 output;
 
-    output = float4((float3) 1, 1);
+    output = float4(input.Color.xyz, 1.0f);
 	
     return output;
 }

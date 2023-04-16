@@ -24,6 +24,8 @@ void ParticleSystem::CreateRandomParticles()
 			(float)(rand() % 100) * 0.01 - 0.5f
 		) * 5.0f;
 		particles[i].Size = (float)(rand() % 100) * 0.001;
+		particles[i].LifeTime = (float)(rand() % 100) * 0.1;
+		particles[i].Color = Color((float)(rand() % 100) * 0.01, (float)(rand() % 100) * 0.01, (float)(rand() % 100) * 0.01);
 	}
 }
 
@@ -50,6 +52,8 @@ bool ParticleSystem::Initialize()
 	particles = new Particle[MAX_PARTICLES_COUNT];
 
 	CreateRandomParticles();
+
+	particlesCount = MAX_PARTICLES_COUNT;
 
 	vertexShader = std::make_unique<VertexShader>(L"./Shaders/Particles.hlsl");
 	pixelShader = std::make_unique<PixelShader>(L"./Shaders/Particles.hlsl");
@@ -81,6 +85,9 @@ bool ParticleSystem::Initialize()
 	if (!cbParticleSystemParams.Initialize(game->Gfx.GetDevice()))
 		return false;
 
+	if (!rcbCount.Initialize(game->Gfx.GetDevice()))
+		return false;
+
 	uavParticlesFirst.Data = this->particles;
 	uavParticlesFirst.Apply(game->Gfx.GetContext());
 
@@ -97,10 +104,10 @@ void ParticleSystem::Update()
 	game->Gfx.GetContext()->ClearState();
 
 	int groupSizeX, groupSizeY;
-	GetGroupSize(MAX_PARTICLES_COUNT, groupSizeX, groupSizeY);
+	GetGroupSize(particlesCount, groupSizeX, groupSizeY);
 
 	ParticleSystemParamsCBuf particleSystemParams = {};
-	particleSystemParams.CountDeltaTimeGroupDim.x = MAX_PARTICLES_COUNT;
+	particleSystemParams.CountDeltaTimeGroupDim.x = particlesCount;
 	particleSystemParams.CountDeltaTimeGroupDim.y = game->DeltaTime;
 	particleSystemParams.CountDeltaTimeGroupDim.z = groupSizeY;
 
@@ -121,7 +128,7 @@ void ParticleSystem::Update()
 	game->Gfx.GetContext()->CSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
 	game->Gfx.GetContext()->CSSetConstantBuffers(1, 1, cbParticleSystemParams.GetAddressOf());
 
-	const UINT counterKeepValue = MAX_PARTICLES_COUNT;
+	const UINT counterKeepValue = particlesCount;
 	const UINT counterZero = 0;
 
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavSrc->GetUnorderedAccessViewAddressOf(), &counterKeepValue);
@@ -135,9 +142,21 @@ void ParticleSystem::Update()
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, &uavNull, &counterZero);
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, &uavNull, &counterZero);
 
+	game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDest->GetUnorderedAccessView());
+
+	UINT count;
+	rcbCount.Read(game->Gfx.GetContext(), count);
+
+	particlesCount = count;
+
+	//Logs::Log(std::to_string(count), false);
+
+	//Swap
 	auto tmp = uavSrc;
 	uavSrc = uavDest;
 	uavDest = tmp;
+	//---
+
 }
 
 void ParticleSystem::Bind()
@@ -165,5 +184,5 @@ void ParticleSystem::Bind()
 
 void ParticleSystem::Draw()
 {
-	game->Gfx.GetContext()->Draw(MAX_PARTICLES_COUNT, 0);
+	game->Gfx.GetContext()->Draw(particlesCount, 0);
 }

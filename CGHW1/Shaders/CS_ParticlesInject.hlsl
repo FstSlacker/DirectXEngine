@@ -21,8 +21,8 @@ struct Particle // описание структуры на GPU
     float LifeTime;
 };
 
-ConsumeStructuredBuffer<Particle> ParticlesSrc : register(u0);
 AppendStructuredBuffer<Particle> ParticlesDest : register(u1);
+ConsumeStructuredBuffer<Particle> ParticlesInjected : register(u2);
 
 #define BLOCK_SIZE 256
 #define THREAD_IN_GROUP_TOTAL 256
@@ -41,19 +41,11 @@ void CSMain(
     if (index >= ParticlesCount_DeltaTime_GroupDim.x)
         return;
 
-    Particle particle = ParticlesSrc.Consume();
-
-    float3 position = particle.Position;
-    float3 velocity = particle.Velocity;
-    
-    particle.LifeTime -= ParticlesCount_DeltaTime_GroupDim.y;
+    Particle particle = ParticlesInjected.Consume();
     
     if(particle.LifeTime > 0)
     {
-        particle.Position = position + velocity * ParticlesCount_DeltaTime_GroupDim.y;
-        particle.Velocity = velocity;
-
         ParticlesDest.Append(particle);
     }
-    
+
 }

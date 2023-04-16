@@ -136,6 +136,74 @@ struct TransformCbuf
 	DirectX::XMMATRIX ProjMatrix;
 };
 
+template<typename T>
+class RConstantBuffer
+{
+private:
+	RConstantBuffer(const RConstantBuffer<T>& rhs);
+
+protected:
+	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
+
+public:
+	RConstantBuffer() {}
+
+	ID3D11Buffer* Get() const
+	{
+		return buffer.Get();
+	}
+
+	ID3D11Buffer* const* GetAddressOf() const
+	{
+		return buffer.GetAddressOf();
+	}
+
+	bool Initialize(ID3D11Device* device)
+	{
+		D3D11_BUFFER_DESC bufDesc = {};
+		bufDesc.Usage = D3D11_USAGE_STAGING;
+		bufDesc.BindFlags = 0;
+		bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		bufDesc.MiscFlags = 0;
+		bufDesc.StructureByteStride = 0;
+		bufDesc.ByteWidth = sizeof(T);
+
+		HRESULT res = device->CreateBuffer(&bufDesc, 0, buffer.GetAddressOf());
+		if (FAILED(res))
+		{
+			Logs::LogError(res, "Failed to initialize RConstantBuffer");
+			return false;
+		}
+
+		return true;
+	}
+
+	bool Read(ID3D11DeviceContext* context, T& data)
+	{
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		HRESULT res = context->Map(buffer.Get(), 0, D3D11_MAP_READ, 0, &mappedResource);
+
+		if (FAILED(res))
+		{
+			Logs::LogError(res, "Failed to apply RConstantBuffer", false);
+			return false;
+		}
+
+		T* pData = reinterpret_cast<T*>(mappedResource.pData);
+		data = pData[0];
+
+		context->Unmap(buffer.Get(), 0);
+
+		return true;
+	}
+
+	virtual void DestroyResources()
+	{
+		this->buffer.Reset();
+	}
+};
+
 //class TransformConstantBuffer : public ConstantBuffer<TransformCbuf>
 //{
 //private:

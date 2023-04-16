@@ -12,7 +12,9 @@ struct Particle
 public:
 	Vector3 Position;
 	Vector3 Velocity;
+	Color Color;
 	float Size;
+	float LifeTime;
 };
 
 class ParticleSystem : public GameComponent
@@ -34,11 +36,15 @@ private:
 	ConstantBuffer<TransformCbuf> cbTransform;
 	ConstantBuffer<ParticleSystemParamsCBuf> cbParticleSystemParams;
 
+	RConstantBuffer<UINT> rcbCount;
+
 	std::unique_ptr<VertexShader> vertexShader;
 	std::unique_ptr<PixelShader> pixelShader;
 	std::unique_ptr<GeometryShader> geometryShader;
 
 	std::unique_ptr<ComputeShader> csSimulate;
+
+	UINT particlesCount = 0;
 
 	void CreateRandomParticles();
 	void GetGroupSize(int count, int& sizeX, int& sizeY);
