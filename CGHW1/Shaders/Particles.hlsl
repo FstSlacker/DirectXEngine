@@ -7,25 +7,26 @@ cbuffer cBuf : register(b0)
     float4x4 Proj;
 };
 
-struct Particle // описание структуры на GPU
+struct Particle
 {
     float3 Position;
     float3 Velocity;
     float4 Color;
     float Size;
     float LifeTime;
+    float MaxLifeTime;
 };
 
-StructuredBuffer<Particle> Particles : register(t0); // буфер частиц
+StructuredBuffer<Particle> Particles : register(t0);
 
 
-struct PS_IN // описывает вертекс на выходе из Vertex Shader
+struct PS_IN
 {
     float4 Position : SV_POSITION;
     float4 Color : PARTICLE_COLOR;
 };
 
-struct PS_OUT // цвет результирующего пикселя
+struct PS_OUT
 {
     float4 Color : SV_TARGET0;
 };
@@ -52,7 +53,7 @@ PS_IN GetOffsetPoint(PS_IN data, float2 offset)
     return data;
 }
 
-[maxvertexcount(4)] // результат работы GS – 4 вертекса, которые образуют TriangleStrip
+[maxvertexcount(4)]
 void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
 {
     PS_IN pointOut = (PS_IN) 0;
@@ -64,15 +65,13 @@ void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
     pointOut.Position = mul(worldPosition, View);
     pointOut.Color = p.Color;
     
-    const float size = p.Size; // размер конченого квадрата
+    const float size = p.Size;
     
-	// описание квадрата
     stream.Append(GetOffsetPoint(pointOut, float2(-1, -1) * size));
     stream.Append(GetOffsetPoint(pointOut, float2(-1, 1) * size));
     stream.Append(GetOffsetPoint(pointOut, float2(1, -1) * size));
     stream.Append(GetOffsetPoint(pointOut, float2(1, 1) * size));
 
-	// создать TriangleStrip
     stream.RestartStrip();
 }
 
@@ -80,7 +79,7 @@ float4 PSMain(PS_IN input) : SV_Target0
 {
     float4 output;
 
-    output = float4(input.Color.xyz, 1.0f);
+    output = input.Color;
 	
     return output;
 }

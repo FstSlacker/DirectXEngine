@@ -10,15 +10,20 @@ cbuffer cTransformParams : register(b0)
 cbuffer cParticleSystemParams : register(b1)
 {
     float4 ParticlesCount_DeltaTime_GroupDim;
+    float4 Gravity;
+    float4 Size;
+    float4 StartColor;
+    float4 EndColor;
 };
 
-struct Particle // описание структуры на GPU
+struct Particle
 {
     float3 Position;
     float3 Velocity;
     float4 Color;
     float Size;
     float LifeTime;
+    float MaxLifeTime;
 };
 
 AppendStructuredBuffer<Particle> ParticlesDest : register(u1);

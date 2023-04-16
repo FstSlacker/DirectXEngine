@@ -4,6 +4,7 @@
 #include "../Graphics/StructuredBuffer.h";
 #include "../Graphics/ConstantBuffer.h"
 #include "../Graphics/Shaders.h"
+#include "../Graphics/BlendState.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -15,6 +16,7 @@ public:
 	Color Color;
 	float Size;
 	float LifeTime;
+	float MaxLifeTime;
 };
 
 class ParticleSystem : public GameComponent
@@ -23,12 +25,17 @@ private:
 	struct ParticleSystemParamsCBuf
 	{
 		XMFLOAT4 CountDeltaTimeGroupDim;
+		XMFLOAT4 Gravity;
+		XMFLOAT4 Size;
+		XMFLOAT4 StartColor;
+		XMFLOAT4 EndColor;
 	};
 
-	Particle* particles;
+	BlendState blendState;
 
 	UAVStructuredBuffer<Particle> uavParticlesFirst;
 	UAVStructuredBuffer<Particle> uavParticlesSecond;
+	UAVStructuredBuffer<Particle> uavParticleInjection;
 
 	UAVStructuredBuffer<Particle>* uavSrc;
 	UAVStructuredBuffer<Particle>* uavDest;
@@ -42,19 +49,39 @@ private:
 	std::unique_ptr<PixelShader> pixelShader;
 	std::unique_ptr<GeometryShader> geometryShader;
 
-	std::unique_ptr<ComputeShader> csSimulate;
+	std::unique_ptr<ComputeShader> csParticlesSimulate;
+	std::unique_ptr<ComputeShader> csParticlesInject;
+
+	Particle* particles;
+	Particle* injectedParticles;
 
 	UINT particlesCount = 0;
+	UINT injectedParticlesCount = 0;
 
+	float spawnCounter = 0.0f;
+
+	void Emmit();
+	void Simulate();
 	void CreateRandomParticles();
 	void GetGroupSize(int count, int& sizeX, int& sizeY);
+	void SwapParticlesBuffers();
 
 public:
+
+	float SpawnRate;
+	Vector3 Gravity;
+	Color StartColor;
+	Color EndColor;
+	float StartSize;
+	float EndSize;
+
 	ParticleSystem(Game* game);
 
 	bool Initialize() override;
 	void Update() override;
 	void Bind() override;
 	void Draw() override;
+
+	bool AddParticle(Particle& p);
 };
 

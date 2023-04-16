@@ -4,6 +4,124 @@
 #include <math.h>
 
 #define MAX_PARTICLES_COUNT 100000
+#define MAX_PARTICLES_INJECTION_COUNT 1000
+
+void ParticleSystem::Emmit()
+{
+	spawnCounter += SpawnRate * game->DeltaTime;
+
+	int count = (int)spawnCounter;
+
+	spawnCounter = spawnCounter - (int)spawnCounter;
+
+	for (int i = 0; i < count; i++)
+	{
+		Particle p = {};
+		p.Color = Color(1.0f, 0.0f, 0.0f);
+
+		float randAngle = (float)(rand() % 360) * kDeg2Rad;
+		float coneRadius = 10.0f;
+		float coneHeight = 50.0f;
+
+		Vector3 v = Vector3(cos(randAngle) * coneRadius, coneHeight, sin(randAngle) * coneRadius);
+		v.Normalize();
+
+		p.Velocity = v * (float)(rand() % 100) * 0.1;
+		p.LifeTime = (float)(rand() % 100) * 0.05;
+		p.Color = StartColor;
+		p.Size = StartSize;
+
+		AddParticle(p);
+	}
+}
+
+void ParticleSystem::Simulate()
+{
+	game->Gfx.GetContext()->ClearState();
+
+	const UINT counterKeepValue = -1;
+	const UINT counterZero = 0;
+
+	int groupSizeX, groupSizeY;
+	GetGroupSize(particlesCount, groupSizeX, groupSizeY);
+
+	ParticleSystemParamsCBuf particleSystemParams = {};
+	particleSystemParams.CountDeltaTimeGroupDim.x = particlesCount;
+	particleSystemParams.CountDeltaTimeGroupDim.y = game->DeltaTime;
+	particleSystemParams.CountDeltaTimeGroupDim.z = groupSizeY;
+	particleSystemParams.Gravity = Vector4(Gravity);
+	particleSystemParams.StartColor = StartColor;
+	particleSystemParams.EndColor = EndColor;
+	particleSystemParams.Size = Vector4(StartSize, EndSize, 0.0f, 0.0f);
+
+	cbParticleSystemParams.Data = particleSystemParams;
+	cbParticleSystemParams.Apply(game->Gfx.GetContext());
+
+	TransformCbuf tData = {};
+
+	tData.ViewPosition = Vector4(Camera::Main->Transform.GetPosition());
+	tData.WorldMatrix = XMMatrixTranspose(this->Transform.GetTransformMatrix());
+	tData.WorldViewProjMatrix = XMMatrixTranspose(this->Transform.GetTransformMatrix() * Camera::Main->GetViewProjectionMatrix());
+	tData.ViewMatrix = XMMatrixTranspose(Camera::Main->GetViewMatrix());
+	tData.ProjMatrix = XMMatrixTranspose(Camera::Main->GetProjectionMatrix());
+
+	cbTransform.Data = tData;
+	cbTransform.Apply(game->Gfx.GetContext());
+
+	game->Gfx.GetContext()->CSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
+	game->Gfx.GetContext()->CSSetConstantBuffers(1, 1, cbParticleSystemParams.GetAddressOf());
+
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavSrc->GetUnorderedAccessViewAddressOf(), &particlesCount);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavDest->GetUnorderedAccessViewAddressOf(), &counterZero);
+
+	csParticlesSimulate->Bind(game->Gfx.GetContext());
+
+	game->Gfx.GetContext()->Dispatch(groupSizeX, groupSizeY, 1);
+
+	game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDest->GetUnorderedAccessView());
+	rcbCount.Read(game->Gfx.GetContext(), particlesCount);
+
+	if (injectedParticlesCount > 0)
+	{
+		injectedParticlesCount =
+			injectedParticlesCount + particlesCount > MAX_PARTICLES_COUNT ?
+			MAX_PARTICLES_COUNT - particlesCount : injectedParticlesCount;
+
+		GetGroupSize(injectedParticlesCount, groupSizeX, groupSizeY);
+
+		particleSystemParams.CountDeltaTimeGroupDim.x = injectedParticlesCount;
+		particleSystemParams.CountDeltaTimeGroupDim.y = game->DeltaTime;
+		particleSystemParams.CountDeltaTimeGroupDim.z = groupSizeY;
+
+		cbParticleSystemParams.Data = particleSystemParams;
+		cbParticleSystemParams.Apply(game->Gfx.GetContext());
+
+		csParticlesInject->Bind(game->Gfx.GetContext());
+
+		game->Gfx.GetContext()->CSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
+		game->Gfx.GetContext()->CSSetConstantBuffers(1, 1, cbParticleSystemParams.GetAddressOf());
+
+		uavParticleInjection.Data = injectedParticles;
+		uavParticleInjection.Apply(game->Gfx.GetContext());
+
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavDest->GetUnorderedAccessViewAddressOf(), &particlesCount);
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, uavParticleInjection.GetUnorderedAccessViewAddressOf(), &injectedParticlesCount);
+
+		game->Gfx.GetContext()->Dispatch(groupSizeX, groupSizeY, 1);
+
+		game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDest->GetUnorderedAccessView());
+		rcbCount.Read(game->Gfx.GetContext(), particlesCount);
+
+		injectedParticlesCount = 0;
+	}
+
+	ID3D11UnorderedAccessView* uavNull = nullptr;
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, &uavNull, &counterZero);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, &uavNull, &counterZero);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, &uavNull, &counterZero);
+
+	SwapParticlesBuffers();
+}
 
 void ParticleSystem::CreateRandomParticles()
 {
@@ -39,9 +157,23 @@ void ParticleSystem::GetGroupSize(int count, int& sizeX, int& sizeY)
 	sizeY = static_cast<int>(r);
 }
 
+void ParticleSystem::SwapParticlesBuffers()
+{
+	auto tmp = uavSrc;
+	uavSrc = uavDest;
+	uavDest = tmp;
+}
+
 ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
 {
 	this->Name = "ParticleSystem";
+
+	this->SpawnRate = 1000.0f;
+	this->Gravity = Vector3(0.0f, -9.8f, 0.0f);
+	this->StartColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
+	this->EndColor = Color(1.0f, 1.0f, 1.0f, 0.0f);
+	this->StartSize = 0.1f;
+	this->EndSize = 0.01f;
 }
 
 bool ParticleSystem::Initialize()
@@ -50,16 +182,36 @@ bool ParticleSystem::Initialize()
 		return false;
 
 	particles = new Particle[MAX_PARTICLES_COUNT];
+	injectedParticles = new Particle[MAX_PARTICLES_INJECTION_COUNT];
 
-	CreateRandomParticles();
-
-	particlesCount = MAX_PARTICLES_COUNT;
+	particlesCount = 0;
+	injectedParticlesCount = 0;
 
 	vertexShader = std::make_unique<VertexShader>(L"./Shaders/Particles.hlsl");
 	pixelShader = std::make_unique<PixelShader>(L"./Shaders/Particles.hlsl");
 	geometryShader = std::make_unique<GeometryShader>(L"./Shaders/Particles.hlsl");
 
-	csSimulate = std::make_unique<ComputeShader>(L"./Shaders/CS_ParticlesSimulate.hlsl");
+	csParticlesSimulate = std::make_unique<ComputeShader>(L"./Shaders/CS_ParticlesSimulate.hlsl");
+	csParticlesInject = std::make_unique<ComputeShader>(L"./Shaders/CS_ParticlesInject.hlsl");
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
+	rtBlendDesc.BlendEnable = true;
+
+	rtBlendDesc.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
+	rtBlendDesc.DestBlend = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtBlendDesc.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+
+	rtBlendDesc.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtBlendDesc.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
+	rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+
+	rtBlendDesc.RenderTargetWriteMask = 0x0f;
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0] = rtBlendDesc;
+
+	if (!blendState.Initialize(game->Gfx.GetDevice(), blendDesc))
+		return false;
 
 	if (!vertexShader->Initialize(game->Gfx.GetDevice()))
 		return false;
@@ -70,13 +222,19 @@ bool ParticleSystem::Initialize()
 	if (!geometryShader->Initialize(game->Gfx.GetDevice()))
 		return false;
 
-	if (!csSimulate->Initialize(game->Gfx.GetDevice()))
+	if (!csParticlesSimulate->Initialize(game->Gfx.GetDevice()))
+		return false;
+
+	if (!csParticlesInject->Initialize(game->Gfx.GetDevice()))
 		return false;
 
 	if (!uavParticlesFirst.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
 		return false;
 
 	if (!uavParticlesSecond.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
+		return false;
+
+	if (!uavParticleInjection.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_INJECTION_COUNT))
 		return false;
 
 	if (!cbTransform.Initialize(game->Gfx.GetDevice()))
@@ -101,66 +259,14 @@ void ParticleSystem::Update()
 {
 	GameComponent::Update();
 
-	game->Gfx.GetContext()->ClearState();
-
-	int groupSizeX, groupSizeY;
-	GetGroupSize(particlesCount, groupSizeX, groupSizeY);
-
-	ParticleSystemParamsCBuf particleSystemParams = {};
-	particleSystemParams.CountDeltaTimeGroupDim.x = particlesCount;
-	particleSystemParams.CountDeltaTimeGroupDim.y = game->DeltaTime;
-	particleSystemParams.CountDeltaTimeGroupDim.z = groupSizeY;
-
-	cbParticleSystemParams.Data = particleSystemParams;
-	cbParticleSystemParams.Apply(game->Gfx.GetContext());
-
-	TransformCbuf tData = {};
-
-	tData.ViewPosition = Vector4(Camera::Main->Transform.GetPosition());
-	tData.WorldMatrix = XMMatrixTranspose(this->Transform.GetTransformMatrix());
-	tData.WorldViewProjMatrix = XMMatrixTranspose(this->Transform.GetTransformMatrix() * Camera::Main->GetViewProjectionMatrix());
-	tData.ViewMatrix = XMMatrixTranspose(Camera::Main->GetViewMatrix());
-	tData.ProjMatrix = XMMatrixTranspose(Camera::Main->GetProjectionMatrix());
-
-	cbTransform.Data = tData;
-	cbTransform.Apply(game->Gfx.GetContext());
-
-	game->Gfx.GetContext()->CSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
-	game->Gfx.GetContext()->CSSetConstantBuffers(1, 1, cbParticleSystemParams.GetAddressOf());
-
-	const UINT counterKeepValue = particlesCount;
-	const UINT counterZero = 0;
-
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavSrc->GetUnorderedAccessViewAddressOf(), &counterKeepValue);
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavDest->GetUnorderedAccessViewAddressOf(), &counterZero);
-
-	csSimulate->Bind(game->Gfx.GetContext());
-
-	game->Gfx.GetContext()->Dispatch(groupSizeX, groupSizeY, 1);
-
-	ID3D11UnorderedAccessView* uavNull = nullptr;
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, &uavNull, &counterZero);
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, &uavNull, &counterZero);
-
-	game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDest->GetUnorderedAccessView());
-
-	UINT count;
-	rcbCount.Read(game->Gfx.GetContext(), count);
-
-	particlesCount = count;
-
-	//Logs::Log(std::to_string(count), false);
-
-	//Swap
-	auto tmp = uavSrc;
-	uavSrc = uavDest;
-	uavDest = tmp;
-	//---
-
+	Emmit();
+	Simulate();
 }
 
 void ParticleSystem::Bind()
 {
+	blendState.Bind(game->Gfx.GetContext());
+
 	vertexShader->Bind(game->Gfx.GetContext());
 	pixelShader->Bind(game->Gfx.GetContext());
 	geometryShader->Bind(game->Gfx.GetContext());
@@ -185,4 +291,16 @@ void ParticleSystem::Bind()
 void ParticleSystem::Draw()
 {
 	game->Gfx.GetContext()->Draw(particlesCount, 0);
+}
+
+bool ParticleSystem::AddParticle(Particle& p)
+{
+	if (injectedParticlesCount == MAX_PARTICLES_INJECTION_COUNT)
+		return false;
+
+	p.MaxLifeTime = p.LifeTime;
+
+	injectedParticles[injectedParticlesCount++] = p;
+
+	return true;
 }

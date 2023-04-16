@@ -10,15 +10,20 @@ cbuffer cTransformParams : register(b0)
 cbuffer cParticleSystemParams : register(b1)
 {
     float4 ParticlesCount_DeltaTime_GroupDim;
+    float4 Gravity;
+    float4 Size;
+    float4 StartColor;
+    float4 EndColor;
 };
 
-struct Particle // описание структуры на GPU
+struct Particle
 {
     float3 Position;
     float3 Velocity;
     float4 Color;
     float Size;
     float LifeTime;
+    float MaxLifeTime;
 };
 
 ConsumeStructuredBuffer<Particle> ParticlesSrc : register(u0);
@@ -42,16 +47,16 @@ void CSMain(
         return;
 
     Particle particle = ParticlesSrc.Consume();
-
-    float3 position = particle.Position;
-    float3 velocity = particle.Velocity;
     
     particle.LifeTime -= ParticlesCount_DeltaTime_GroupDim.y;
     
     if(particle.LifeTime > 0)
     {
-        particle.Position = position + velocity * ParticlesCount_DeltaTime_GroupDim.y;
-        particle.Velocity = velocity;
+        particle.Velocity += Gravity.xyz * ParticlesCount_DeltaTime_GroupDim.y;
+        particle.Position += particle.Velocity * ParticlesCount_DeltaTime_GroupDim.y;
+        
+        particle.Color = lerp(EndColor, StartColor, (float4) (particle.LifeTime / particle.MaxLifeTime));
+        particle.Size = lerp(Size.y, Size.x, (particle.LifeTime / particle.MaxLifeTime));
 
         ParticlesDest.Append(particle);
     }
