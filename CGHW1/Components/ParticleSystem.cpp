@@ -27,7 +27,8 @@ void ParticleSystem::Emmit()
 		v.Normalize();
 
 		p.Velocity = v * (float)(rand() % 100) * 0.1;
-		p.LifeTime = (float)(rand() % 100) * 0.05;
+
+		p.LifeTime = ((float)rand() / (float)(RAND_MAX)) * (MaxLifeTime - MinLifeTime) + MinLifeTime;
 		p.Color = StartColor;
 		p.Size = StartSize;
 
@@ -168,7 +169,9 @@ ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
 {
 	this->Name = "ParticleSystem";
 
-	this->SpawnRate = 1000.0f;
+	this->MinLifeTime = 1.0f;
+	this->MaxLifeTime = 3.0f;
+	this->SpawnRate = 100.0f;
 	this->Gravity = Vector3(0.0f, -9.8f, 0.0f);
 	this->StartColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 	this->EndColor = Color(1.0f, 1.0f, 1.0f, 0.0f);
@@ -291,6 +294,27 @@ void ParticleSystem::Bind()
 void ParticleSystem::Draw()
 {
 	game->Gfx.GetContext()->Draw(particlesCount, 0);
+}
+
+void ParticleSystem::DrawGui()
+{
+	GameComponent::DrawGui();
+
+	if (ImGui::CollapsingHeader("ParticleSystem", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::DragFloat("MinLifeTime", &MinLifeTime);
+		ImGui::DragFloat("MaxLifeTime", &MaxLifeTime);
+
+		ImGui::DragFloat("SpawnRate", &SpawnRate);
+
+		ImGui::DragFloat3("Gravity", (float*)(&Gravity));
+
+		ImGui::ColorEdit4("StartColor", (float*)(&StartColor));
+		ImGui::ColorEdit4("EndColor", (float*)(&EndColor));
+
+		ImGui::DragFloat("StartSize", &StartSize);
+		ImGui::DragFloat("EndSize", &EndSize);
+	}
 }
 
 bool ParticleSystem::AddParticle(Particle& p)

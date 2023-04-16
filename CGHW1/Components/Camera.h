@@ -29,6 +29,7 @@ public:
 	void SetOrthographicSize(float size);
 
 	void DrawGizmos() override;
+	void DrawGui() override;
 
 	float GetFov() const;
 	float GetNear() const;

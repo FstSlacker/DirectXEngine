@@ -24,6 +24,7 @@ public:
 
 	bool Initialize() override;
 	void Draw() override;
+	void DrawGui() override;
 	void DestroyResources() override;
 
 	void SetMesh(std::shared_ptr<Mesh> mesh);

@@ -71,6 +71,7 @@ public:
 	LightData GetLightData() const override;
 
 	virtual void DrawGizmos() override;
+	virtual void DrawGui() override;
 };
 
 class DirectionalLightComponent : public LightComponent
@@ -83,6 +84,7 @@ public:
 	LightData GetLightData() const override;
 
 	virtual void DrawGizmos() override;
+	virtual void DrawGui() override;
 };
 
 class AmbientLightComponent : public LightComponent
@@ -96,6 +98,7 @@ public:
 
 	virtual void DrawGizmos() override;
 	virtual void DrawGizmosIcon(Vector3 right, Vector3 up, float scale) override;
+	virtual void DrawGui() override;
 };
 
 class SpotLightComponent : public LightComponent
@@ -114,6 +117,7 @@ public:
 	LightData GetLightData() const override;
 
 	virtual void DrawGizmos() override;
+	virtual void DrawGui() override;
 };
 
 

@@ -77,6 +77,58 @@ void Camera::DrawGizmos()
     }
 }
 
+void Camera::DrawGui()
+{
+    GameComponent::DrawGui();
+
+    if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        if (Camera::Main != this)
+        {
+            if (ImGui::Button("SetAsMain"))
+            {
+                Camera::Main = this;
+            }
+        }
+
+        int currentItem = static_cast<int>(this->GetProjectionMode());
+        const char* items[] = { "Perspective", "Orthographic" };
+
+        if (ImGui::Combo("Mode", &currentItem, items, IM_ARRAYSIZE(items)))
+        {
+            this->SetProjectionMode(static_cast<Camera::ProjectionMode>(currentItem));
+        }
+        if (static_cast<Camera::ProjectionMode>(currentItem) == Camera::ProjectionMode::Perspective)
+        {
+            float fov = this->GetFov();
+            if (ImGui::SliderFloat("FOV", &fov, 0.01f, 360.0f))
+            {
+                this->SetFov(fov);
+            }
+        }
+        else
+        {
+            float orthSize = this->GetOrthographicSize();
+            if (ImGui::DragFloat("Size", &orthSize, 0.1f, 0.1f))
+            {
+                orthSize = orthSize < 0.1f ? 0.1f : orthSize;
+                this->SetOrthographicSize(orthSize);
+            }
+        }
+
+        if (ImGui::InputFloat("Near Z", &nearZ))
+        {
+            this->SetNear(nearZ);
+        }
+        if (ImGui::InputFloat("Far Z", &farZ))
+        {
+            this->SetFar(farZ);
+        }
+
+        ImGui::Spacing();
+    }
+}
+
 float Camera::GetFov() const
 {
     return this->fovDegrees;

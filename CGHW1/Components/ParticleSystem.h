@@ -68,6 +68,8 @@ private:
 
 public:
 
+	float MinLifeTime;
+	float MaxLifeTime;
 	float SpawnRate;
 	Vector3 Gravity;
 	Color StartColor;
@@ -81,6 +83,8 @@ public:
 	void Update() override;
 	void Bind() override;
 	void Draw() override;
+
+	void DrawGui() override;
 
 	bool AddParticle(Particle& p);
 };

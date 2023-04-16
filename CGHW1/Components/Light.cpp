@@ -88,6 +88,32 @@ void PointLightComponent::DrawGizmos()
 	game->Gizmos.DrawSphere(this->Transform.GetPosition(), this->Range, Color(DirectX::Colors::White));
 }
 
+void PointLightComponent::DrawGui()
+{
+	LightComponent::DrawGui();
+
+	if (ImGui::CollapsingHeader("PointLight", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float lightColor[3] = { this->LightColor.x, this->LightColor.y, this->LightColor.z };
+		if (ImGui::ColorEdit3("Color", lightColor))
+		{
+			this->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+		}
+		ImGui::DragFloat("Intensity", &this->Intensity, 0.01f, 0.0f, 10.0f);
+
+		ImGui::DragFloat("Range", &this->Range);
+
+		ImGui::Spacing();
+
+		ImGui::Text("Attenuation:");
+		ImGui::DragFloat("Constant", &this->ConstantAttenuation);
+		ImGui::DragFloat("Linear", &this->LinearAttenuation);
+		ImGui::DragFloat("Quadric", &this->QuadricAttenuation);
+
+		ImGui::Spacing();
+	}
+}
+
 DirectionalLightComponent::DirectionalLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "DirectionalLight";
@@ -131,6 +157,23 @@ void DirectionalLightComponent::DrawGizmos()
 	game->Gizmos.DrawRay(o + -lr * 0.5f * pScale, lf * pScale * 4.0f, color);
 	game->Gizmos.DrawRay(o + lu * 0.5f * pScale, lf * pScale * 4.0f, color);
 	game->Gizmos.DrawRay(o + -lu * 0.5f * pScale, lf * pScale * 4.0f, color);
+}
+
+void DirectionalLightComponent::DrawGui()
+{
+	LightComponent::DrawGui();
+
+	if (ImGui::CollapsingHeader("DirectionalLight", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float lightColor[3] = { this->LightColor.x, this->LightColor.y, this->LightColor.z };
+		if (ImGui::ColorEdit3("Color", lightColor))
+		{
+			this->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+		}
+		ImGui::DragFloat("Intensity", &this->Intensity, 0.01f, 0.0f, 10.0f);
+
+		ImGui::Spacing();
+	}
 }
 
 SpotLightComponent::SpotLightComponent(Game* game) : LightComponent(game)
@@ -193,6 +236,33 @@ void SpotLightComponent::DrawGizmos()
 	game->Gizmos.DrawRay(sLightPos, p4 - sLightPos, color);
 }
 
+void SpotLightComponent::DrawGui()
+{
+	LightComponent::DrawGui();
+
+	if (ImGui::CollapsingHeader("PointLight", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float lightColor[3] = { this->LightColor.x, this->LightColor.y, this->LightColor.z };
+		if (ImGui::ColorEdit3("Color", lightColor))
+		{
+			this->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+		}
+		ImGui::DragFloat("Intensity", &this->Intensity, 0.01f, 0.0f, 10.0f);
+
+		ImGui::DragFloat("Range", &this->Range);
+		ImGui::DragFloat("ConeAngle", &this->ConeAngle);
+
+		ImGui::Spacing();
+
+		ImGui::Text("Attenuation:");
+		ImGui::DragFloat("Constant", &this->ConstantAttenuation);
+		ImGui::DragFloat("Linear", &this->LinearAttenuation);
+		ImGui::DragFloat("Quadric", &this->QuadricAttenuation);
+
+		ImGui::Spacing();
+	}
+}
+
 AmbientLightComponent::AmbientLightComponent(Game* game) : LightComponent(game)
 {
 	this->Name = "AmbientLight";
@@ -225,4 +295,21 @@ void AmbientLightComponent::DrawGizmos()
 void AmbientLightComponent::DrawGizmosIcon(Vector3 right, Vector3 up, float scale)
 {
 	//...
+}
+
+void AmbientLightComponent::DrawGui()
+{
+	LightComponent::DrawGui();
+
+	if (ImGui::CollapsingHeader("AmbientLight", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		float lightColor[3] = { this->LightColor.x, this->LightColor.y, this->LightColor.z };
+		if (ImGui::ColorEdit3("Color", lightColor))
+		{
+			this->LightColor = Color(lightColor[0], lightColor[1], lightColor[2]);
+		}
+		ImGui::DragFloat("Intensity", &this->Intensity, 0.01f, 0.0f, 10.0f);
+
+		ImGui::Spacing();
+	}
 }

@@ -34,6 +34,8 @@ public:
 	virtual void DrawGizmos();
 	virtual void DrawGizmosIcon(Vector3 forward, Vector3 up, float scale);
 
+	virtual void DrawGui();
+
 	//Game logic
 	virtual void Reaload();
 	virtual void Update();
