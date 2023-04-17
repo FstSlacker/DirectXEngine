@@ -19,15 +19,12 @@ void ParticleSystem::Emmit()
 		Particle p = {};
 		p.Color = Color(1.0f, 0.0f, 0.0f);
 
-		float randAngle = (float)(rand() % 360) * kDeg2Rad;
-		float coneRadius = 10.0f;
-		float coneHeight = 50.0f;
-
-		Vector3 v = Vector3(cos(randAngle) * coneRadius, coneHeight, sin(randAngle) * coneRadius);
+		Vector3 v = VelocityDistribution->GetRandomSurfacePoint();
 		v.Normalize();
 
-		p.Velocity = v * (float)(rand() % 100) * 0.1;
+		p.Velocity = v * (((float)rand() / (float)(RAND_MAX)) * (MaxVelocityScale - MinVelocityScale) + MinVelocityScale);
 
+		p.Position = Transform.GetPosition() + PositionDistribution->GetRandomInnerPoint();
 		p.LifeTime = ((float)rand() / (float)(RAND_MAX)) * (MaxLifeTime - MinLifeTime) + MinLifeTime;
 		p.Color = StartColor;
 		p.Size = StartSize;
@@ -50,6 +47,7 @@ void ParticleSystem::Simulate()
 	particleSystemParams.CountDeltaTimeGroupDim.x = particlesCount;
 	particleSystemParams.CountDeltaTimeGroupDim.y = game->DeltaTime;
 	particleSystemParams.CountDeltaTimeGroupDim.z = groupSizeY;
+
 	particleSystemParams.Gravity = Vector4(Gravity);
 	particleSystemParams.StartColor = StartColor;
 	particleSystemParams.EndColor = EndColor;
@@ -105,8 +103,8 @@ void ParticleSystem::Simulate()
 		uavParticleInjection.Data = injectedParticles;
 		uavParticleInjection.Apply(game->Gfx.GetContext());
 
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavParticleInjection.GetUnorderedAccessViewAddressOf(), &injectedParticlesCount);
 		game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavDest->GetUnorderedAccessViewAddressOf(), &particlesCount);
-		game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, uavParticleInjection.GetUnorderedAccessViewAddressOf(), &injectedParticlesCount);
 
 		game->Gfx.GetContext()->Dispatch(groupSizeX, groupSizeY, 1);
 
@@ -119,7 +117,6 @@ void ParticleSystem::Simulate()
 	ID3D11UnorderedAccessView* uavNull = nullptr;
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, &uavNull, &counterZero);
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, &uavNull, &counterZero);
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, &uavNull, &counterZero);
 
 	SwapParticlesBuffers();
 }
@@ -171,12 +168,22 @@ ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
 
 	this->MinLifeTime = 1.0f;
 	this->MaxLifeTime = 3.0f;
+
 	this->SpawnRate = 100.0f;
+
 	this->Gravity = Vector3(0.0f, -9.8f, 0.0f);
+
 	this->StartColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 	this->EndColor = Color(1.0f, 1.0f, 1.0f, 0.0f);
+
 	this->StartSize = 0.1f;
 	this->EndSize = 0.01f;
+
+	this->MinVelocityScale = 1.0f;
+	this->MaxVelocityScale = 5.0f;
+
+	this->PositionDistribution = std::make_shared<ConeDistribution>();
+	this->VelocityDistribution = std::make_shared<ConeDistribution>();
 }
 
 bool ParticleSystem::Initialize()
@@ -302,18 +309,121 @@ void ParticleSystem::DrawGui()
 
 	if (ImGui::CollapsingHeader("ParticleSystem", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::DragFloat("MinLifeTime", &MinLifeTime);
-		ImGui::DragFloat("MaxLifeTime", &MaxLifeTime);
+		const char* items[] = { "Point", "Linear",  "Sphere", "Cone", "Box" };
+		int currentItem = 0;
 
 		ImGui::DragFloat("SpawnRate", &SpawnRate);
 
-		ImGui::DragFloat3("Gravity", (float*)(&Gravity));
+		if (ImGui::TreeNodeEx("LifeTime", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("Min###MinLifeTime", &MinLifeTime);
+			ImGui::DragFloat("Max###MaxLifeTime", &MaxLifeTime);
 
-		ImGui::ColorEdit4("StartColor", (float*)(&StartColor));
-		ImGui::ColorEdit4("EndColor", (float*)(&EndColor));
+			ImGui::TreePop();
+		}
 
-		ImGui::DragFloat("StartSize", &StartSize);
-		ImGui::DragFloat("EndSize", &EndSize);
+		if (ImGui::TreeNodeEx("Position", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			currentItem = static_cast<int>(this->PositionDistribution->GetDistributionType());
+
+			if (ImGui::Combo("Distribution###DistributionTypePosition", &currentItem, items, IM_ARRAYSIZE(items)))
+			{
+				switch (static_cast<DistributionType>(currentItem))
+				{
+					case DistributionType::Point:
+					{
+						PositionDistribution = std::make_shared<PointDistribution>();
+						break;
+					}
+					case DistributionType::Linear:
+					{
+						PositionDistribution = std::make_shared<LinearDistribution>();
+						break;
+					}
+					case DistributionType::Sphere:
+					{
+						PositionDistribution = std::make_shared<SphereDistribution>();
+						break;
+					}
+					case DistributionType::Cone:
+					{
+						PositionDistribution = std::make_shared<ConeDistribution>();
+						break;
+					}
+					case DistributionType::Box:
+					{
+						PositionDistribution = std::make_shared<BoxDistribution>();
+						break;
+					}
+				}
+			}
+
+			PositionDistribution->DrawGui();
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNodeEx("Color", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::ColorEdit4("StartColor", (float*)(&StartColor));
+			ImGui::ColorEdit4("EndColor", (float*)(&EndColor));
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNodeEx("Size", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("StartSize", &StartSize);
+			ImGui::DragFloat("EndSize", &EndSize);
+
+			ImGui::TreePop();
+		}
+
+		if(ImGui::TreeNodeEx("Velocity", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("Min###MinVelocityScale", &MinVelocityScale);
+			ImGui::DragFloat("Max###MaxVelocityScale", &MaxVelocityScale);
+			ImGui::DragFloat3("Gravity", (float*)(&Gravity));
+
+			currentItem = static_cast<int>(this->VelocityDistribution->GetDistributionType());
+
+			if (ImGui::Combo("Distribution###DistributionTypeVelocity", &currentItem, items, IM_ARRAYSIZE(items)))
+			{
+
+				switch (static_cast<DistributionType>(currentItem))
+				{
+					case DistributionType::Point:
+					{
+						VelocityDistribution = std::make_shared<PointDistribution>();
+						break;
+					}
+					case DistributionType::Linear:
+					{
+						VelocityDistribution = std::make_shared<LinearDistribution>();
+						break;
+					}
+					case DistributionType::Sphere:
+					{
+						VelocityDistribution = std::make_shared<SphereDistribution>();
+						break;
+					}
+					case DistributionType::Cone:
+					{
+						VelocityDistribution = std::make_shared<ConeDistribution>();
+						break;
+					}
+					case DistributionType::Box:
+					{
+						VelocityDistribution = std::make_shared<BoxDistribution>();
+						break;
+					}
+				}
+			}
+
+			VelocityDistribution->DrawGui();
+
+			ImGui::TreePop();
+		}
 	}
 }
 

@@ -1,24 +1,12 @@
+#include "./Includes/ParticleSystemData.hlsli"
+#include "./Includes/TransformData.hlsli"
+
 cbuffer cBuf : register(b0)
 {
-	float4x4 WorldViewProj;
-	float4x4 World;
-    float4 ViewPos;
-    float4x4 View;
-    float4x4 Proj;
-};
-
-struct Particle
-{
-    float3 Position;
-    float3 Velocity;
-    float4 Color;
-    float Size;
-    float LifeTime;
-    float MaxLifeTime;
+    TransformData Transforms;
 };
 
 StructuredBuffer<Particle> Particles : register(t0);
-
 
 struct PS_IN
 {
@@ -48,7 +36,7 @@ VS_OUT VSMain(uint vertexId : SV_VertexID)
 PS_IN GetOffsetPoint(PS_IN data, float2 offset)
 {
     data.Position.xy += offset;
-    data.Position = mul(data.Position, Proj);
+    data.Position = mul(data.Position, Transforms.Proj);
 
     return data;
 }
@@ -62,7 +50,7 @@ void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
 
     float4 worldPosition = float4(p.Position, 1);
     
-    pointOut.Position = mul(worldPosition, View);
+    pointOut.Position = mul(worldPosition, Transforms.View);
     pointOut.Color = p.Color;
     
     const float size = p.Size;

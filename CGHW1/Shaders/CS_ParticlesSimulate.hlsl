@@ -1,29 +1,8 @@
-cbuffer cTransformParams : register(b0)
-{
-	float4x4 WorldViewProj;
-	float4x4 World;
-    float4 ViewPos;
-    float4x4 View;
-    float4x4 Proj;
-};
+#include "./Includes/ParticleSystemData.hlsli"
 
 cbuffer cParticleSystemParams : register(b1)
 {
-    float4 ParticlesCount_DeltaTime_GroupDim;
-    float4 Gravity;
-    float4 Size;
-    float4 StartColor;
-    float4 EndColor;
-};
-
-struct Particle
-{
-    float3 Position;
-    float3 Velocity;
-    float4 Color;
-    float Size;
-    float LifeTime;
-    float MaxLifeTime;
+    ParticleSystemParams ParticleSystem;
 };
 
 ConsumeStructuredBuffer<Particle> ParticlesSrc : register(u0);
@@ -40,23 +19,23 @@ void CSMain(
     uint groupIndex : SV_GroupIndex
 )
 {
-    int index = groupID.x * THREAD_IN_GROUP_TOTAL + groupID.y * THREAD_IN_GROUP_TOTAL * ParticlesCount_DeltaTime_GroupDim.z + groupIndex;
+    int index = groupID.x * THREAD_IN_GROUP_TOTAL + groupID.y * THREAD_IN_GROUP_TOTAL * ParticleSystem.ParticlesCount_DeltaTime_GroupDim.z + groupIndex;
 
     [flatten]
-    if (index >= ParticlesCount_DeltaTime_GroupDim.x)
+    if (index >= ParticleSystem.ParticlesCount_DeltaTime_GroupDim.x)
         return;
 
     Particle particle = ParticlesSrc.Consume();
     
-    particle.LifeTime -= ParticlesCount_DeltaTime_GroupDim.y;
+    particle.LifeTime -= ParticleSystem.ParticlesCount_DeltaTime_GroupDim.y;
     
     if(particle.LifeTime > 0)
     {
-        particle.Velocity += Gravity.xyz * ParticlesCount_DeltaTime_GroupDim.y;
-        particle.Position += particle.Velocity * ParticlesCount_DeltaTime_GroupDim.y;
+        particle.Velocity += ParticleSystem.Gravity.xyz * ParticleSystem.ParticlesCount_DeltaTime_GroupDim.y;
+        particle.Position += particle.Velocity * ParticleSystem.ParticlesCount_DeltaTime_GroupDim.y;
         
-        particle.Color = lerp(EndColor, StartColor, (float4) (particle.LifeTime / particle.MaxLifeTime));
-        particle.Size = lerp(Size.y, Size.x, (particle.LifeTime / particle.MaxLifeTime));
+        particle.Color = lerp(ParticleSystem.EndColor, ParticleSystem.StartColor, (float4) (particle.LifeTime / particle.MaxLifeTime));
+        particle.Size = lerp(ParticleSystem.Size.y, ParticleSystem.Size.x, (particle.LifeTime / particle.MaxLifeTime));
 
         ParticlesDest.Append(particle);
     }

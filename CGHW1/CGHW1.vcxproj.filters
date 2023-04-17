@@ -392,6 +392,9 @@
     <ClInclude Include="Graphics\StructuredBuffer.h">
       <Filter>Файлы заголовков\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Components\PointsDistributions.h">
+      <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

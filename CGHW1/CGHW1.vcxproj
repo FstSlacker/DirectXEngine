@@ -208,6 +208,7 @@
     <ClInclude Include="Components\ModelComponent.h" />
     <ClInclude Include="Components\ParticleSystem.h" />
     <ClInclude Include="Components\PlaneComponent.h" />
+    <ClInclude Include="Components\PointsDistributions.h" />
     <ClInclude Include="Components\SphereComponent.h" />
     <ClInclude Include="Components\Text2DComponent.h" />
     <ClInclude Include="Components\Transform.h" />

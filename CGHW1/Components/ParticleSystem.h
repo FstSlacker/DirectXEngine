@@ -5,6 +5,7 @@
 #include "../Graphics/ConstantBuffer.h"
 #include "../Graphics/Shaders.h"
 #include "../Graphics/BlendState.h"
+#include "PointsDistributions.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -62,6 +63,7 @@ private:
 
 	void Emmit();
 	void Simulate();
+
 	void CreateRandomParticles();
 	void GetGroupSize(int count, int& sizeX, int& sizeY);
 	void SwapParticlesBuffers();
@@ -70,12 +72,22 @@ public:
 
 	float MinLifeTime;
 	float MaxLifeTime;
+
 	float SpawnRate;
+
 	Vector3 Gravity;
+
 	Color StartColor;
 	Color EndColor;
+
 	float StartSize;
 	float EndSize;
+
+	std::shared_ptr<Distribution> PositionDistribution;
+	std::shared_ptr<Distribution> VelocityDistribution;
+
+	float MinVelocityScale;
+	float MaxVelocityScale;
 
 	ParticleSystem(Game* game);
 

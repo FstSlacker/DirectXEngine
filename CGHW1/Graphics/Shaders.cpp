@@ -29,7 +29,7 @@ bool VertexShader::Initialize(ID3D11Device* device)
 	res = D3DCompileFromFile(
 		shaderPath.c_str(),
 		nullptr /*macros*/,
-		nullptr /*include*/,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE /*include*/,
 		"VSMain",
 		"vs_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
@@ -122,7 +122,7 @@ bool PixelShader::Initialize(ID3D11Device* device)
 	res = D3DCompileFromFile(
 		shaderPath.c_str(),
 		nullptr /*macros*/,
-		nullptr /*include*/,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE /*include*/,
 		"PSMain",
 		"ps_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
@@ -214,7 +214,7 @@ bool GeometryShader::Initialize(ID3D11Device* device)
 	res = D3DCompileFromFile(
 		shaderPath.c_str(),
 		nullptr /*macros*/,
-		nullptr /*include*/,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE /*include*/,
 		"GSMain",
 		"gs_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
@@ -286,7 +286,7 @@ bool ComputeShader::Initialize(ID3D11Device* device)
 	res = D3DCompileFromFile(
 		shaderPath.c_str(),
 		nullptr /*macros*/,
-		nullptr /*include*/,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE /*include*/,
 		"CSMain",
 		"cs_5_0",
 		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
