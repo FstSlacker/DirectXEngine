@@ -5,6 +5,7 @@
 #include "../Graphics/ConstantBuffer.h"
 #include "../Graphics/Shaders.h"
 #include "../Graphics/BlendState.h"
+#include "../Graphics/Sampler.h"
 #include "PointsDistributions.h"
 
 using namespace DirectX::SimpleMath;

@@ -51,7 +51,8 @@ void ParticleSystem::Simulate()
 	particleSystemParams.Gravity = Vector4(Gravity);
 	particleSystemParams.StartColor = StartColor;
 	particleSystemParams.EndColor = EndColor;
-	particleSystemParams.Size = Vector4(StartSize, EndSize, 0.0f, 0.0f);
+	particleSystemParams.Size = Vector4(StartSize, EndSize, game->Display->ClientWidth, game->Display->ClientHeight);
+
 
 	cbParticleSystemParams.Data = particleSystemParams;
 	cbParticleSystemParams.Apply(game->Gfx.GetContext());
@@ -66,6 +67,13 @@ void ParticleSystem::Simulate()
 
 	cbTransform.Data = tData;
 	cbTransform.Apply(game->Gfx.GetContext());
+
+	ID3D11ShaderResourceView* srvs[2] = {
+		game->RenderSystem.GetGBuffer()->rtWorldPos.GetShaderResourceView(),
+		game->RenderSystem.GetGBuffer()->rtNormals.GetShaderResourceView()
+	};
+
+	game->Gfx.GetContext()->CSSetShaderResources(0, 2, srvs);
 
 	game->Gfx.GetContext()->CSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
 	game->Gfx.GetContext()->CSSetConstantBuffers(1, 1, cbParticleSystemParams.GetAddressOf());
@@ -184,6 +192,8 @@ ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
 
 	this->PositionDistribution = std::make_shared<ConeDistribution>();
 	this->VelocityDistribution = std::make_shared<ConeDistribution>();
+
+	game->RenderSystem.RegisterParticleSystem(this);
 }
 
 bool ParticleSystem::Initialize()

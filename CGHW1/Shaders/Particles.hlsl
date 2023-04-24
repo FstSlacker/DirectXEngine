@@ -1,5 +1,6 @@
 #include "./Includes/ParticleSystemData.hlsli"
 #include "./Includes/TransformData.hlsli"
+#include "./Includes/DeferredData.hlsli"
 
 cbuffer cBuf : register(b0)
 {
@@ -12,11 +13,7 @@ struct PS_IN
 {
     float4 Position : SV_POSITION;
     float4 Color : PARTICLE_COLOR;
-};
-
-struct PS_OUT
-{
-    float4 Color : SV_TARGET0;
+    float3 WorldPos : WORLD_POSITION;
 };
 
 struct VS_OUT
@@ -63,11 +60,16 @@ void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
     stream.RestartStrip();
 }
 
-float4 PSMain(PS_IN input) : SV_Target0
+PS_OUT PSMain(PS_IN input)
 {
-    float4 output;
+    PS_OUT output = (PS_OUT)0;
 
-    output = input.Color;
+    output.Diffuse = input.Color;
+    output.Normal = (float4) 0;
+    output.Emissive = (float4) 0;
+    output.Specular = (float4) 0;
+    output.Normal = (float4) 0;
+    output.WorldPos = (float4) 0;
 	
     return output;
 }

@@ -42,6 +42,16 @@ void Sampler::DestroyResources()
 	sampler.Reset();
 }
 
+ID3D11SamplerState* Sampler::GetSamplerState() const
+{
+	return this->sampler.Get();
+}
+
+ID3D11SamplerState* const* Sampler::GetSamplerStateAddressOf() const
+{
+	return this->sampler.GetAddressOf();
+}
+
 bool ShadowSampler::Initialize(ID3D11Device* device)
 {
 	D3D11_SAMPLER_DESC desc = CD3D11_SAMPLER_DESC{ CD3D11_DEFAULT{} };

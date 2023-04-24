@@ -10,6 +10,9 @@ public:
 	void Bind(ID3D11DeviceContext* context) override;
 	void DestroyResources() override;
 
+	ID3D11SamplerState* GetSamplerState() const;
+	ID3D11SamplerState* const* GetSamplerStateAddressOf() const;
+
 protected:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler;
 	UINT slotInd = 0;

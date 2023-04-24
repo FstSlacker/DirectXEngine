@@ -1,22 +1,14 @@
+#include "./Includes/TransformData.hlsli"
+#include "./Includes/MaterialData.hlsli"
+#include "./Includes/DeferredData.hlsli"
+
 #define USE_DIFFUSE_TEXTURE 1
 #define USE_NORMAL_MAP 2
 #define USE_SPECULAR_MAP 4
 
-struct MaterialData
-{
-    float4 Emissive;
-    float4 Ambient;
-    float4 Diffuse;
-    float4 Specular;
-    
-    int Flags;
-};
-
 cbuffer cBuf : register(b0)
 {
-	float4x4 WorldViewProj;
-	float4x4 World;
-    float4 ViewPos;
+    TransformData Transforms;
 };
 
 cbuffer cMaterial : register(b1)
@@ -55,25 +47,16 @@ PS_IN VSMain( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 	
-    output.pos = mul(float4(input.pos, 1.0f), WorldViewProj);
+    output.pos = mul(float4(input.pos, 1.0f), Transforms.WorldViewProj);
     output.color = input.color;
 	output.texCord = input.texCord;
-    output.normal = mul(input.normal, (float3x3)World);
-    output.worldPos = mul(float4(input.pos, 1.0f), World);
-    output.tangent = mul(input.tangent, (float3x3)World);
-    output.bitangent = mul(input.bitangent, (float3x3)World);
+    output.normal = mul(input.normal, (float3x3) Transforms.World);
+    output.worldPos = mul(float4(input.pos, 1.0f), Transforms.World);
+    output.tangent = mul(input.tangent, (float3x3) Transforms.World);
+    output.bitangent = mul(input.bitangent, (float3x3) Transforms.World);
 	
 	return output;
 }
-
-struct PS_OUT
-{
-    float4 Diffuse : SV_Target0; //a - SpecularMap
-    float4 Emissive : SV_Target1;
-    float4 Normal : SV_Target2;
-    float4 Specular : SV_Target3;
-    float4 WorldPos : SV_Target4;
-};
 
 PS_OUT PSMain(PS_IN input)
 {

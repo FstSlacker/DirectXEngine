@@ -80,10 +80,13 @@ bool RenderSystem::Initialize()
     if (!dsStateLightGreater.Initialize(device, dsGreaterDesc))
         return false;
 
-    D3D11_DEPTH_STENCIL_DESC dsOffDesc = {};
-    dsOffDesc.DepthEnable = false;
+    D3D11_DEPTH_STENCIL_DESC dsWriteOffDesc = {};
+    dsWriteOffDesc.DepthEnable = true;
+    dsWriteOffDesc.StencilEnable = false;
+    dsWriteOffDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    dsWriteOffDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
-    if (!dsStateOff.Initialize(device, dsOffDesc))
+    if (!dsStateWriteOff.Initialize(device, dsWriteOffDesc))
         return false;
 
     if (!sampler.Initialize(device))
@@ -171,6 +174,7 @@ void RenderSystem::OpaquePass()
 
     opaqueVSs[VertexShaderOpaque::Default]->Bind(context);
     opaquePSs[PixelShaderOpaque::Default]->Bind(context);
+    context->GSSetShader(nullptr, nullptr, 0);
 
     sampler.Bind(context, 0);
 
@@ -208,6 +212,14 @@ void RenderSystem::OpaquePass()
 
         //Draw mesh
         m->Draw();
+    }
+
+    dsStateWriteOff.Bind(context);
+
+    for (auto p : particleSystems)
+    {
+        p->Bind();
+        p->Draw();
     }
 }
 
@@ -298,6 +310,7 @@ void RenderSystem::LightPass()
 
             lightVSs[VertexShaderLight::ScreenQuad]->Bind(context);
             lightPSs[light->GetPixelShaderLightType()]->Bind(context);
+            context->GSSetShader(nullptr, nullptr, 0);
 
             context->IASetInputLayout(nullptr);
             context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -328,6 +341,11 @@ void RenderSystem::RegisterMesh(MeshComponent* mesh)
 void RenderSystem::RegisterLight(LightComponent* light)
 {
     lights.push_back(light);
+}
+
+void RenderSystem::RegisterParticleSystem(ParticleSystem* particleSystem)
+{
+    particleSystems.push_back(particleSystem);
 }
 
 GBuffer* RenderSystem::GetGBuffer()

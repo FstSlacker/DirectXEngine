@@ -13,6 +13,7 @@
 class Game;
 class MeshComponent;
 class LightComponent;
+class ParticleSystem;
 struct LightData;
 
 class RenderSystem
@@ -25,6 +26,7 @@ private:
 
 	std::vector<MeshComponent*> meshes;
 	std::vector<LightComponent*> lights;
+	std::vector<ParticleSystem*> particleSystems;
 
 	Sampler sampler;
 
@@ -34,7 +36,7 @@ private:
 	DepthStencilState dsStateOpaque;
 	DepthStencilState dsStateLightLessEqual;
 	DepthStencilState dsStateLightGreater;
-	DepthStencilState dsStateOff;
+	DepthStencilState dsStateWriteOff;
 
 	BlendState bsLight;
 
@@ -61,6 +63,7 @@ public:
 
 	void RegisterMesh(MeshComponent* mesh);
 	void RegisterLight(LightComponent* light);
+	void RegisterParticleSystem(ParticleSystem* particleSystem);
 
 	GBuffer* GetGBuffer();
 };
