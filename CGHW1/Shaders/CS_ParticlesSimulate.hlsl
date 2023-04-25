@@ -65,7 +65,7 @@ void CSMain(
     
     if(particle.LifeTime > 0)
     {   
-        //ÓÑÒÀÍÎÂÈÒÜ VIEW è PROJ ìàòðèöû â C++
+        
         float3 viewSpaceParticlePos = mul(float4(particle.Position, 1.0f), Transforms.View).xyz;
         
         float4 screenSpaceParticlePos = mul(float4(viewSpaceParticlePos, 1.0f), Transforms.Proj);
@@ -76,11 +76,11 @@ void CSMain(
         {
             float3 viewSpaceDepthPos = GetViewSpaceWorldPos(screenSpaceParticlePos.xy);
             
-            if (viewSpaceParticlePos.z > viewSpaceDepthPos.z)
+            if ((viewSpaceParticlePos.z > viewSpaceDepthPos.z) && (viewSpaceParticlePos.z < viewSpaceDepthPos.z + 1.0f))
             {
                 float3 normal = GetNormalFromTex(screenSpaceParticlePos.xy);
                 
-                float3 newVelocity = reflect(particle.Velocity, normal) * 0.7f;
+                float3 newVelocity = reflect(particle.Velocity, normal) * 0.8f;
                 
                 particle.Velocity = newVelocity;
             }

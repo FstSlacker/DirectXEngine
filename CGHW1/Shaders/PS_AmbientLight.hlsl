@@ -70,7 +70,7 @@ float4 PSMain(PS_IN input) : SV_Target
     float4 color;
     GBufferData gBuf = ReadGBuffer(input.position.xy);
 
-    color = float4(gBuf.Diffuse.xyz * Light.Color.xyz * Light.Color.a, 1.0f);
+    color = float4(gBuf.Diffuse.xyz * Light.Color.xyz * Light.Color.a + gBuf.Emissive.xyz, 1.0f);
     
     return color;
 }

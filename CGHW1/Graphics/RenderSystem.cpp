@@ -213,14 +213,6 @@ void RenderSystem::OpaquePass()
         //Draw mesh
         m->Draw();
     }
-
-    dsStateWriteOff.Bind(context);
-
-    for (auto p : particleSystems)
-    {
-        p->Bind();
-        p->Draw();
-    }
 }
 
 void RenderSystem::LightPass()
@@ -330,6 +322,20 @@ void RenderSystem::LightPass()
 
             light->GetMesh()->Draw(context);
         }
+    }
+}
+
+void RenderSystem::TransparentPass()
+{
+    ID3D11DeviceContext* context = game->Gfx.GetContext();
+
+    rStateCullBack.Bind(context);
+    dsStateWriteOff.Bind(context);
+
+    for (auto p : particleSystems)
+    {
+        p->Bind();
+        p->Draw();
     }
 }
 

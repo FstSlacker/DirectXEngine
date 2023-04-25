@@ -145,6 +145,11 @@ void MeshComponent::SetMaterial(Material* mat)
 	this->material = mat;
 }
 
+Mesh* MeshComponent::GetMesh() const
+{
+	return this->mesh.get();
+}
+
 Material* MeshComponent::GetMaterial() const
 {
 	return this->material;

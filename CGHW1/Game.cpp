@@ -91,16 +91,7 @@ void Game::Draw()
 
 	RenderSystem.OpaquePass();
 	RenderSystem.LightPass();
-
-	//for (int i = 0; i < Components.size(); i++)
-	//{
-	//	ParticleSystem* ps = dynamic_cast<ParticleSystem*>(Components[i]);
-	//	if (ps != nullptr)
-	//	{
-	//		ps->Bind();
-	//		ps->Draw();
-	//	}
-	//}
+	RenderSystem.TransparentPass();
 
 	//Draw debug
 	Gizmos.Draw();

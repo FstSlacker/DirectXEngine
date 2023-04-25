@@ -3,7 +3,7 @@
 #include <random>
 #include <math.h>
 
-#define MAX_PARTICLES_COUNT 256 * 256
+#define MAX_PARTICLES_COUNT 1024 * 1024
 #define MAX_PARTICLES_INJECTION_COUNT 1000
 
 void ParticleSystem::Emmit()
@@ -97,8 +97,8 @@ void ParticleSystem::Simulate()
 	if (injectedParticlesCount > 0)
 	{
 		injectedParticlesCount =
-			injectedParticlesCount + particlesCount > MAX_PARTICLES_COUNT ?
-			MAX_PARTICLES_COUNT - particlesCount : injectedParticlesCount;
+			injectedParticlesCount + prevParticlesCount > MAX_PARTICLES_COUNT ?
+			MAX_PARTICLES_COUNT - prevParticlesCount : injectedParticlesCount;
 
 		GetGroupSize(injectedParticlesCount, groupSizeX, groupSizeY);
 
@@ -217,13 +217,6 @@ void ParticleSystem::GetGroupSize(int count, int& sizeX, int& sizeY)
 	sizeY = static_cast<int>(r);
 }
 
-void ParticleSystem::SwapParticlesBuffers()
-{
-	//auto tmp = uavSrc;
-	//uavSrc = uavDest;
-	//uavDest = tmp;
-}
-
 ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
 {
 	this->Name = "ParticleSystem";
@@ -273,14 +266,14 @@ bool ParticleSystem::Initialize()
 	rtBlendDesc.BlendEnable = true;
 
 	rtBlendDesc.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
-	rtBlendDesc.DestBlend = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtBlendDesc.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
 	rtBlendDesc.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 
 	rtBlendDesc.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
 	rtBlendDesc.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
 	rtBlendDesc.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 
-	rtBlendDesc.RenderTargetWriteMask = 0x0f;
+	rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	D3D11_BLEND_DESC blendDesc = {};
 	blendDesc.RenderTarget[0] = rtBlendDesc;
@@ -348,6 +341,9 @@ bool ParticleSystem::Initialize()
 	uavSortedParticles.Data = sortParticles;
 	uavSortedParticles.Apply(game->Gfx.GetContext());
 
+	delete[] inds;
+	delete[] sortParticles;
+
 	deadParticlesCount = MAX_PARTICLES_COUNT;
 
 	//uavSrc = &uavParticlesFirst;
@@ -405,6 +401,10 @@ void ParticleSystem::DrawGui()
 	{
 		const char* items[] = { "Point", "Linear",  "Sphere", "Cone", "Box" };
 		int currentItem = 0;
+
+		std::string pCountText = "Count: " + std::to_string(particlesCount) + "/" + std::to_string(MAX_PARTICLES_COUNT);
+
+		ImGui::Text(pCountText.c_str());
 
 		ImGui::DragFloat("SpawnRate", &SpawnRate);
 
@@ -531,4 +531,14 @@ bool ParticleSystem::AddParticle(Particle& p)
 	injectedParticles[injectedParticlesCount++] = p;
 
 	return true;
+}
+
+UINT ParticleSystem::GetParticlesCount() const
+{
+	return this->particlesCount;
+}
+
+UINT ParticleSystem::GetMaxParticlesCount() const
+{
+	return MAX_PARTICLES_COUNT;
 }

@@ -29,5 +29,7 @@ public:
 
 	void SetMesh(std::shared_ptr<Mesh> mesh);
 	void SetMaterial(Material* mat);
+
+	Mesh* GetMesh() const;
 	Material* GetMaterial() const;
 };

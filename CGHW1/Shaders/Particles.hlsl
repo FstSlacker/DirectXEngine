@@ -1,6 +1,5 @@
 #include "./Includes/ParticleSystemData.hlsli"
 #include "./Includes/TransformData.hlsli"
-#include "./Includes/DeferredData.hlsli"
 
 cbuffer cBuf : register(b0)
 {
@@ -15,6 +14,12 @@ struct PS_IN
     float4 Position : SV_POSITION;
     float4 Color : PARTICLE_COLOR;
     float3 WorldPos : WORLD_POSITION;
+    float3 Normal : NORMAL;
+};
+
+struct PS_OUT
+{
+    float4 Color : SV_Target0;
 };
 
 struct VS_OUT
@@ -52,6 +57,7 @@ void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
     
     pointOut.Position = mul(worldPosition, Transforms.View);
     pointOut.Color = p.Color;
+    pointOut.Normal = normalize(Transforms.ViewPos.xyz - p.Position);
     
     const float size = p.Size;
     
@@ -67,12 +73,8 @@ PS_OUT PSMain(PS_IN input)
 {
     PS_OUT output = (PS_OUT)0;
 
-    output.Diffuse = input.Color;
-    output.Normal = (float4) 0;
-    output.Emissive = (float4) 0;
-    output.Specular = (float4) 0;
-    output.Normal = (float4) 0;
-    output.WorldPos = (float4) 0;
+    //output.Diffuse = input.Color;
+    output.Color = input.Color;
 	
     return output;
 }

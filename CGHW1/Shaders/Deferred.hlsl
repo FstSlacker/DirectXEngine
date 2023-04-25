@@ -80,9 +80,9 @@ PS_OUT PSMain(PS_IN input)
             input.normal
         );
         
-        input.normal.x = normSample.x * 2.0f - 1.0f;
-        input.normal.y = -normSample.y * 2.0f + 1.0f;
-        input.normal.z = -normSample.z;
+        input.normal.x = -normSample.x * 2.0f + 1.0f;
+        input.normal.y = normSample.y * 2.0f - 1.0f;
+        input.normal.z = normSample.z;
         
         input.normal = mul(input.normal, tangSpaceRotMat);
     }
@@ -93,7 +93,7 @@ PS_OUT PSMain(PS_IN input)
     }
     
     output.Diffuse = diffuseColor;
-    output.Emissive = input.color;
+    output.Emissive = Material.Emissive;
     output.Normal = float4(normalize(input.normal), 1.0f);
     output.Specular = float4(specularColor.xyz, Material.Specular.a);
     output.WorldPos = float4(input.worldPos, 1.0f);

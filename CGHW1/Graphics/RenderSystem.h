@@ -60,6 +60,7 @@ public:
 
 	void OpaquePass();
 	void LightPass();
+	void TransparentPass();
 
 	void RegisterMesh(MeshComponent* mesh);
 	void RegisterLight(LightComponent* light);

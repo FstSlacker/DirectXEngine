@@ -24,6 +24,8 @@ public:
 	virtual void Draw(ID3D11DeviceContext* context);
 	virtual void DestroyResources();
 
+	void RecalculateTangents();
+
 	static std::shared_ptr<Mesh> CreateSphereMesh(UINT tslX = 16U, UINT tslY = 16U, float radius = 1.0f);
 	static std::shared_ptr<Mesh> CreateCubeMesh(float size = 1.0f);
 	static std::shared_ptr<Mesh> CreatePlaneMesh(float size = 1.0f);

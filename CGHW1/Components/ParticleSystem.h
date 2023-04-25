@@ -40,9 +40,6 @@ private:
 	UAVStructuredBuffer<UINT> uavDeadParticles;
 	UAVStructuredBuffer<Particle> uavParticleInjection;
 
-	//UAVStructuredBuffer<Particle>* uavSrc;
-	//UAVStructuredBuffer<Particle>* uavDest;
-
 	ConstantBuffer<TransformCbuf> cbTransform;
 	ConstantBuffer<ParticleSystemParamsCBuf> cbParticleSystemParams;
 	ConstantBuffer<Vector4> cbSortData;
@@ -72,7 +69,6 @@ private:
 
 	void CreateRandomParticles();
 	void GetGroupSize(int count, int& sizeX, int& sizeY);
-	void SwapParticlesBuffers();
 
 public:
 
@@ -105,5 +101,8 @@ public:
 	void DrawGui() override;
 
 	bool AddParticle(Particle& p);
+
+	UINT GetParticlesCount() const;
+	UINT GetMaxParticlesCount() const;
 };
 
