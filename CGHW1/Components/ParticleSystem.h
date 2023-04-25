@@ -35,15 +35,17 @@ private:
 
 	BlendState blendState;
 
-	UAVStructuredBuffer<Particle> uavParticlesFirst;
-	UAVStructuredBuffer<Particle> uavParticlesSecond;
+	UAVStructuredBuffer<Particle> uavParticles;
+	UAVStructuredBuffer<Vector2> uavSortedParticles;
+	UAVStructuredBuffer<UINT> uavDeadParticles;
 	UAVStructuredBuffer<Particle> uavParticleInjection;
 
-	UAVStructuredBuffer<Particle>* uavSrc;
-	UAVStructuredBuffer<Particle>* uavDest;
+	//UAVStructuredBuffer<Particle>* uavSrc;
+	//UAVStructuredBuffer<Particle>* uavDest;
 
 	ConstantBuffer<TransformCbuf> cbTransform;
 	ConstantBuffer<ParticleSystemParamsCBuf> cbParticleSystemParams;
+	ConstantBuffer<Vector4> cbSortData;
 
 	RConstantBuffer<UINT> rcbCount;
 
@@ -53,17 +55,20 @@ private:
 
 	std::unique_ptr<ComputeShader> csParticlesSimulate;
 	std::unique_ptr<ComputeShader> csParticlesInject;
+	std::unique_ptr<ComputeShader> csParticlesSort;
 
 	Particle* particles;
 	Particle* injectedParticles;
 
 	UINT particlesCount = 0;
+	UINT deadParticlesCount = 0;
 	UINT injectedParticlesCount = 0;
 
 	float spawnCounter = 0.0f;
 
 	void Emmit();
 	void Simulate();
+	void SortGPU();
 
 	void CreateRandomParticles();
 	void GetGroupSize(int count, int& sizeX, int& sizeY);

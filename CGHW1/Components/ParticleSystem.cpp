@@ -3,7 +3,7 @@
 #include <random>
 #include <math.h>
 
-#define MAX_PARTICLES_COUNT 100000
+#define MAX_PARTICLES_COUNT 256 * 256
 #define MAX_PARTICLES_INJECTION_COUNT 1000
 
 void ParticleSystem::Emmit()
@@ -39,6 +39,7 @@ void ParticleSystem::Simulate()
 
 	const UINT counterKeepValue = -1;
 	const UINT counterZero = 0;
+	const UINT maxParticlesCount = MAX_PARTICLES_COUNT;
 
 	int groupSizeX, groupSizeY;
 	GetGroupSize(particlesCount, groupSizeX, groupSizeY);
@@ -78,15 +79,20 @@ void ParticleSystem::Simulate()
 	game->Gfx.GetContext()->CSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
 	game->Gfx.GetContext()->CSSetConstantBuffers(1, 1, cbParticleSystemParams.GetAddressOf());
 
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavSrc->GetUnorderedAccessViewAddressOf(), &particlesCount);
-	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavDest->GetUnorderedAccessViewAddressOf(), &counterZero);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavParticles.GetUAVCounterAddressOf(), &maxParticlesCount);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavSortedParticles.GetUAVCounterAddressOf(), &particlesCount);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, uavDeadParticles.GetUAVAppendAddressOf(), &deadParticlesCount);
 
 	csParticlesSimulate->Bind(game->Gfx.GetContext());
 
 	game->Gfx.GetContext()->Dispatch(groupSizeX, groupSizeY, 1);
 
-	game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDest->GetUnorderedAccessView());
-	rcbCount.Read(game->Gfx.GetContext(), particlesCount);
+	UINT prevParticlesCount = particlesCount;
+
+	game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDeadParticles.GetUAVAppend());
+	rcbCount.Read(game->Gfx.GetContext(), deadParticlesCount);
+
+	particlesCount = MAX_PARTICLES_COUNT - deadParticlesCount;
 
 	if (injectedParticlesCount > 0)
 	{
@@ -111,13 +117,17 @@ void ParticleSystem::Simulate()
 		uavParticleInjection.Data = injectedParticles;
 		uavParticleInjection.Apply(game->Gfx.GetContext());
 
-		game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavParticleInjection.GetUnorderedAccessViewAddressOf(), &injectedParticlesCount);
-		game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavDest->GetUnorderedAccessViewAddressOf(), &particlesCount);
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, uavParticles.GetUAVCounterAddressOf(), &maxParticlesCount);
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, uavSortedParticles.GetUAVAppendAddressOf(), &prevParticlesCount);
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, uavDeadParticles.GetUAVAppendAddressOf(), &deadParticlesCount);
+		game->Gfx.GetContext()->CSSetUnorderedAccessViews(3, 1, uavParticleInjection.GetUAVAppendAddressOf(), &injectedParticlesCount);
 
 		game->Gfx.GetContext()->Dispatch(groupSizeX, groupSizeY, 1);
 
-		game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDest->GetUnorderedAccessView());
-		rcbCount.Read(game->Gfx.GetContext(), particlesCount);
+		game->Gfx.GetContext()->CopyStructureCount(rcbCount.Get(), 0, uavDeadParticles.GetUAVAppend());
+		rcbCount.Read(game->Gfx.GetContext(), deadParticlesCount);
+
+		particlesCount = MAX_PARTICLES_COUNT - deadParticlesCount;
 
 		injectedParticlesCount = 0;
 	}
@@ -125,8 +135,52 @@ void ParticleSystem::Simulate()
 	ID3D11UnorderedAccessView* uavNull = nullptr;
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(0, 1, &uavNull, &counterZero);
 	game->Gfx.GetContext()->CSSetUnorderedAccessViews(1, 1, &uavNull, &counterZero);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(2, 1, &uavNull, &counterZero);
+	game->Gfx.GetContext()->CSSetUnorderedAccessViews(3, 1, &uavNull, &counterZero);
+}
 
-	SwapParticlesBuffers();
+void ParticleSystem::SortGPU()
+{
+	ID3D11DeviceContext* context = game->Gfx.GetContext();
+
+	UINT pCountSquared = (UINT)pow(2, ceil(log(MAX_PARTICLES_COUNT) / log(2)));
+	pCountSquared = pCountSquared == 1U ? 0U : pCountSquared;
+
+	//Logs::Log("Sq:" + std::to_string(pCountSquared) + " Total:" + std::to_string(particlesCount), false);
+
+	context->CSSetUnorderedAccessViews(0, 1, uavSortedParticles.GetUAVCounterAddressOf(), &pCountSquared);
+	csParticlesSort->Bind(context);
+
+	int sizeX, sizeY;
+	GetGroupSize(pCountSquared, sizeX, sizeY);
+
+	int stage = 1;
+	const int count = pCountSquared;
+
+	int passCount = 0;
+
+	for (int k = 2; k <= count; k <<= 1)
+	{
+		int stageInd = stage;
+		for (int j = k >> 1; j > 0; j >>= 1)
+		{
+			//----
+			cbSortData.Data = Vector4(
+				sizeY,
+				pCountSquared,
+				stage,
+				stageInd
+			);
+			cbSortData.Apply(context);
+			context->CSSetConstantBuffers(0, 1, cbSortData.GetAddressOf());
+
+			context->Dispatch(sizeX, sizeY, 1);
+			//----
+			passCount++;
+			stageInd--;
+		}
+		stage += 1;
+	}
 }
 
 void ParticleSystem::CreateRandomParticles()
@@ -165,9 +219,9 @@ void ParticleSystem::GetGroupSize(int count, int& sizeX, int& sizeY)
 
 void ParticleSystem::SwapParticlesBuffers()
 {
-	auto tmp = uavSrc;
-	uavSrc = uavDest;
-	uavDest = tmp;
+	//auto tmp = uavSrc;
+	//uavSrc = uavDest;
+	//uavDest = tmp;
 }
 
 ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
@@ -181,7 +235,7 @@ ParticleSystem::ParticleSystem(Game* game) : GameComponent(game)
 
 	this->Gravity = Vector3(0.0f, -9.8f, 0.0f);
 
-	this->StartColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
+	this->StartColor = Color(1.0f, 1.0f, 0.0f, 1.0f);
 	this->EndColor = Color(1.0f, 1.0f, 1.0f, 0.0f);
 
 	this->StartSize = 0.1f;
@@ -213,6 +267,7 @@ bool ParticleSystem::Initialize()
 
 	csParticlesSimulate = std::make_unique<ComputeShader>(L"./Shaders/CS_ParticlesSimulate.hlsl");
 	csParticlesInject = std::make_unique<ComputeShader>(L"./Shaders/CS_ParticlesInject.hlsl");
+	csParticlesSort = std::make_unique<ComputeShader>(L"./Shaders/CS_BitonicSort.hlsl");
 
 	D3D11_RENDER_TARGET_BLEND_DESC rtBlendDesc = {};
 	rtBlendDesc.BlendEnable = true;
@@ -248,10 +303,16 @@ bool ParticleSystem::Initialize()
 	if (!csParticlesInject->Initialize(game->Gfx.GetDevice()))
 		return false;
 
-	if (!uavParticlesFirst.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
+	if (!csParticlesSort->Initialize(game->Gfx.GetDevice()))
 		return false;
 
-	if (!uavParticlesSecond.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
+	if (!uavParticles.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
+		return false;
+
+	if (!uavSortedParticles.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
+		return false;
+
+	if (!uavDeadParticles.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_COUNT))
 		return false;
 
 	if (!uavParticleInjection.Initialize(game->Gfx.GetDevice(), MAX_PARTICLES_INJECTION_COUNT))
@@ -263,14 +324,34 @@ bool ParticleSystem::Initialize()
 	if (!cbParticleSystemParams.Initialize(game->Gfx.GetDevice()))
 		return false;
 
+	if (!cbSortData.Initialize(game->Gfx.GetDevice()))
+		return false;
+
 	if (!rcbCount.Initialize(game->Gfx.GetDevice()))
 		return false;
 
-	uavParticlesFirst.Data = this->particles;
-	uavParticlesFirst.Apply(game->Gfx.GetContext());
+	uavParticles.Data = this->particles;
+	uavParticles.Apply(game->Gfx.GetContext());
 
-	uavSrc = &uavParticlesFirst;
-	uavDest = &uavParticlesSecond;
+	auto inds = new UINT[MAX_PARTICLES_COUNT];
+	auto sortParticles = new Vector2[MAX_PARTICLES_COUNT];
+
+	for (int i = 0; i < MAX_PARTICLES_COUNT; i++)
+	{
+		inds[i] = i;
+		sortParticles[i] = Vector2(i, 1000.0f);
+	}
+
+	uavDeadParticles.Data = inds;
+	uavDeadParticles.Apply(game->Gfx.GetContext());
+
+	uavSortedParticles.Data = sortParticles;
+	uavSortedParticles.Apply(game->Gfx.GetContext());
+
+	deadParticlesCount = MAX_PARTICLES_COUNT;
+
+	//uavSrc = &uavParticlesFirst;
+	//uavDest = &uavParticlesSecond;
 
 	return true;
 }
@@ -281,6 +362,7 @@ void ParticleSystem::Update()
 
 	Emmit();
 	Simulate();
+	SortGPU();
 }
 
 void ParticleSystem::Bind()
@@ -305,7 +387,9 @@ void ParticleSystem::Bind()
 	cbTransform.Apply(game->Gfx.GetContext());
 
 	game->Gfx.GetContext()->GSSetConstantBuffers(0, 1, cbTransform.GetAddressOf());
-	game->Gfx.GetContext()->GSSetShaderResources(0, 1, uavSrc->GetShaderResourceViewAddressOf());
+
+	game->Gfx.GetContext()->GSSetShaderResources(0, 1, uavParticles.GetShaderResourceViewAddressOf());
+	game->Gfx.GetContext()->GSSetShaderResources(1, 1, uavSortedParticles.GetShaderResourceViewAddressOf());
 }
 
 void ParticleSystem::Draw()

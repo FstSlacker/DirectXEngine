@@ -8,6 +8,7 @@ cbuffer cBuf : register(b0)
 };
 
 StructuredBuffer<Particle> Particles : register(t0);
+StructuredBuffer<float2> SortedParticles : register(t1);
 
 struct PS_IN
 {
@@ -43,7 +44,9 @@ void GSMain(point VS_OUT input[1], inout TriangleStream<PS_IN> stream)
 {
     PS_IN pointOut = (PS_IN) 0;
     
-    Particle p = Particles[input[0].vertexID];
+    uint pId = (uint)SortedParticles[input[0].vertexID].x;
+    
+    Particle p = Particles[pId];
 
     float4 worldPosition = float4(p.Position, 1);
     

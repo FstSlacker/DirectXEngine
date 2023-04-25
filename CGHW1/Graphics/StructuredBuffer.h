@@ -109,7 +109,9 @@ class UAVStructuredBuffer
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> resourceView;
-	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> unorderedAccessView;
+
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> unorderedAccessViewAppend;
+	Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> unorderedAccessViewCounter;
 
 	UINT numElements;
 
@@ -155,9 +157,19 @@ public:
 		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 		uavDesc.Buffer.FirstElement = 0;
 		uavDesc.Buffer.NumElements = numElements;
+
 		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
 
-		res = device->CreateUnorderedAccessView(buffer.Get(), &uavDesc, unorderedAccessView.GetAddressOf());
+		res = device->CreateUnorderedAccessView(buffer.Get(), &uavDesc, unorderedAccessViewAppend.GetAddressOf());
+		if (FAILED(res))
+		{
+			Logs::LogError(res, "Failed to create UnorderedAccessView in UAVStructuredBuffer");
+			return false;
+		}
+
+		uavDesc.Buffer.Flags = 0;
+
+		res = device->CreateUnorderedAccessView(buffer.Get(), &uavDesc, unorderedAccessViewCounter.GetAddressOf());
 		if (FAILED(res))
 		{
 			Logs::LogError(res, "Failed to create UnorderedAccessView in UAVStructuredBuffer");
@@ -176,7 +188,9 @@ public:
 	{
 		this->buffer.Reset();
 		this->resourceView.Reset();
-		this->unorderedAccessView.Reset();
+
+		this->unorderedAccessViewAppend.Reset();
+		this->unorderedAccessViewCounter.Reset();
 	}
 
 	ID3D11ShaderResourceView* GetShaderResourceView() const
@@ -184,9 +198,14 @@ public:
 		return this->resourceView.Get();
 	}
 
-	ID3D11UnorderedAccessView* GetUnorderedAccessView() const
+	ID3D11UnorderedAccessView* GetUAVAppend() const
 	{
-		return this->unorderedAccessView.Get();
+		return this->unorderedAccessViewAppend.Get();
+	}
+
+	ID3D11UnorderedAccessView* GetUAVCounter() const
+	{
+		return this->unorderedAccessViewCounter.Get();
 	}
 
 	ID3D11ShaderResourceView* const* GetShaderResourceViewAddressOf() const
@@ -194,8 +213,13 @@ public:
 		return this->resourceView.GetAddressOf();
 	}
 
-	ID3D11UnorderedAccessView** GetUnorderedAccessViewAddressOf()
+	ID3D11UnorderedAccessView** GetUAVAppendAddressOf()
 	{
-		return this->unorderedAccessView.GetAddressOf();
+		return this->unorderedAccessViewAppend.GetAddressOf();
+	}
+
+	ID3D11UnorderedAccessView** GetUAVCounterAddressOf()
+	{
+		return this->unorderedAccessViewCounter.GetAddressOf();
 	}
 };
